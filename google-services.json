@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "212828336741",
+    "project_id": "radarurbano-62742",
+    "storage_bucket": "radarurbano-62742.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:212828336741:android:8b9510bf027fed0bdc0c8c",
+        "android_client_info": {
+          "package_name": "com.victorlabbe.radarurbano"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaR_s6ExWrEmBC_Kcg_Cid1GJ60g6ue9o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

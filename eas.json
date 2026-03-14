@@ -1,0 +1,19 @@
+{
+  "cli": {
+    "appVersionSource": "local",
+    "version": ">= 18.0.6"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {}
+  }
+}
