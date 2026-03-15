@@ -18,34 +18,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { AxiosResponse } from 'axios';
 import { Share } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { DrawerActions } from '@react-navigation/native';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { useNavigation } from '@react-navigation/native';
 import { 
-  // Íconos generales
-  X,
-  MapPin,
-  
-  // Categorías
-  Layout,
-  Car,
-  ShieldPlus,
-  Siren,
-  Home,
-  
-  // Íconos específicos
-  Clock,
-  AlertCircle,
-  Power,
-  XCircle,
-  AlertTriangle,
-  EyeOff,
-  Target,
-  Flame,
-  Droplet,
-  Circle,
-  PowerOff,
-  DropletOff,
-  CheckCircle,
-  Share2
+  Menu, User,
+  X, MapPin, Layout, Car, ShieldPlus, Siren, Home,
+  Clock, AlertCircle, Power, XCircle, AlertTriangle,
+  EyeOff, Target, Flame, Droplet, Circle, PowerOff,
+  DropletOff, CheckCircle, Share2
 } from 'lucide-react-native';
+
+import { AppState } from 'react-native';
+
 
 
 const API_URL = 'http://192.168.1.84:4000/api';
@@ -69,7 +54,14 @@ interface Coordinate {
   longitude: number;
 }
 
-export default function MapScreen({ navigation }: any) {
+type RootDrawerParamList = {
+  MapScreen: undefined;
+  Profile: undefined;
+};
+
+
+export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
+  const navigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
   const [region, setRegion] = useState<any>(null);
   const [reportes, setReportes] = useState<Reporte[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -77,14 +69,13 @@ export default function MapScreen({ navigation }: any) {
   const [selectedFilter, setSelectedFilter] = useState<'RECENT' | 'TRENDING'>('RECENT');
   const mapRef = useRef<MapView>(null);
   const [sheetIndex, setSheetIndex] = useState(0);
-  const snapPoints = ['35%', '50%', '70%'];
+  const snapPoints = ['15%', '50%', '80%'];
   const [modalVisible, setModalVisible] = useState(false);
   const [loadingReporte, setLoadingReporte] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
   const [cardModalVisible, setCardModalVisible] = useState(false);
   const [filtroCategoria, setFiltroCategoria] = useState<string>('todos');
   const [selectedReporte, setSelectedReporte] = useState<Reporte | null>(null);
-  const [mapaOscuro, setMapaOscuro] = useState(true);
   const [alertConfig, setAlertConfig] = useState({
     title: '',
     message: '',
@@ -110,32 +101,46 @@ export default function MapScreen({ navigation }: any) {
     clima: '#2196F3'
   };
 
-  useEffect(() => {
-    const getToken = async () => {
-      const t = await AsyncStorage.getItem('token');
-      setToken(t || '');
+useEffect(() => {
+  const getToken = async () => {
+    const t = await AsyncStorage.getItem('token');
+    setToken(t || '');
+  };
+  getToken();
+
+  (async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Permiso denegado');
+      return;
+    }
+
+    const location = await Location.getCurrentPositionAsync({});
+    const newRegion = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      latitudeDelta: 0.02,
+      longitudeDelta: 0.02,
     };
-    getToken();
+    setRegion(newRegion);
+    cargarReportes(newRegion.latitude, newRegion.longitude);
+    setLoading(false);
+  })();
+}, []);
 
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Permiso denegado');
-        return;
-      }
+// 👇 NUEVO EFECTO PARA RECARGAR CADA 5 SEGUNDOS
 
-      const location = await Location.getCurrentPositionAsync({});
-      const newRegion = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        latitudeDelta: 0.02,
-        longitudeDelta: 0.02,
-      };
-      setRegion(newRegion);
-      cargarReportes(newRegion.latitude, newRegion.longitude);
-      setLoading(false);
-    })();
-  }, []);
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    if (region && AppState.currentState === 'active') {
+      console.log('🔄 Recargando reportes...');
+      cargarReportes(region.latitude, region.longitude);
+    }
+  }, 20000); // 20 segundos
+
+  return () => clearInterval(interval);
+}, [region]);
 
   const cargarReportes = async (lat: number, lng: number) => {
     try {
@@ -165,57 +170,73 @@ export default function MapScreen({ navigation }: any) {
   };
 
   
+const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
+  if (!coordinate) return;
+  
+  setLoadingReporte(true);
+  
+  try {
+    const response: AxiosResponse<Reporte> = await axios.post(`${API_URL}/reportes`, {
+      tipo,
+      descripcion: `Reporte de ${tipo}`,
+      lat: coordinate.latitude,
+      lng: coordinate.longitude
+    }, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    // 👇 AGREGAR EL NUEVO REPORTE Y RECARGAR
+    setReportes(prev => [response.data, ...prev]);
+    if (region) {
+      await cargarReportes(region.latitude, region.longitude);
+    }
+    
+    setModalVisible(false);
+    showAlert('✅ Éxito', 'Reporte creado correctamente', 'success');
+    
+  } catch (error) {
+    console.error('Error creando reporte:', error);
+    showAlert('❌ Error', 'No se pudo crear el reporte', 'error');
+  } finally {
+    setLoadingReporte(false);
+  }
+};
 
-  const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
-    if (!coordinate) return;
+const confirmarReporte = async (id: string) => {
+  try {
+    await axios.post(`${API_URL}/reportes/${id}/confirmar`, {}, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
     
-    setLoadingReporte(true);
-    
-    try {
-      const response: AxiosResponse<Reporte> = await axios.post(`${API_URL}/reportes`, {
-        tipo,
-        descripcion: `Reporte de ${tipo}`,
-        lat: coordinate.latitude,
-        lng: coordinate.longitude
-      }, {
-        headers: { 'Authorization': `Bearer ${token}` }
+    // 👇 RECARGAR REPORTES DESPUÉS DE CONFIRMAR
+    if (region) {
+      const response = await axios.get(`${API_URL}/reportes/cercanos`, {
+        params: { lat: region.latitude, lng: region.longitude, radio: 5 }
       });
       
-      setReportes(prev => [response.data, ...prev]);
-      setModalVisible(false);
-      showAlert('✅ Éxito', 'Reporte creado correctamente', 'success');
+      const reportesLimpios = response.data.map((reporte: any) => ({
+        ...reporte,
+        confirmadoPor: Array.isArray(reporte.confirmadoPor) ? reporte.confirmadoPor : [],
+        confirmaciones: typeof reporte.confirmaciones === 'number' ? reporte.confirmaciones : 0,
+        reportesFalsos: typeof reporte.reportesFalsos === 'number' ? reporte.reportesFalsos : 0,
+        tipo: reporte.tipo || '',
+        descripcion: reporte.descripcion || '',
+        estado: reporte.estado || 'no_confirmado',
+      }));
       
-    } catch (error) {
-      console.error('Error creando reporte:', error);
-      showAlert('❌ Error', 'No se pudo crear el reporte', 'error');
-    } finally {
-      setLoadingReporte(false);
+      setReportes(reportesLimpios);
     }
-  };
-
-  const confirmarReporte = async (id: string) => {
-    try {
-      await axios.post(`${API_URL}/reportes/${id}/confirmar`, {}, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      
-      if (region) {
-        const response: AxiosResponse<Reporte[]> = await axios.get(`${API_URL}/reportes/cercanos`, {
-          params: { lat: region.latitude, lng: region.longitude, radio: 5 }
-        });
-        setReportes(response.data);
-      }
-      
-      showAlert('✅ Confirmado', 'Reporte confirmado correctamente', 'success');
-      
-    } catch (error: any) {
-      if (error.response?.status === 400) {
-        showAlert('⚠️ Ya confirmado', 'Ya has confirmado este reporte anteriormente', 'info');
-      } else {
-        showAlert('❌ Error', 'No se pudo confirmar el reporte', 'error');
-      }
+    
+    showAlert('✅ Confirmado', 'Reporte confirmado correctamente', 'success');
+    
+  } catch (error: any) {
+    if (error.response?.status === 400) {
+      showAlert('⚠️ Ya confirmado', 'Ya has confirmado este reporte anteriormente', 'info');
+    } else {
+      showAlert('❌ Error', 'No se pudo confirmar el reporte', 'error');
     }
-  };
+  }
+};
 
   const reportarFalso = async (id: string) => {
     try {
@@ -259,6 +280,8 @@ export default function MapScreen({ navigation }: any) {
       showAlert('Error', 'No se pudo compartir el reporte', 'error');
     }
   };
+
+  
 
   const mostrarOpcionesCard = (reporte: Reporte) => {
     setSelectedReporte(reporte);
@@ -420,15 +443,17 @@ export default function MapScreen({ navigation }: any) {
 
   ];
 
+  
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: mapaOscuro ? '#000' : '#FFF' }]}>
       {region && (
-        <MapView 
+        <MapView
+          key={mapaOscuro ? 'dark' : 'light'} // 👈 FORZAMOS RE-RENDER
           style={styles.map} 
           region={region} 
           showsUserLocation
           showsMyLocationButton
-          customMapStyle={mapDarkStyle} 
+          customMapStyle={mapaOscuro ? mapDarkStyle : undefined}
         >
           {reportes.map((reporte) => (
             <PulseMarker
@@ -443,50 +468,55 @@ export default function MapScreen({ navigation }: any) {
           ))}
         </MapView>
       )}
-
-      {/* Botón de perfil */}
-      <TouchableOpacity 
-        style={styles.profileButton}
-        onPress={() => navigation.navigate('Profile')}
-      >
-        <Text style={styles.profileButtonText}>👤</Text>
-      </TouchableOpacity>
-
-      {/* Botón flotante para crear reporte */}
-      <TouchableOpacity 
-        style={styles.botonReportar}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.botonTexto}>+</Text>
-      </TouchableOpacity>
-
-
-
-      
-      {/* Modal para crear reportes - NUEVO DISEÑO */}
-
-   {/* Modal para crear reportes - TODO CON LUCIDE */}
-<Modal
-  animationType="slide"
-  transparent={true}
-  visible={modalVisible}
-  onRequestClose={() => setModalVisible(false)}
->
-  <View style={styles.modernModalOverlay}>
-    <View style={styles.modernModalContent}>
-      
-      {/* Header con título e ícono de cierre (Lucide) */}
-      <View style={styles.modernModalHeader}>
-        <View>
-          <Text style={styles.modernModalTitle}>Nuevo reporte</Text>
-          <Text style={styles.modernModalSubtitle}>¿Qué está pasando?</Text>
-        </View>
-        <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modernCloseButton}>
-          <X size={24} color="#8E8E93" />
+    
+         {/* Header con colores según tema */}
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+          <Menu size={28} color={mapaOscuro ? "#FFF" : "#000"} />
+        </TouchableOpacity>
+        
+        <Text style={[styles.headerTitle, { color: '#DC2626' }]}>
+          RADAR URBANO
+        </Text>
+        
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <User size={28} color={mapaOscuro ? "#FFF" : "#000"} />
         </TouchableOpacity>
       </View>
 
-      {/* Tarjeta de ubicación (Lucide) */}
+{/* Botón flotante para crear reporte */}
+<TouchableOpacity 
+  style={styles.botonReportar}
+  onPress={() => setModalVisible(true)}
+>
+  <Text style={styles.botonTexto}>+</Text>
+</TouchableOpacity>
+
+      
+            {/* Modal para crear reportes - NUEVO DISEÑO */}
+
+            {/* Modal para crear reportes - TODO CON LUCIDE */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={styles.modernModalOverlay}>
+              <View style={styles.modernModalContent}>
+                
+                {/* Header con título e ícono de cierre (Lucide) */}
+                <View style={styles.modernModalHeader}>
+                  <View>
+                    <Text style={styles.modernModalTitle}>Nuevo reporte</Text>
+                    <Text style={styles.modernModalSubtitle}>¿Qué está pasando?</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modernCloseButton}>
+                    <X size={24} color="#8E8E93" />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Tarjeta de ubicación (Lucide) */}
       <View style={styles.locationCard}>
         <MapPin size={20} color="#DC2626" />
         <Text style={styles.locationText}>Reportando en mi ubicación actual</Text>
@@ -1328,7 +1358,26 @@ modernLoadingText: {
   fontSize: 16,
   marginTop: 12,
 },
-  
+  headerContainer: {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  paddingHorizontal: 16,
+  paddingTop: 50, // Ajustá según tu dispositivo
+  paddingBottom: 12,
+  backgroundColor: 'transparent',
+  zIndex: 1000,
+},
+headerTitle: {
+  color: '#FFF',
+  fontSize: 18,
+  fontWeight: 'bold',
+  letterSpacing: 1,
+},
   
 
 });

@@ -9,12 +9,18 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
 import styles from './LoginStyles';
+import * as RootNavigation from '../navigation/RootNavigation';
+
+
+
 
 const API_URL = 'http://192.168.1.84:4000/api';
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen() {
+  const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -68,8 +74,11 @@ export default function LoginScreen({ navigation }) {
         await savePushToken(response.data.usuario.id, response.data.token);
       }
       
-      Alert.alert('Éxito', isRegistro ? 'Registro exitoso' : 'Login exitoso');
-      navigation.replace('MapScreen');
+     Alert.alert('Éxito', isRegistro ? 'Registro exitoso' : 'Login exitoso');
+      //console.log('Reseteando a MapScreen');
+      //RootNavigation.replace('MapScreen');
+      console.log('Navegando a MapScreen');
+      navigation.navigate('MapScreen');
       
     } catch (error) {
       Alert.alert('Error', error.response?.data?.error || 'Error de conexión');
