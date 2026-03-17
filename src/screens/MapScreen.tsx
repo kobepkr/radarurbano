@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import io from 'socket.io-client';
 import { 
   StyleSheet, 
   View, 
@@ -34,6 +35,7 @@ import { AppState } from 'react-native';
 
 
 const API_URL = 'http://192.168.1.84:4000/api';
+const SOCKET_URL = 'http://192.168.1.84:4000'
 
 interface Reporte {
   _id: string;
@@ -76,6 +78,7 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
   const [cardModalVisible, setCardModalVisible] = useState(false);
   const [filtroCategoria, setFiltroCategoria] = useState<string>('todos');
   const [selectedReporte, setSelectedReporte] = useState<Reporte | null>(null);
+  const socketRef = useRef<any>(null);
   const [alertConfig, setAlertConfig] = useState({
     title: '',
     message: '',
@@ -128,19 +131,56 @@ useEffect(() => {
   })();
 }, []);
 
+useEffect(() => {
+  if (socketRef.current) return;
+
+  socketRef.current = io(SOCKET_URL, {
+    transports: ['websocket'],
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+  });
+
+  socketRef.current.on('connect', () => {
+    console.log('🟢 Conectado a WebSocket');
+  });
+
+  // Escuchar nuevos reportes
+  socketRef.current.on('nuevo-reporte', (nuevoReporte: Reporte) => {
+    setReportes(prev => {
+      if (prev.some(r => r._id === nuevoReporte._id)) return prev;
+      return [nuevoReporte, ...prev];
+    });
+  });
+
+  // 👇 ESCUCHAR ACTUALIZACIONES (confirmaciones)
+  socketRef.current.on('reporte-actualizado', (reporteActualizado: Reporte) => {
+    console.log('📢 Reporte actualizado recibido:', reporteActualizado._id);
+    
+    setReportes(prev => 
+      prev.map(r => r._id === reporteActualizado._id ? reporteActualizado : r)
+    );
+  });
+
+  socketRef.current.on('disconnect', () => {
+    console.log('🔴 Desconectado de WebSocket');
+  });
+
+  return () => {
+    if (socketRef.current) {
+      socketRef.current.off('nuevo-reporte');
+      socketRef.current.off('reporte-actualizado');
+      socketRef.current.disconnect();
+      socketRef.current = null;
+    }
+  };
+}, []);
+
+
 // 👇 NUEVO EFECTO PARA RECARGAR CADA 5 SEGUNDOS
 
 
-useEffect(() => {
-  const interval = setInterval(() => {
-    if (region && AppState.currentState === 'active') {
-      console.log('🔄 Recargando reportes...');
-      cargarReportes(region.latitude, region.longitude);
-    }
-  }, 20000); // 20 segundos
 
-  return () => clearInterval(interval);
-}, [region]);
 
   const cargarReportes = async (lat: number, lng: number) => {
     try {
@@ -238,27 +278,22 @@ const confirmarReporte = async (id: string) => {
   }
 };
 
-  const reportarFalso = async (id: string) => {
-    try {
-      await axios.post(`${API_URL}/reportes/${id}/reportar-falso`, {}, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      
-      if (region) {
-        const response: AxiosResponse<Reporte[]> = await axios.get(`${API_URL}/reportes/cercanos`, {
-          params: { lat: region.latitude, lng: region.longitude, radio: 5 }
-        });
-        setReportes(response.data);
-      }
-      
-      showAlert('⚠️ Reportado', 'Reporte marcado como falso', 'info');
-      
-    } catch (error) {
-      console.error('Error reportando falso:', error);
-      showAlert('❌ Error', 'No se pudo reportar como falso', 'error');
-    }
-  };
-
+const reportarFalso = async (id: string) => {
+  try {
+    await axios.post(`${API_URL}/reportes/${id}/reportar-falso`, {}, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    // 👇 NO necesitas recargar todos los reportes
+    // El WebSocket se encargará de actualizar este reporte específico
+    
+    showAlert('⚠️ Reportado', 'Reporte marcado como falso', 'info');
+    
+  } catch (error) {
+    console.error('Error reportando falso:', error);
+    showAlert('❌ Error', 'No se pudo reportar como falso', 'error');
+  }
+};
   const compartirReporte = async (reporte: Reporte) => {
     try {
       const mensaje = 
