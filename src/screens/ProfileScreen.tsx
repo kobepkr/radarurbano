@@ -18,6 +18,7 @@ export default function ProfileScreen({ navigation }: any) {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [misReportes, setMisReportes] = useState<any[]>([]);
+  const [limite, setLimite] = useState<any>(null);
   const [stats, setStats] = useState({
     total: 0,
     confirmados: 0,
@@ -29,44 +30,50 @@ export default function ProfileScreen({ navigation }: any) {
     cargarDatosUsuario();
   }, []);
 
-  const cargarDatosUsuario = async () => {
-    try {
-      // Obtener datos del usuario guardados
-      const usuarioStr = await AsyncStorage.getItem('usuario');
-      const token = await AsyncStorage.getItem('token');
+const cargarDatosUsuario = async () => {
+  try {
+    const usuarioStr = await AsyncStorage.getItem('usuario');
+    const token = await AsyncStorage.getItem('token');
 
-      if (!usuarioStr || !token) {
-        navigation.replace('Login');
-        return;
-      }
-
-      const usuario = JSON.parse(usuarioStr);
-      setUser(usuario);
-
-      // Cargar reportes del usuario
-      const response = await axios.get(`${API_URL}/reportes/filtros?creadoPor=${usuario.id}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      const reportes = response.data.reportes || [];
-      setMisReportes(reportes);
-
-      // Calcular estadísticas
-      const stats = {
-        total: reportes.length,
-        confirmados: reportes.filter((r: any) => r.estado === 'confirmado').length,
-        falsos: reportes.filter((r: any) => r.estado === 'falso').length,
-        pendientes: reportes.filter((r: any) => r.estado === 'no_confirmado').length
-      };
-      setStats(stats);
-
-    } catch (error) {
-      console.error('Error cargando perfil:', error);
-      Alert.alert('Error', 'No se pudo cargar el perfil');
-    } finally {
-      setLoading(false);
+    if (!usuarioStr || !token) {
+      navigation.replace('Login');
+      return;
     }
-  };
+
+    const usuario = JSON.parse(usuarioStr);
+    setUser(usuario);
+
+    // Cargar reportes
+    const response = await axios.get(`${API_URL}/reportes/filtros?creadoPor=${usuario.id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    const reportes = response.data.reportes || [];
+    setMisReportes(reportes);
+
+    // Calcular estadísticas básicas
+    const statsCalc = {
+      total: reportes.length,
+      confirmados: reportes.filter((r: any) => r.estado === 'confirmado').length,
+      falsos: reportes.filter((r: any) => r.estado === 'falso').length,
+      pendientes: reportes.filter((r: any) => r.estado === 'no_confirmado').length
+    };
+    setStats(statsCalc);
+    
+    // ✅ NUEVO: Cargar límite de reportes
+    const limiteRes = await axios.get(`${API_URL}/usuarios/limite-reportes`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    setLimite(limiteRes.data);
+
+  } catch (error) {
+    console.error('Error cargando perfil:', error);
+    Alert.alert('Error', 'No se pudo cargar el perfil');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 // En ProfileScreen.tsx
 const handleLogout = async () => {
@@ -112,6 +119,44 @@ const handleLogout = async () => {
         <Text style={styles.userEmail}>{user?.email}</Text>
         <Text style={styles.userPhone}>{user?.telefono}</Text>
       </View>
+
+{/* Tarjeta de límite de reportes */}
+{limite && !limite.es_premium && (
+  <View style={styles.limiteCard}>
+    <Text style={styles.limiteTitle}>Reportes disponibles hoy</Text>
+    <Text style={styles.limiteCount}>
+      {limite.restantes} / {limite.limite}
+    </Text>
+    <View style={styles.progressBar}>
+      <View 
+        style={[
+          styles.progressFill, 
+          { 
+            width: `${((limite.limite - limite.restantes) / limite.limite) * 100}%`,
+            backgroundColor: limite.restantes === 0 ? '#F44336' : '#4CAF50'
+          }
+        ]} 
+      />
+    </View>
+    <Text style={styles.limiteInfo}>
+      Has usado {limite.reportes_hoy} de {limite.limite} reportes hoy
+    </Text>
+  </View>
+)}
+
+{/* Si es premium, mostrar badge */}
+{limite?.es_premium && (
+  <View style={styles.premiumCard}>
+    <Text style={styles.premiumEmoji}>⭐</Text>
+    <Text style={styles.premiumTitle}>Usuario Premium</Text>
+    <Text style={styles.premiumInfo}>Reportes ilimitados</Text>
+  </View>
+)}
+
+
+
+
+
 
       {/* Estadísticas */}
       <View style={styles.statsContainer}>
@@ -289,4 +334,61 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  limiteCard: {
+  backgroundColor: '#1C1C1E',
+  margin: 16,
+  padding: 16,
+  borderRadius: 16,
+  borderWidth: 1,
+  borderColor: '#2C2C2E',
+},
+limiteTitle: {
+  color: '#8E8E93',
+  fontSize: 14,
+  marginBottom: 8,
+},
+limiteCount: {
+  color: '#FFF',
+  fontSize: 32,
+  fontWeight: 'bold',
+  marginBottom: 12,
+},
+progressBar: {
+  height: 8,
+  backgroundColor: '#2C2C2E',
+  borderRadius: 4,
+  overflow: 'hidden',
+  marginBottom: 8,
+},
+progressFill: {
+  height: '100%',
+  borderRadius: 4,
+},
+limiteInfo: {
+  color: '#8E8E93',
+  fontSize: 12,
+},
+premiumCard: {
+  backgroundColor: '#FFD70020',
+  margin: 16,
+  padding: 16,
+  borderRadius: 16,
+  borderWidth: 1,
+  borderColor: '#FFD700',
+  alignItems: 'center',
+},
+premiumEmoji: {
+  fontSize: 32,
+  marginBottom: 8,
+},
+premiumTitle: {
+  color: '#FFD700',
+  fontSize: 18,
+  fontWeight: 'bold',
+  marginBottom: 4,
+},
+premiumInfo: {
+  color: '#8E8E93',
+  fontSize: 12,
+},
 });
