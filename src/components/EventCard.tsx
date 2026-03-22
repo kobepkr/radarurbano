@@ -13,7 +13,6 @@ interface EventCardProps {
   onPress: () => void;
   onConfirm: () => void;
   onFalseReport: () => void;
-  // ✅ NUEVAS PROPS
   reacciones?: {
     like?: number;
     urgente?: number;
@@ -21,6 +20,8 @@ interface EventCardProps {
   };
   onReaccion?: (tipo: string) => void;
   esPremium?: boolean;
+  comentariosCount?: number;
+  onOpenComments?: () => void;
 }
 
 export default function EventCard({ 
@@ -35,10 +36,11 @@ export default function EventCard({
   onPress,
   onConfirm,
   onFalseReport,
-  // ✅ AGREGAR LAS NUEVAS PROPS AQUÍ
   reacciones,
   onReaccion,
-  esPremium = false
+  esPremium = false,
+  comentariosCount = 0,
+  onOpenComments
 }: EventCardProps) {
   
   const getEstadoColor = () => {
@@ -63,69 +65,82 @@ export default function EventCard({
 
   return (
     <TouchableOpacity style={styles.card} onPress={handlePress}>
-  <Text style={styles.title}>{String(title)}</Text>
-  
-  <View style={styles.locationContainer}>
-    <Text style={styles.address}>{String(address)}</Text>
-    <Text style={styles.distance}>{String(distance)}</Text>
-  </View>
-  
-  <Text style={styles.time}>{String(time)}</Text>
-  <Text style={styles.description}>{String(description)}</Text>
+      <Text style={styles.title}>{String(title)}</Text>
+      
+      <View style={styles.locationContainer}>
+        <Text style={styles.address}>{String(address)}</Text>
+        <Text style={styles.distance}>{String(distance)}</Text>
+      </View>
+      
+      <Text style={styles.time}>{String(time)}</Text>
+      <Text style={styles.description}>{String(description)}</Text>
 
-  {/* Fila con estado a la izquierda y estadísticas a la derecha */}
-  <View style={styles.row}>
-    <View style={[styles.estadoBadge, { backgroundColor: getEstadoColor() + '20' }]}>
-      <Text style={[styles.estadoText, { color: getEstadoColor() }]}>
-        {String(getEstadoText())}
-      </Text>
-    </View>
+      {/* Fila con estado a la izquierda y estadísticas a la derecha */}
+      <View style={styles.row}>
+        <View style={[styles.estadoBadge, { backgroundColor: getEstadoColor() + '20' }]}>
+          <Text style={[styles.estadoText, { color: getEstadoColor() }]}>
+            {String(getEstadoText())}
+          </Text>
+        </View>
 
-    <View style={styles.statsContainer}>
-      <Text style={styles.confirmaciones}>
-        ✅ {String(confirmaciones)}
-      </Text>
-      {reportesFalsos > 0 && (
-        <Text style={styles.falsos}>
-          ⚠️ {String(reportesFalsos)}
-        </Text>
+        <View style={styles.statsContainer}>
+          <Text style={styles.confirmaciones}>
+            ✅ {String(confirmaciones)}
+          </Text>
+          {reportesFalsos > 0 && (
+            <Text style={styles.falsos}>
+              ⚠️ {String(reportesFalsos)}
+            </Text>
+          )}
+        </View>
+      </View>
+
+      {/* 👇 REACCIONES + COMENTARIOS - SOLO PARA PREMIUM */}
+      {esPremium && reacciones && onReaccion && (
+        <View style={styles.reaccionesContainer}>
+          <TouchableOpacity 
+            style={styles.reaccionButton}
+            onPress={() => onReaccion('like')}
+          >
+            <Text style={styles.reaccionEmoji}>👍</Text>
+            <Text style={styles.reaccionCount}>{reacciones.like || 0}</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.reaccionButton}
+            onPress={() => onReaccion('urgente')}
+          >
+            <Text style={styles.reaccionEmoji}>🔥</Text>
+            <Text style={styles.reaccionCount}>{reacciones.urgente || 0}</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.reaccionButton}
+            onPress={() => onReaccion('peligro')}
+          >
+            <Text style={styles.reaccionEmoji}>🚨</Text>
+            <Text style={styles.reaccionCount}>{reacciones.peligro || 0}</Text>
+          </TouchableOpacity>
+          
+          {/* Botón de comentarios */}
+          <TouchableOpacity 
+            style={styles.reaccionButton}
+            onPress={() => {
+              if (onOpenComments) {
+                onOpenComments();
+              }
+            }}
+          >
+            <Text style={styles.reaccionEmoji}>💬</Text>
+            <Text style={styles.reaccionCount}>{comentariosCount}</Text>
+          </TouchableOpacity>
+        </View>
       )}
-    </View>
-  </View>
 
-  {/* 👇 REACCIONES - JUSTO DEBAJO DEL ESTADO */}
-  {esPremium && reacciones && onReaccion && (
-    <View style={styles.reaccionesContainer}>
-      <TouchableOpacity 
-        style={styles.reaccionButton}
-        onPress={() => onReaccion('like')}
-      >
-        <Text style={styles.reaccionEmoji}>👍</Text>
-        <Text style={styles.reaccionCount}>{reacciones.like || 0}</Text>
-      </TouchableOpacity>
+      {/* Línea divisoria al final */}
+      <View style={styles.divider} />
       
-      <TouchableOpacity 
-        style={styles.reaccionButton}
-        onPress={() => onReaccion('urgente')}
-      >
-        <Text style={styles.reaccionEmoji}>🔥</Text>
-        <Text style={styles.reaccionCount}>{reacciones.urgente || 0}</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={styles.reaccionButton}
-        onPress={() => onReaccion('peligro')}
-      >
-        <Text style={styles.reaccionEmoji}>🚨</Text>
-        <Text style={styles.reaccionCount}>{reacciones.peligro || 0}</Text>
-      </TouchableOpacity>
-    </View>
-  )}
-
-  {/* 👇 LÍNEA DIVISORIA AL FINAL */}
-  <View style={styles.divider} />
-  
-</TouchableOpacity>
+    </TouchableOpacity>
   );
 }
 
@@ -197,17 +212,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-reaccionesContainer: {
-  flexDirection: 'row',
-  gap: 12,
-  marginTop: 8,
-  marginBottom: 8,
-},
-divider: {
-  height: 1,
-  backgroundColor: '#2C2C2E',
-  marginTop: 4,
-},
+  divider: {
+    height: 1,
+    backgroundColor: '#2C2C2E',
+    marginTop: 12,
+  },
+  reaccionesContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 8,
+    marginBottom: 4,
+  },
   reaccionButton: {
     flexDirection: 'row',
     alignItems: 'center',

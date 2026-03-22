@@ -31,7 +31,7 @@ import {
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { offlineReportService, OfflineReport } from '../services/OfflineReportService';
 import { ConnectionStatus } from '../components/ConnectionStatus';
-
+import { CommentSection } from '../components/CommentSection';
 
 
 
@@ -60,6 +60,13 @@ interface Reporte {
     urgente?: number;
     peligro?: number;
   };
+   comentarios?: Array<{
+    _id?: string;
+    usuarioId: string;
+    nombre: string;
+    texto: string;
+    createdAt: string;
+  }>;
 }
 
 interface Coordinate {
@@ -92,6 +99,8 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
   const [pendingOfflineReports, setPendingOfflineReports] = useState<OfflineReport[]>([]);
   const [syncing, setSyncing] = useState(false);
   const [esPremium, setEsPremium] = useState(false);
+  const [commentModalVisible, setCommentModalVisible] = useState(false);
+  const [reporteParaComentar, setReporteParaComentar] = useState<Reporte | null>(null);
 
   const [alertConfig, setAlertConfig] = useState({
     title: '',
@@ -364,9 +373,10 @@ useEffect(() => {
       console.log('🔵 Inicializando app...');
       
       const t = await AsyncStorage.getItem('token');  
+      console.log('🔑 MI TOKEN ES:', t);
       if (isMounted) setToken(t || '');
 
-      
+       
       // ✅ NUEVO: CARGAR DATOS DEL USUARIO PARA SABER SI ES PREMIUM
       const usuarioStr = await AsyncStorage.getItem('usuario');
       console.log('📦 USUARIO EN ASYNCSTORAGE:', usuarioStr);
@@ -819,23 +829,28 @@ useEffect(() => {
     ) : 0;
     
     return (
-      <EventCard
-        key={reporte._id}  // ✅ SOLO EL ID, SIN INDEX
-        title={`${reporte.tipo?.toUpperCase() || ''}`}
-        address="Ubicación cercana"
-        distance={formatearDistancia(distanciaReal)}
-        time={reporte.createdAt ? new Date(reporte.createdAt).toLocaleTimeString() : 'Reciente'}
-        description={reporte.descripcion || ''}
-        confirmaciones={reporte.confirmaciones}
-        reportesFalsos={reporte.reportesFalsos}
-        estado={reporte.estado || 'no_confirmado'}
-        onPress={() => mostrarOpcionesCard(reporte)}
-        onConfirm={() => confirmarReporte(reporte._id)}
-        onFalseReport={() => reportarFalso(reporte._id)}
-        reacciones={reporte.reacciones}
-        onReaccion={(tipo) => reaccionarReporte(reporte._id, tipo)}
-        esPremium={esPremium}
-      />
+   <EventCard
+          key={reporte._id}
+          title={`${reporte.tipo?.toUpperCase() || ''}`}
+          address="Ubicación cercana"
+          distance={formatearDistancia(distanciaReal)}
+          time={reporte.createdAt ? new Date(reporte.createdAt).toLocaleTimeString() : 'Reciente'}
+          description={reporte.descripcion || ''}
+          confirmaciones={reporte.confirmaciones}
+          reportesFalsos={reporte.reportesFalsos}
+          estado={reporte.estado || 'no_confirmado'}
+          onPress={() => mostrarOpcionesCard(reporte)}
+          onConfirm={() => confirmarReporte(reporte._id)}
+          onFalseReport={() => reportarFalso(reporte._id)}
+          reacciones={reporte.reacciones}
+          onReaccion={(tipo) => reaccionarReporte(reporte._id, tipo)}
+          esPremium={esPremium}
+          comentariosCount={reporte.comentarios?.length || 0}
+          onOpenComments={() => {
+            setReporteParaComentar(reporte);  // ✅ Guardar reporte
+            setCommentModalVisible(true);     // ✅ Abrir modal de comentarios
+          }}
+        />
     );
   })}
         </BottomSheetScrollView>
@@ -917,11 +932,51 @@ useEffect(() => {
                     </View>
                   </TouchableOpacity>
                 </View>
+
+              
+
+
               </>
             )}
           </View>
         </View>
       </Modal>
+
+      {/* 👇 MODAL DE COMENTARIOS - INDEPENDIENTE */}
+<Modal
+  transparent={true}
+  visible={commentModalVisible}
+  animationType="slide"
+  onRequestClose={() => setCommentModalVisible(false)}
+>
+  <View style={styles.modalOverlay}>
+    <View style={[styles.modalContent, { maxHeight: '80%' }]}>
+      
+      <View style={styles.modalHeader}>
+        <Text style={styles.modalTitle}>
+          💬 Comentarios
+        </Text>
+        <TouchableOpacity onPress={() => setCommentModalVisible(false)}>
+          <X size={24} color="#8E8E93" />
+        </TouchableOpacity>
+      </View>
+      
+      {reporteParaComentar && (
+        <CommentSection
+          reporteId={reporteParaComentar._id}
+          esPremium={esPremium}
+          token={token}
+          onComentarioAgregado={() => {
+            if (region) {
+              cargarReportes(region.latitude, region.longitude);
+            }
+          }}
+        />
+      )}
+      
+    </View>
+  </View>
+</Modal>
 
       <CustomAlert
         visible={alertVisible}
