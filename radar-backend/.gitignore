@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+*.tsbuildinfo
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.DS_Store
+*.pem
+node_modules
