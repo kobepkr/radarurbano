@@ -657,6 +657,7 @@ const centrarMapa = () => {
       {region && (
         <MapView
           ref={mapRef}
+          provider="google"
           key={mapaOscuro ? 'dark' : 'light'}
           style={styles.map}
           region={region}
