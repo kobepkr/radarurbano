@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const OFFLINE_REPORTS_KEY = '@offline_reports';
-const API_URL = 'http://192.168.1.83:4000/api';
+const API_URL = 'https://radarurbano-1.onrender.com/api';
 
 export interface OfflineReport {
   id: string;

@@ -12,7 +12,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Send } from 'lucide-react-native';
 
-const API_URL = 'http://192.168.1.82:4000/api';
+const API_URL = 'https://radarurbano-1.onrender.com/api';
 
 interface Comentario {
   _id?: string;

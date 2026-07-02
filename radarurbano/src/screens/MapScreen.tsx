@@ -41,8 +41,8 @@ import { Send } from 'lucide-react-native';
 
 
 
-const API_URL = 'http://192.168.1.82:4000/api';
-const SOCKET_URL = 'http://192.168.1.82:4000'
+const API_URL = 'https://radarurbano-1.onrender.com/api';
+const SOCKET_URL = 'https://radarurbano-1.onrender.com'
 
 interface Reporte {
   _id: string;
