@@ -22,6 +22,11 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCaR_s6ExWrEmBC_Kcg_Cid1GJ60g6ue9o"
+        }
+      },
       "package": "com.kobepkr.radarurbanoexpo",
       "googleServicesFile": "./google-services.json"
     },
