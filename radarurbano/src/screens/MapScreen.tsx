@@ -167,6 +167,55 @@ const getIconoPorTipo = (tipo: string): string => {
   return iconosPorTipo[tipo] || '📍';
 };
 
+const formatearTiempoRelativo = (fecha: string): string => {
+  const ahora = new Date();
+  const reporte = new Date(fecha);
+  const diffMs = ahora.getTime() - reporte.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHoras = Math.floor(diffMs / 3600000);
+  const diffDias = Math.floor(diffMs / 86400000);
+
+  if (diffMin < 1) return 'Ahora';
+  if (diffMin < 60) return `Hace ${diffMin} min`;
+  if (diffHoras < 24) return `Hace ${diffHoras}h`;
+  if (diffDias < 7) return `Hace ${diffDias} días`;
+  return reporte.toLocaleDateString('es-CL');
+};
+
+const getCategoriaReporte = (tipo: string): string => {
+  const catMap: { [key: string]: string } = {
+    embotellamiento: 'transito', choque: 'transito', semaforoRoto: 'transito',
+    calleCortada: 'transito', accidente: 'transito', trafico: 'transito',
+    asalto: 'seguridad', actitudSospechosa: 'seguridad', balacera: 'seguridad',
+    delito: 'seguridad',
+    incendio: 'emergencias', inundacion: 'emergencias', clima: 'emergencias',
+    bache: 'comunidad', corteLuz: 'comunidad', corteAgua: 'comunidad',
+  };
+  return catMap[tipo] || 'comunidad';
+};
+
+const getNombreTipo = (tipo: string): string => {
+  const nombres: { [key: string]: string } = {
+    embotellamiento: 'Embotellamiento',
+    choque: 'Choque',
+    semaforoRoto: 'Semáforo roto',
+    calleCortada: 'Calle cortada',
+    accidente: 'Accidente',
+    trafico: 'Tráfico',
+    asalto: 'Asalto',
+    actitudSospechosa: 'Actitud sospechosa',
+    balacera: 'Balacera',
+    delito: 'Delito',
+    incendio: 'Incendio',
+    inundacion: 'Inundación',
+    clima: 'Clima',
+    bache: 'Bache',
+    corteLuz: 'Corte de luz',
+    corteAgua: 'Corte de agua',
+  };
+  return nombres[tipo] || tipo;
+};
+
 
 
   // ========== FUNCIONES ==========
@@ -978,10 +1027,11 @@ const centrarMapa = () => {
     return (
    <EventCard
           key={reporte._id}
-          title={`${reporte.tipo?.toUpperCase() || ''}`}
-          address="Ubicación cercana"
+          title={getNombreTipo(reporte.tipo)}
+          address="Cerca de esta zona"
           distance={formatearDistancia(distanciaReal)}
-          time={reporte.createdAt ? new Date(reporte.createdAt).toLocaleTimeString() : 'Reciente'}
+          time={reporte.createdAt ? formatearTiempoRelativo(reporte.createdAt) : 'Reciente'}
+          categoria={getCategoriaReporte(reporte.tipo)}
           description={reporte.descripcion || ''}
           confirmaciones={reporte.confirmaciones}
           reportesFalsos={reporte.reportesFalsos}

@@ -6,6 +6,7 @@ interface EventCardProps {
   address: string;
   distance: string;
   time: string;
+  categoria: string;
   description: string;
   confirmaciones: number;
   reportesFalsos?: number;
@@ -24,11 +25,19 @@ interface EventCardProps {
   onOpenComments?: () => void;
 }
 
+const categoriaLabels: { [key: string]: string } = {
+  transito: '🚦 Tránsito',
+  seguridad: '🔒 Seguridad',
+  emergencias: '🚨 Emergencias',
+  comunidad: '🏘️ Comunidad',
+};
+
 export default function EventCard({ 
   title, 
   address, 
   distance, 
   time, 
+  categoria,
   description,
   confirmaciones,
   reportesFalsos = 0,
@@ -53,111 +62,104 @@ export default function EventCard({
 
   const getEstadoText = () => {
     switch(estado) {
-      case 'confirmado': return '✅ Confirmado';
-      case 'falso': return '❌ Falso';
-      default: return '⏳ Pendiente';
+      case 'confirmado': return 'Confirmado';
+      case 'falso': return 'Falso';
+      default: return 'Pendiente';
     }
   };
 
-  const handlePress = () => {
-    onPress();
+  const getEstadoIcon = () => {
+    switch(estado) {
+      case 'confirmado': return '✅';
+      case 'falso': return '❌';
+      default: return '⏳';
+    }
   };
 
   return (
-    <TouchableOpacity style={styles.card} onPress={handlePress}>
-      <Text style={styles.title}>{String(title)}</Text>
-      
-      <View style={styles.locationContainer}>
-        <Text style={styles.address}>{String(address)}</Text>
-        <Text style={styles.distance}>{String(distance)}</Text>
-      </View>
-      
-      <Text style={styles.time}>{String(time)}</Text>
-      <Text style={styles.description}>{String(description)}</Text>
-
-      {/* Estado y estadísticas */}
-      <View style={styles.row}>
-        <View style={[styles.estadoBadge, { backgroundColor: getEstadoColor() + '20' }]}>
+    <TouchableOpacity style={styles.card} onPress={onPress}>
+      {/* Tipo + Estado */}
+      <View style={styles.headerRow}>
+        <Text style={styles.title}>{title}</Text>
+        <View style={[styles.estadoBadge, { backgroundColor: getEstadoColor() + '25' }]}>
+          <Text style={styles.estadoIcon}>{getEstadoIcon()}</Text>
           <Text style={[styles.estadoText, { color: getEstadoColor() }]}>
-            {String(getEstadoText())}
+            {getEstadoText()}
           </Text>
-        </View>
-
-        <View style={styles.statsContainer}>
-          <Text style={styles.confirmaciones}>
-            ✅ {String(confirmaciones)}
-          </Text>
-          {reportesFalsos > 0 && (
-            <Text style={styles.falsos}>
-              ⚠️ {String(reportesFalsos)}
-            </Text>
-          )}
         </View>
       </View>
 
-      {/* 👇 SOLO PARA USUARIOS PREMIUM: BOTONES CON CONTADORES */}
-      {reacciones && onReaccion ? (
-        <View style={styles.botonesContainer}>
-          <TouchableOpacity 
-            style={styles.reaccionButton}
-            onPress={() => onReaccion('like')}
-          >
-            <Text style={styles.reaccionEmoji}>👍</Text>
-            <Text style={styles.reaccionCount}>{reacciones.like || 0}</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.reaccionButton}
-            onPress={() => onReaccion('urgente')}
-          >
-            <Text style={styles.reaccionEmoji}>🔥</Text>
-            <Text style={styles.reaccionCount}>{reacciones.urgente || 0}</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.reaccionButton}
-            onPress={() => onReaccion('peligro')}
-          >
-            <Text style={styles.reaccionEmoji}>🚨</Text>
-            <Text style={styles.reaccionCount}>{reacciones.peligro || 0}</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.reaccionButton}
-            onPress={() => onOpenComments && onOpenComments()}
-          >
-            <Text style={styles.reaccionEmoji}>💬</Text>
-            <Text style={styles.reaccionCount}>{comentariosCount}</Text>
-          </TouchableOpacity>
+      {/* Categoría */}
+      <View style={styles.categoriaRow}>
+        <Text style={styles.categoriaLabel}>
+          {categoriaLabels[categoria] || '📍 General'}
+        </Text>
+      </View>
+
+      {/* Ubicación + distancia */}
+      <View style={styles.infoRow}>
+        <Text style={styles.address} numberOfLines={1}>{address}</Text>
+        <View style={styles.distanceBadge}>
+          <Text style={styles.distance}>{distance}</Text>
         </View>
-      ) : (
-        /* 👇 SOLO PARA USUARIOS NORMALES: CONTADORES SIN BOTONES */
-        reacciones && (
-          <View style={styles.reaccionesContainer}>
-            <View style={styles.reaccionBadge}>
-              <Text style={styles.reaccionEmoji}>👍</Text>
-              <Text style={styles.reaccionCount}>{reacciones.like || 0}</Text>
-            </View>
-            
-            <View style={styles.reaccionBadge}>
-              <Text style={styles.reaccionEmoji}>🔥</Text>
-              <Text style={styles.reaccionCount}>{reacciones.urgente || 0}</Text>
-            </View>
-            
-            <View style={styles.reaccionBadge}>
-              <Text style={styles.reaccionEmoji}>🚨</Text>
-              <Text style={styles.reaccionCount}>{reacciones.peligro || 0}</Text>
-            </View>
-            
-            <View style={styles.reaccionBadge}>
-              <Text style={styles.reaccionEmoji}>💬</Text>
-              <Text style={styles.reaccionCount}>{comentariosCount}</Text>
-            </View>
-          </View>
-        )
+      </View>
+
+      {/* Tiempo */}
+      <Text style={styles.time}>{time}</Text>
+
+      {/* Descripción */}
+      {description && description !== `Reporte de ${title.toLowerCase()}` && (
+        <Text style={styles.description} numberOfLines={2}>{description}</Text>
       )}
 
       <View style={styles.divider} />
+
+      {/* Confirmar / Falso + Contadores */}
+      <View style={styles.actionsRow}>
+        <TouchableOpacity style={styles.actionButton} onPress={onConfirm}>
+          <Text style={styles.actionIcon}>✅</Text>
+          <Text style={styles.actionCount}>{confirmaciones}</Text>
+          <Text style={styles.actionLabel}>Confirmar</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.actionButton} onPress={onFalseReport}>
+          <Text style={styles.actionIcon}>⚠️</Text>
+          <Text style={styles.actionCount}>{reportesFalsos}</Text>
+          <Text style={styles.actionLabel}>Falso</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => onReaccion && onReaccion('like')}
+        >
+          <Text style={styles.actionIcon}>👍</Text>
+          <Text style={styles.actionCount}>{reacciones?.like || 0}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => onReaccion && onReaccion('urgente')}
+        >
+          <Text style={styles.actionIcon}>🔥</Text>
+          <Text style={styles.actionCount}>{reacciones?.urgente || 0}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => onReaccion && onReaccion('peligro')}
+        >
+          <Text style={styles.actionIcon}>🚨</Text>
+          <Text style={styles.actionCount}>{reacciones?.peligro || 0}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => onOpenComments && onOpenComments()}
+        >
+          <Text style={styles.actionIcon}>💬</Text>
+          <Text style={styles.actionCount}>{comentariosCount}</Text>
+        </TouchableOpacity>
+      </View>
     </TouchableOpacity>
   );
 }
@@ -166,111 +168,105 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#1C1C1E',
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 14,
     marginHorizontal: 16,
-    marginBottom: 8,
+    marginBottom: 10,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
   },
   title: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: 'bold',
-    textTransform: 'uppercase',
-    marginBottom: 8,
+    textTransform: 'capitalize',
+    flex: 1,
   },
-  locationContainer: {
+  estadoBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
+    gap: 3,
+  },
+  estadoIcon: {
+    fontSize: 10,
+  },
+  estadoText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  categoriaRow: {
+    marginBottom: 6,
+  },
+  categoriaLabel: {
+    color: '#DC2626',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 4,
   },
   address: {
     color: '#8E8E93',
-    fontSize: 14,
+    fontSize: 13,
+    flex: 1,
+    marginRight: 8,
+  },
+  distanceBadge: {
+    backgroundColor: '#2C2C2E',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
   },
   distance: {
-    color: '#8E8E93',
-    fontSize: 14,
+    color: '#AAAAAA',
+    fontSize: 12,
+    fontWeight: '500',
   },
   time: {
-    color: '#8E8E93',
-    fontSize: 12,
-    marginBottom: 8,
+    color: '#6B6B6B',
+    fontSize: 11,
+    marginBottom: 4,
   },
   description: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 12,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  estadoBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  estadoText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  confirmaciones: {
-    color: '#4CAF50',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  falsos: {
-    color: '#F44336',
-    fontSize: 14,
-    fontWeight: '600',
+    color: '#CCCCCC',
+    fontSize: 13,
+    lineHeight: 18,
+    marginBottom: 4,
   },
   divider: {
     height: 1,
     backgroundColor: '#2C2C2E',
-    marginTop: 12,
+    marginVertical: 10,
   },
-  reaccionesContainer: {
+  actionsRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 8,
-    marginBottom: 4,
-  },
-  reaccionBadge: {
-    flexDirection: 'row',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#2C2C2E',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
   },
-  botonesContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 8,
-    marginBottom: 4,
-  },
-  reaccionButton: {
-    flexDirection: 'row',
+  actionButton: {
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#3A3A3C',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
+    paddingHorizontal: 4,
+    gap: 2,
   },
-  reaccionEmoji: {
-    fontSize: 14,
+  actionIcon: {
+    fontSize: 18,
   },
-  reaccionCount: {
+  actionCount: {
     color: '#8E8E93',
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  actionLabel: {
+    color: '#6B6B6B',
+    fontSize: 10,
   },
 });
