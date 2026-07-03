@@ -391,12 +391,8 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
       showAlert('✅ Reacción agregada', `Has reaccionado con ${tipo}`, 'success');
     }
   } catch (error: any) {
-    if (error.response?.status === 403) {
-      showAlert('🔒 Solo Premium', 'Esta función es solo para usuarios premium', 'info');
-    } else {
       console.error('Error al reaccionar:', error);
       showAlert('❌ Error', 'No se pudo agregar la reacción', 'error');
-    }
   }
 };
 
@@ -1042,27 +1038,29 @@ useEffect(() => {
           
           {regionDropdownOpen && (
             <View style={styles.regionDropdownList}>
-              {regionesChile.map((region, index) => (
-                <TouchableOpacity
-                  key={region.nombre}
-                  style={[
-                    styles.regionDropdownItem,
-                    regionSeleccionada === index && styles.regionDropdownItemActive
-                  ]}
-                  onPress={() => {
-                    setRegionSeleccionada(index);
-                    setRegionDropdownOpen(false);
-                    cambiarRegion(index);
-                  }}
-                >
-                  <Text style={[
-                    styles.regionDropdownItemText,
-                    regionSeleccionada === index && styles.regionDropdownItemTextActive
-                  ]}>
-                    {index === 0 ? '📍 Mi ubicación' : region.nombre}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+              <ScrollView style={{ maxHeight: 200 }} nestedScrollEnabled>
+                {regionesChile.map((region, index) => (
+                  <TouchableOpacity
+                    key={region.nombre}
+                    style={[
+                      styles.regionDropdownItem,
+                      regionSeleccionada === index && styles.regionDropdownItemActive
+                    ]}
+                    onPress={() => {
+                      setRegionSeleccionada(index);
+                      setRegionDropdownOpen(false);
+                      cambiarRegion(index);
+                    }}
+                  >
+                    <Text style={[
+                      styles.regionDropdownItemText,
+                      regionSeleccionada === index && styles.regionDropdownItemTextActive
+                    ]}>
+                      {index === 0 ? '📍 Mi ubicación' : region.nombre}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
             </View>
           )}
         </View>
@@ -1302,8 +1300,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#2C2C2E',
     borderRadius: 12,
     marginTop: 4,
-    maxHeight: 200,
-    overflow: 'scroll' as const,
   },
   regionDropdownItem: {
     paddingHorizontal: 14,
