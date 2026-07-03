@@ -9,7 +9,7 @@ import {
   ScrollView, 
   ActivityIndicator 
 } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import PulseMarker from '../components/PulseMarker';
@@ -104,6 +104,7 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
   const [commentModalVisible, setCommentModalVisible] = useState(false);
   const [reporteParaComentar, setReporteParaComentar] = useState<Reporte | null>(null);
   const [userLocation, setUserLocation] = useState<Coordinate | null>(null);
+  const [selectedCoordinate, setSelectedCoordinate] = useState<Coordinate | null>(null);
   const [alertConfig, setAlertConfig] = useState({
     title: '',
     message: '',
@@ -200,41 +201,42 @@ const getIconoPorTipo = (tipo: string): string => {
 
 
 const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
-  if (!coordinate) return;
+  const targetCoord = selectedCoordinate || coordinate;
+  if (!targetCoord) return;
   
   setLoadingReporte(true);
   
   try {
-    // Si hay conexión, enviar normalmente
     if (isOnline) {
       const response: AxiosResponse<Reporte> = await axios.post(`${API_URL}/reportes`, {
         tipo,
         descripcion: `Reporte de ${tipo}`,
-        lat: coordinate.latitude,
-        lng: coordinate.longitude
+        lat: targetCoord.latitude,
+        lng: targetCoord.longitude
       }, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
+      const nuevoReporte = response.data;
+      setReportes(prev => [nuevoReporte, ...prev]);
       setModalVisible(false);
+      setSelectedCoordinate(null);
       showAlert('✅ Éxito', 'Reporte creado correctamente', 'success');
       
     } else {
-      // Modo offline: guardar localmente
       const offlineId = await offlineReportService.saveOfflineReport({
         tipo,
         descripcion: `Reporte de ${tipo}`,
-        lat: coordinate.latitude,
-        lng: coordinate.longitude
+        lat: targetCoord.latitude,
+        lng: targetCoord.longitude
       });
       
-      // Agregar reporte temporal al estado (con ID temporal)
       const tempReporte: Reporte = {
         _id: offlineId,
         tipo,
         descripcion: `📱 ${tipo} (pendiente de sincronizar)`,
         ubicacion: {
-          coordinates: [coordinate.longitude, coordinate.latitude]
+          coordinates: [targetCoord.longitude, targetCoord.latitude]
         },
         confirmaciones: 0,
         reportesFalsos: 0,
@@ -673,6 +675,10 @@ const centrarMapa = () => {
           showsUserLocation
           showsMyLocationButton={false}
           customMapStyle={mapaOscuro ? mapDarkStyle : undefined}
+          onLongPress={(e) => {
+            const { latitude, longitude } = e.nativeEvent.coordinate;
+            setSelectedCoordinate({ latitude, longitude });
+          }}
         >
           {reportes.map((reporte) => {
             const icono = getIconoPorTipo(reporte.tipo);
@@ -692,6 +698,19 @@ const centrarMapa = () => {
             );
           })}
           
+          {selectedCoordinate && (
+            <Marker
+              coordinate={selectedCoordinate}
+              title="Ubicación seleccionada"
+              description="Mantené presionado en otro lugar para cambiarla"
+              pinColor="#DC2626"
+              draggable
+              onDragEnd={(e) => {
+                const { latitude, longitude } = e.nativeEvent.coordinate;
+                setSelectedCoordinate({ latitude, longitude });
+              }}
+            />
+          )}
         </MapView>
       )}
       
@@ -742,7 +761,19 @@ const centrarMapa = () => {
 
       <View style={styles.locationCard}>
         <MapPin size={20} color="#DC2626" />
-        <Text style={styles.locationText}>Reportando en mi ubicación actual</Text>
+        {selectedCoordinate ? (
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.locationText}>Ubicación seleccionada en el mapa</Text>
+            <TouchableOpacity 
+              onPress={() => setSelectedCoordinate(null)}
+              style={{ marginLeft: 8, padding: 4 }}
+            >
+              <X size={16} color="#8E8E93" />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <Text style={styles.locationText}>Usando mi ubicación actual</Text>
+        )}
       </View>
 
       <Text style={styles.sectionTitle}>Categorías</Text>
