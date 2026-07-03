@@ -32,22 +32,22 @@ const categoriaMap: { [key: string]: string } = {
 
 // Tiempos de expiración
 const horasExpiracion: { [key: string]: number } = {
-  accidente: 4,
-  delito: 12,
-  trafico: 2,
-  clima: 8,
-  incendio: 12,
-  embotellamiento: 2,
-  choque: 4,
-  semaforoRoto: 8,
-  calleCortada: 6,
-  asalto: 12,
-  actitudSospechosa: 2,
-  balacera: 24,
-  inundacion: 8,
-  bache: 72,
-  corteLuz: 4,
-  corteAgua: 6
+  accidente: 12,
+  delito: 24,
+  trafico: 8,
+  clima: 12,
+  incendio: 24,
+  embotellamiento: 8,
+  choque: 12,
+  semaforoRoto: 12,
+  calleCortada: 12,
+  asalto: 24,
+  actitudSospechosa: 8,
+  balacera: 48,
+  inundacion: 12,
+  bache: 96,
+  corteLuz: 8,
+  corteAgua: 12
 };
 // ============================================
 // CREAR UN REPORTE (POST /api/reportes)

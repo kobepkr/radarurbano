@@ -172,7 +172,7 @@ const getIconoPorTipo = (tipo: string): string => {
   const cargarReportes = async (lat: number, lng: number) => {
     try {
       const response: AxiosResponse<Reporte[]> = await axios.get(`${API_URL}/reportes/cercanos`, {
-        params: { lat, lng, radio: 5 }
+        params: { lat, lng, radio: 50 }
       });
       
       const reportesLimpios = response.data.map(reporte => ({
@@ -481,6 +481,15 @@ useEffect(() => {
 
     socketRef.current.on('nuevo-reporte', (nuevoReporte: Reporte) => {
       console.log('📢 Nuevo reporte recibido:', nuevoReporte._id);
+      
+      if (userLocation) {
+        const [rLng, rLat] = nuevoReporte.ubicacion.coordinates;
+        const dist = calcularDistancia(userLocation.latitude, userLocation.longitude, rLat, rLng);
+        if (dist > 50) {
+          console.log('⚠️ Reporte fuera de rango (50km), ignorando');
+          return;
+        }
+      }
       
       setReportes(prev => {
         if (prev.some(r => r._id === nuevoReporte._id)) {
