@@ -33,6 +33,7 @@ import { offlineReportService, OfflineReport } from '../services/OfflineReportSe
 import { ConnectionStatus } from '../components/ConnectionStatus';
 import { CommentSection } from '../components/CommentSection';
 import { Send } from 'lucide-react-native';
+import { regionesChile, RegionChile } from '../utils/regiones';
 
 
 
@@ -105,6 +106,7 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
   const [reporteParaComentar, setReporteParaComentar] = useState<Reporte | null>(null);
   const [userLocation, setUserLocation] = useState<Coordinate | null>(null);
   const [selectedCoordinate, setSelectedCoordinate] = useState<Coordinate | null>(null);
+  const [regionSeleccionada, setRegionSeleccionada] = useState(0); // 0 = mi ubicación
   const [alertConfig, setAlertConfig] = useState({
     title: '',
     message: '',
@@ -219,10 +221,10 @@ const getNombreTipo = (tipo: string): string => {
 
 
   // ========== FUNCIONES ==========
-  const cargarReportes = async (lat: number, lng: number) => {
+  const cargarReportes = async (lat: number, lng: number, radio: number = 50) => {
     try {
       const response: AxiosResponse<Reporte[]> = await axios.get(`${API_URL}/reportes/cercanos`, {
-        params: { lat, lng, radio: 50 }
+        params: { lat, lng, radio }
       });
       
       const reportesLimpios = response.data.map(reporte => ({
@@ -664,16 +666,47 @@ useEffect(() => {
   getLocation();
 }, []);
 
-const centrarMapa = () => {
-  if (mapRef.current && userLocation) {
-    mapRef.current.animateToRegion({
-      latitude: userLocation.latitude,
-      longitude: userLocation.longitude,
-      latitudeDelta: 0.02,
-      longitudeDelta: 0.02,
-    }, 500);
-  }
-};
+  const centrarMapa = () => {
+    if (mapRef.current && userLocation) {
+      mapRef.current.animateToRegion({
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        latitudeDelta: 0.02,
+        longitudeDelta: 0.02,
+      }, 500);
+    }
+  };
+
+  const cambiarRegion = async (index: number) => {
+    setRegionSeleccionada(index);
+    const regionData = regionesChile[index];
+    
+    if (index === 0) {
+      // Mi ubicación
+      if (userLocation) {
+        const newRegion = {
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        };
+        setRegion(newRegion);
+        mapRef.current?.animateToRegion(newRegion, 500);
+        await cargarReportes(userLocation.latitude, userLocation.longitude, 50);
+      }
+    } else {
+      // Región seleccionada
+      const newRegion = {
+        latitude: regionData.lat,
+        longitude: regionData.lng,
+        latitudeDelta: regionData.radio / 50,
+        longitudeDelta: regionData.radio / 50,
+      };
+      setRegion(newRegion);
+      mapRef.current?.animateToRegion(newRegion, 800);
+      await cargarReportes(regionData.lat, regionData.lng, regionData.radio);
+    }
+  };
 
   // ========== RENDER ==========
   if (loading) {
@@ -985,6 +1018,29 @@ const centrarMapa = () => {
         backgroundStyle={{ backgroundColor: '#1C1C1E' }}
         handleIndicatorStyle={{ backgroundColor: '#8E8E93', width: 40 }}
       >
+        {/* Selector de región */}
+        <View style={styles.regionSelector}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.regionScroll}>
+            {regionesChile.map((region, index) => (
+              <TouchableOpacity
+                key={region.nombre}
+                style={[
+                  styles.regionChip,
+                  regionSeleccionada === index && styles.regionChipActive
+                ]}
+                onPress={() => cambiarRegion(index)}
+              >
+                <Text style={[
+                  styles.regionChipText,
+                  regionSeleccionada === index && styles.regionChipTextActive
+                ]}>
+                  {index === 0 ? '📍 Mi ubicación' : region.nombre}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+
         <View style={styles.iconRow}>
           <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'todos' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('todos')}>
             <Layout size={24} color={filtroCategoria === 'todos' ? '#FFF' : '#8E8E93'} />
@@ -1192,6 +1248,34 @@ const styles = StyleSheet.create({
   map: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' },
   loadingText: { color: '#FFF', fontSize: 16, marginTop: 10 },
+  regionSelector: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2C2C2E',
+  },
+  regionScroll: {
+    gap: 8,
+  },
+  regionChip: {
+    backgroundColor: '#2C2C2E',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+  },
+  regionChipActive: {
+    backgroundColor: '#DC2626',
+  },
+  regionChipText: {
+    color: '#8E8E93',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  regionChipTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
   botonReportar: {
     position: 'absolute',
     bottom: 100,
