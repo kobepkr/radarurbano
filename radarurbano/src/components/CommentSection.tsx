@@ -40,7 +40,6 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
   const [loading, setLoading] = useState(true);
   const [enviando, setEnviando] = useState(false);
 
-  // Cargar comentarios
   const cargarComentarios = async () => {
     try {
       const response = await axios.get(`${API_URL}/reportes/${reporteId}/comentarios`);
@@ -52,13 +51,8 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
     }
   };
 
-  // Enviar comentario
   const enviarComentario = async () => {
     if (!nuevoComentario.trim()) return;
-    if (!esPremium) {
-      alert('Solo usuarios premium pueden comentar');
-      return;
-    }
     
     setEnviando(true);
     try {
@@ -74,11 +68,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
         if (onComentarioAgregado) onComentarioAgregado();
       }
     } catch (error: any) {
-      if (error.response?.status === 403) {
-        alert('🔒 Solo usuarios premium pueden comentar');
-      } else {
-        alert('Error al enviar comentario');
-      }
+      alert('Error al enviar comentario');
     } finally {
       setEnviando(false);
     }
@@ -129,36 +119,28 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
         )}
       </ScrollView>
       
-      {esPremium && (
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Escribe un comentario..."
-            placeholderTextColor="#8E8E93"
-            value={nuevoComentario}
-            onChangeText={setNuevoComentario}
-            multiline
-            maxLength={300}
-          />
-          <TouchableOpacity 
-            style={[styles.sendButton, !nuevoComentario.trim() && styles.sendButtonDisabled]}
-            onPress={enviarComentario}
-            disabled={!nuevoComentario.trim() || enviando}
-          >
-            {enviando ? (
-              <ActivityIndicator size="small" color="#FFF" />
-            ) : (
-              <Send size={20} color="#FFF" />
-            )}
-          </TouchableOpacity>
-        </View>
-      )}
-      
-      {!esPremium && (
-        <View style={styles.premiumMessage}>
-          <Text style={styles.premiumText}>⭐ Solo usuarios premium pueden comentar</Text>
-        </View>
-      )}
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Escribe un comentario..."
+          placeholderTextColor="#8E8E93"
+          value={nuevoComentario}
+          onChangeText={setNuevoComentario}
+          multiline
+          maxLength={300}
+        />
+        <TouchableOpacity 
+          style={[styles.sendButton, !nuevoComentario.trim() && styles.sendButtonDisabled]}
+          onPress={enviarComentario}
+          disabled={!nuevoComentario.trim() || enviando}
+        >
+          {enviando ? (
+            <ActivityIndicator size="small" color="#FFF" />
+          ) : (
+            <Send size={20} color="#FFF" />
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -242,16 +224,5 @@ const styles = StyleSheet.create({
   },
   sendButtonDisabled: {
     backgroundColor: '#6B6B6B',
-  },
-  premiumMessage: {
-    backgroundColor: '#FFD70020',
-    padding: 12,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  premiumText: {
-    color: '#FFD700',
-    fontSize: 12,
   },
 });

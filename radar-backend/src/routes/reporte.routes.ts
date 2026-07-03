@@ -271,7 +271,6 @@ router.post("/:id/reaccionar", authMiddleware, async (req: AuthRequest, res) => 
     
     const usuario = await Usuario.findById(req.usuario.id);
     if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
-    if (!usuario.premium) return res.status(403).json({ error: "Solo usuarios premium pueden reaccionar" });
     
     const reporte = await Reporte.findById(id);
     if (!reporte) return res.status(404).json({ error: "Reporte no encontrado" });
@@ -305,7 +304,6 @@ router.post("/:id/comentarios", authMiddleware, async (req: AuthRequest, res) =>
     
     const usuario = await Usuario.findById(req.usuario.id);
     if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
-    if (!usuario.premium) return res.status(403).json({ error: "Solo usuarios premium pueden comentar" });
     if (!texto || texto.trim().length === 0) return res.status(400).json({ error: "El comentario no puede estar vacío" });
     if (texto.length > 300) return res.status(400).json({ error: "Máximo 300 caracteres" });
     

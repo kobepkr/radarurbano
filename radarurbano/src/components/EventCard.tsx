@@ -96,7 +96,7 @@ export default function EventCard({
       </View>
 
       {/* 👇 SOLO PARA USUARIOS PREMIUM: BOTONES CON CONTADORES */}
-      {esPremium && reacciones && onReaccion ? (
+      {reacciones && onReaccion ? (
         <View style={styles.botonesContainer}>
           <TouchableOpacity 
             style={styles.reaccionButton}
