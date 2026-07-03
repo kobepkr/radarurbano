@@ -106,7 +106,8 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
   const [reporteParaComentar, setReporteParaComentar] = useState<Reporte | null>(null);
   const [userLocation, setUserLocation] = useState<Coordinate | null>(null);
   const [selectedCoordinate, setSelectedCoordinate] = useState<Coordinate | null>(null);
-  const [regionSeleccionada, setRegionSeleccionada] = useState(0); // 0 = mi ubicación
+  const [regionSeleccionada, setRegionSeleccionada] = useState(0);
+  const [regionDropdownOpen, setRegionDropdownOpen] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
     title: '',
     message: '',
@@ -844,17 +845,26 @@ useEffect(() => {
       <View style={styles.locationCard}>
         <MapPin size={20} color="#DC2626" />
         {selectedCoordinate ? (
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={styles.locationText}>Ubicación seleccionada en el mapa</Text>
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Text style={styles.locationText}>📍 Elegida en el mapa</Text>
             <TouchableOpacity 
               onPress={() => setSelectedCoordinate(null)}
-              style={{ marginLeft: 8, padding: 4 }}
+              style={{ padding: 4 }}
             >
               <X size={16} color="#8E8E93" />
             </TouchableOpacity>
           </View>
         ) : (
-          <Text style={styles.locationText}>Usando mi ubicación actual</Text>
+          <TouchableOpacity 
+            style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+            onPress={() => {
+              setModalVisible(false);
+              showAlert('🗺️ Elegir ubicación', 'Mantené presionado en cualquier parte del mapa para seleccionar dónde reportar. Luego apretá + de nuevo.', 'info');
+            }}
+          >
+            <Text style={styles.locationText}>📍 Mi ubicación actual</Text>
+            <Text style={{ color: '#DC2626', fontSize: 12 }}>Cambiar</Text>
+          </TouchableOpacity>
         )}
       </View>
 
@@ -1018,27 +1028,43 @@ useEffect(() => {
         backgroundStyle={{ backgroundColor: '#1C1C1E' }}
         handleIndicatorStyle={{ backgroundColor: '#8E8E93', width: 40 }}
       >
-        {/* Selector de región */}
+        {/* Selector de región - Dropdown */}
         <View style={styles.regionSelector}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.regionScroll}>
-            {regionesChile.map((region, index) => (
-              <TouchableOpacity
-                key={region.nombre}
-                style={[
-                  styles.regionChip,
-                  regionSeleccionada === index && styles.regionChipActive
-                ]}
-                onPress={() => cambiarRegion(index)}
-              >
-                <Text style={[
-                  styles.regionChipText,
-                  regionSeleccionada === index && styles.regionChipTextActive
-                ]}>
-                  {index === 0 ? '📍 Mi ubicación' : region.nombre}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          <TouchableOpacity 
+            style={styles.regionDropdown}
+            onPress={() => setRegionDropdownOpen(!regionDropdownOpen)}
+          >
+            <Text style={styles.regionDropdownText}>
+              {regionSeleccionada === 0 ? '📍 Mi ubicación' : `📍 ${regionesChile[regionSeleccionada].nombre}`}
+            </Text>
+            <Text style={styles.regionDropdownArrow}>{regionDropdownOpen ? '▲' : '▼'}</Text>
+          </TouchableOpacity>
+          
+          {regionDropdownOpen && (
+            <View style={styles.regionDropdownList}>
+              {regionesChile.map((region, index) => (
+                <TouchableOpacity
+                  key={region.nombre}
+                  style={[
+                    styles.regionDropdownItem,
+                    regionSeleccionada === index && styles.regionDropdownItemActive
+                  ]}
+                  onPress={() => {
+                    setRegionSeleccionada(index);
+                    setRegionDropdownOpen(false);
+                    cambiarRegion(index);
+                  }}
+                >
+                  <Text style={[
+                    styles.regionDropdownItemText,
+                    regionSeleccionada === index && styles.regionDropdownItemTextActive
+                  ]}>
+                    {index === 0 ? '📍 Mi ubicación' : region.nombre}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
 
         <View style={styles.iconRow}>
@@ -1250,9 +1276,51 @@ const styles = StyleSheet.create({
   loadingText: { color: '#FFF', fontSize: 16, marginTop: 10 },
   regionSelector: {
     paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingBottom: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#2C2C2E',
+  },
+  regionDropdown: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#2C2C2E',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+  },
+  regionDropdownText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  regionDropdownArrow: {
+    color: '#8E8E93',
+    fontSize: 12,
+  },
+  regionDropdownList: {
+    backgroundColor: '#2C2C2E',
+    borderRadius: 12,
+    marginTop: 4,
+    maxHeight: 200,
+    overflow: 'scroll' as const,
+  },
+  regionDropdownItem: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#3A3A3C',
+  },
+  regionDropdownItemActive: {
+    backgroundColor: '#DC262620',
+  },
+  regionDropdownItemText: {
+    color: '#CCCCCC',
+    fontSize: 13,
+  },
+  regionDropdownItemTextActive: {
+    color: '#DC2626',
+    fontWeight: '700',
   },
   regionScroll: {
     gap: 8,
