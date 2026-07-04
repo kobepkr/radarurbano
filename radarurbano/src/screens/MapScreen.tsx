@@ -1227,8 +1227,17 @@ useEffect(() => {
           esPremium={esPremium}
           comentariosCount={reporte.comentarios?.length || 0}
           onOpenComments={() => {
-            setReporteParaComentar(reporte);  // ✅ Guardar reporte
-            setCommentModalVisible(true);     // ✅ Abrir modal de comentarios
+            setReporteParaComentar(reporte);
+            setCommentModalVisible(true);
+          }}
+          onLocate={() => {
+            const [lng, lat] = reporte.ubicacion.coordinates;
+            mapRef.current?.animateToRegion({
+              latitude: lat,
+              longitude: lng,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }, 500);
           }}
         />
     );

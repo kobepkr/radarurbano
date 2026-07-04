@@ -23,6 +23,7 @@ interface EventCardProps {
   esPremium?: boolean;
   comentariosCount?: number;
   onOpenComments?: () => void;
+  onLocate?: () => void;
 }
 
 const categoriaLabels: { [key: string]: string } = {
@@ -49,7 +50,8 @@ export default function EventCard({
   onReaccion,
   esPremium = false,
   comentariosCount = 0,
-  onOpenComments
+  onOpenComments,
+  onLocate
 }: EventCardProps) {
   
   const getEstadoColor = () => {
@@ -78,14 +80,21 @@ export default function EventCard({
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
-      {/* Tipo + Estado */}
+      {/* Tipo + Estado + Locate */}
       <View style={styles.headerRow}>
         <Text style={styles.title}>{title}</Text>
-        <View style={[styles.estadoBadge, { backgroundColor: getEstadoColor() + '25' }]}>
-          <Text style={styles.estadoIcon}>{getEstadoIcon()}</Text>
-          <Text style={[styles.estadoText, { color: getEstadoColor() }]}>
-            {getEstadoText()}
-          </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          {onLocate && (
+            <TouchableOpacity onPress={onLocate} style={styles.locateButton}>
+              <Text style={styles.locateIcon}>📍</Text>
+            </TouchableOpacity>
+          )}
+          <View style={[styles.estadoBadge, { backgroundColor: getEstadoColor() + '25' }]}>
+            <Text style={styles.estadoIcon}>{getEstadoIcon()}</Text>
+            <Text style={[styles.estadoText, { color: getEstadoColor() }]}>
+              {getEstadoText()}
+            </Text>
+          </View>
         </View>
       </View>
 
@@ -192,6 +201,12 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 10,
     gap: 3,
+  },
+  locateButton: {
+    padding: 4,
+  },
+  locateIcon: {
+    fontSize: 16,
   },
   estadoIcon: {
     fontSize: 10,
