@@ -144,10 +144,6 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
 
 
 
-
-  return iconosPorTipo[tipo] || '📍';
-};
-
 const formatearTiempoRelativo = (fecha: string): string => {
   const ahora = new Date();
   const reporte = new Date(fecha);
