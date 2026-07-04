@@ -121,9 +121,6 @@ export default function EventCard({
         <Text style={styles.description} numberOfLines={2}>{description}</Text>
       )}
 
-      <View style={styles.divider} />
-
-      {/* Confirmar / Falso + Contadores */}
       <View style={styles.actionsRow}>
         <TouchableOpacity style={styles.actionButton} onPress={onConfirm}>
           <Text style={styles.actionIcon}>✅</Text>
@@ -169,6 +166,8 @@ export default function EventCard({
           <Text style={styles.actionCount}>{comentariosCount}</Text>
         </TouchableOpacity>
       </View>
+
+      <View style={styles.divider} />
     </TouchableOpacity>
   );
 }
