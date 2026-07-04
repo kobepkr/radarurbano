@@ -34,6 +34,7 @@ import { ConnectionStatus } from '../components/ConnectionStatus';
 import { CommentSection } from '../components/CommentSection';
 import { Send } from 'lucide-react-native';
 import { regionesChile, RegionChile } from '../utils/regiones';
+import { getAddress } from '../utils/geocoding';
 
 
 
@@ -108,6 +109,7 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
   const [selectedCoordinate, setSelectedCoordinate] = useState<Coordinate | null>(null);
   const [regionSeleccionada, setRegionSeleccionada] = useState(0);
   const [regionDropdownOpen, setRegionDropdownOpen] = useState(false);
+  const [direcciones, setDirecciones] = useState<{ [key: string]: string }>({});
   const [alertConfig, setAlertConfig] = useState({
     title: '',
     message: '',
@@ -675,7 +677,19 @@ useEffect(() => {
   getLocation();
 }, []);
 
-  const centrarMapa = () => {
+useEffect(() => {
+  const resolverDirecciones = async () => {
+    for (const r of reportes) {
+      if (!direcciones[r._id]) {
+        const addr = await getAddress(r.ubicacion.coordinates[1], r.ubicacion.coordinates[0]);
+        setDirecciones(prev => ({ ...prev, [r._id]: addr }));
+      }
+    }
+  };
+  if (reportes.length > 0) resolverDirecciones();
+}, [reportes]);
+
+const centrarMapa = () => {
     if (mapRef.current && userLocation) {
       mapRef.current.animateToRegion({
         latitude: userLocation.latitude,
@@ -1211,7 +1225,7 @@ useEffect(() => {
    <EventCard
           key={reporte._id}
           title={getNombreTipo(reporte.tipo)}
-          address="Cerca de esta zona"
+          address={direcciones[reporte._id] || 'Cerca de esta zona'}
           distance={formatearDistancia(distanciaReal)}
           time={reporte.createdAt ? formatearTiempoRelativo(reporte.createdAt) : 'Reciente'}
           categoria={getCategoriaReporte(reporte.tipo)}
