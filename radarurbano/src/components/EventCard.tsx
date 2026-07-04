@@ -24,6 +24,7 @@ interface EventCardProps {
   comentariosCount?: number;
   onOpenComments?: () => void;
   onLocate?: () => void;
+  creadoPorNombre?: string;
 }
 
 const categoriaLabels: { [key: string]: string } = {
@@ -51,7 +52,8 @@ export default function EventCard({
   esPremium = false,
   comentariosCount = 0,
   onOpenComments,
-  onLocate
+  onLocate,
+  creadoPorNombre
 }: EventCardProps) {
   
   const getEstadoColor = () => {
@@ -115,6 +117,9 @@ export default function EventCard({
 
       {/* Tiempo */}
       <Text style={styles.time}>{time}</Text>
+      {creadoPorNombre ? (
+        <Text style={styles.creadoPor}>📢 Publicado por {creadoPorNombre}</Text>
+      ) : null}
 
       {/* Descripción */}
       {description && description !== `Reporte de ${title.toLowerCase()}` && (
@@ -248,6 +253,12 @@ const styles = StyleSheet.create({
   time: {
     color: '#6B6B6B',
     fontSize: 11,
+    marginBottom: 4,
+  },
+  creadoPor: {
+    color: '#DC2626',
+    fontSize: 12,
+    fontWeight: '500',
     marginBottom: 4,
   },
   description: {

@@ -50,7 +50,13 @@ router.post("/", authMiddleware, verificarLimiteReportes, async (req: AuthReques
     if (!categoriaMap[tipo]) return res.status(400).json({ error: "Tipo de evento no válido" });
     const expiraEn = new Date();
     expiraEn.setHours(expiraEn.getHours() + (horasExpiracion[tipo] || 6));
-    const nuevoReporte = new Reporte({ categoria: categoriaMap[tipo], tipo, descripcion, ubicacion: { coordinates: [lng, lat] }, expiraEn, creadoPor: req.usuario.id });
+    const creador = await Usuario.findById(req.usuario.id, 'nombre');
+    const nuevoReporte = new Reporte({
+      categoria: categoriaMap[tipo], tipo, descripcion,
+      ubicacion: { coordinates: [lng, lat] }, expiraEn,
+      creadoPor: req.usuario.id,
+      creadoPorNombre: creador?.nombre || 'Anónimo'
+    });
     await nuevoReporte.save();
     try {
       const usuariosCerca = await Usuario.find({ ubicacion: { $near: { $geometry: { type: "Point", coordinates: [lng, lat] }, $maxDistance: 50000 } }, pushToken: { $exists: true, $ne: null }, _id: { $ne: req.usuario.id } });

@@ -1239,6 +1239,7 @@ useEffect(() => {
               longitudeDelta: 0.01,
             }, 500);
           }}
+          creadoPorNombre={(reporte as any).creadoPorNombre}
         />
     );
   })}
