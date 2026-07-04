@@ -68,7 +68,8 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
         if (onComentarioAgregado) onComentarioAgregado();
       }
     } catch (error: any) {
-      alert('Error al enviar comentario');
+      const msg = error.response?.data?.error || error.message || 'Error al enviar comentario';
+      alert(msg);
     } finally {
       setEnviando(false);
     }
