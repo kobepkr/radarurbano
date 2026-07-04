@@ -142,31 +142,9 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
     clima: '#2196F3'
   };
 
-// Función para obtener el icono según el tipo de reporte
-const getIconoPorTipo = (tipo: string): string => {
-  const iconosPorTipo: { [key: string]: string } = {
-    // TRÁNSITO
-    embotellamiento: '🚗🚗🚗',
-    choque: '💥',
-    semaforoRoto: '🚦',
-    calleCortada: '🚧',
-    accidente: '💥',
-    trafico: '🚗',
-    // SEGURIDAD
-    asalto: '🔫',
-    actitudSospechosa: '👀',
-    balacera: '🔫🔫🔫',
-    delito: '🔫',
-    // EMERGENCIAS
-    incendio: '🔥',
-    inundacion: '🌊',
-    clima: '🌧️',
-    // COMUNIDAD
-    bache: '🕳️',
-    corteLuz: '💡',
-    corteAgua: '💧',
-  };
-  
+
+
+
   return iconosPorTipo[tipo] || '📍';
 };
 
@@ -189,34 +167,71 @@ const getCategoriaReporte = (tipo: string): string => {
   const catMap: { [key: string]: string } = {
     embotellamiento: 'transito', choque: 'transito', semaforoRoto: 'transito',
     calleCortada: 'transito', accidente: 'transito', trafico: 'transito',
+    objetoPeligroso: 'transito', controlCarabineros: 'transito', obrasEnVia: 'transito',
+    calleInundada: 'transito', manifestacion: 'transito', emergenciaVehicular: 'transito',
+    actividadDeportiva: 'transito',
     asalto: 'seguridad', actitudSospechosa: 'seguridad', balacera: 'seguridad',
-    delito: 'seguridad',
+    delito: 'seguridad', carabinerosLugar: 'seguridad', patrulla: 'seguridad',
+    camaraSeguridad: 'seguridad', zonaOscura: 'seguridad', casaAbandonada: 'seguridad',
     incendio: 'emergencias', inundacion: 'emergencias', clima: 'emergencias',
+    accidenteGrave: 'emergencias', bomberosLugar: 'emergencias', personaHerida: 'emergencias',
+    rescate: 'emergencias', fenomenoClimatico: 'emergencias', cortoCircuito: 'emergencias',
+    derrumbe: 'emergencias', alertaSeguridad: 'emergencias',
     bache: 'comunidad', corteLuz: 'comunidad', corteAgua: 'comunidad',
+    escombros: 'comunidad', maleza: 'comunidad', perrosCallejeros: 'comunidad',
+    veredaMala: 'comunidad', mueblesAbandonados: 'comunidad', autoAbandonado: 'comunidad',
+    arbolCaido: 'comunidad', cableCaido: 'comunidad', zonaEscolar: 'comunidad',
   };
   return catMap[tipo] || 'comunidad';
 };
 
 const getNombreTipo = (tipo: string): string => {
   const nombres: { [key: string]: string } = {
-    embotellamiento: 'Embotellamiento',
-    choque: 'Choque',
-    semaforoRoto: 'Semáforo roto',
-    calleCortada: 'Calle cortada',
-    accidente: 'Accidente',
-    trafico: 'Tráfico',
-    asalto: 'Asalto',
-    actitudSospechosa: 'Actitud sospechosa',
-    balacera: 'Balacera',
-    delito: 'Delito',
-    incendio: 'Incendio',
-    inundacion: 'Inundación',
-    clima: 'Clima',
-    bache: 'Bache',
-    corteLuz: 'Corte de luz',
-    corteAgua: 'Corte de agua',
+    embotellamiento: 'Embotellamiento', choque: 'Choque', semaforoRoto: 'Semáforo roto',
+    calleCortada: 'Calle cortada', accidente: 'Accidente', trafico: 'Tráfico',
+    objetoPeligroso: 'Objeto peligroso', controlCarabineros: 'Control Carabineros',
+    obrasEnVia: 'Obras en la vía', calleInundada: 'Calle inundada',
+    manifestacion: 'Manifestación', emergenciaVehicular: 'Emergencia vehicular',
+    actividadDeportiva: 'Actividad deportiva',
+    asalto: 'Asalto', actitudSospechosa: 'Actitud sospechosa', balacera: 'Balacera',
+    delito: 'Delito', carabinerosLugar: 'Carabineros en el lugar', patrulla: 'Patrulla',
+    camaraSeguridad: 'Cámara de seguridad', zonaOscura: 'Zona oscura',
+    casaAbandonada: 'Casa abandonada',
+    incendio: 'Incendio', inundacion: 'Inundación', clima: 'Fenómeno climático',
+    accidenteGrave: 'Accidente grave', bomberosLugar: 'Bomberos en el lugar',
+    personaHerida: 'Persona herida', rescate: 'Rescate',
+    fenomenoClimatico: 'Fenómeno climático severo', cortoCircuito: 'Corto circuito',
+    derrumbe: 'Derrumbe', alertaSeguridad: 'Alerta de seguridad',
+    bache: 'Bache', corteLuz: 'Corte de luz', corteAgua: 'Corte de agua',
+    escombros: 'Escombros', maleza: 'Maleza', perrosCallejeros: 'Perros callejeros',
+    veredaMala: 'Vereda en mal estado', mueblesAbandonados: 'Muebles abandonados',
+    autoAbandonado: 'Auto abandonado', arbolCaido: 'Árbol caído',
+    cableCaido: 'Cable caído', zonaEscolar: 'Zona escolar',
   };
   return nombres[tipo] || tipo;
+};
+
+const getIconoPorTipo = (tipo: string): string => {
+  const iconos: { [key: string]: string } = {
+    embotellamiento: '🚗🚗🚗', choque: '💥', semaforoRoto: '🚦❌',
+    calleCortada: '🚧', accidente: '💥', trafico: '🚗',
+    objetoPeligroso: '⚠️', controlCarabineros: '👮‍♂️🚔',
+    obrasEnVia: '🏗️', calleInundada: '💧🚗',
+    manifestacion: '✊', emergenciaVehicular: '🚘⚠️',
+    actividadDeportiva: '🏃‍♂️',
+    asalto: '🔫', actitudSospechosa: '👀', balacera: '🔫🔫🔫',
+    delito: '🔫', carabinerosLugar: '👮‍♂️', patrulla: '🚔',
+    camaraSeguridad: '📹', zonaOscura: '🌑', casaAbandonada: '🏚️',
+    incendio: '🔥', inundacion: '🌊', clima: '🌧️',
+    accidenteGrave: '🚑💥', bomberosLugar: '🚒', personaHerida: '🤕',
+    rescate: '🛟', fenomenoClimatico: '🌪️', cortoCircuito: '⚡',
+    derrumbe: '🏚️⤵️', alertaSeguridad: '🚨',
+    bache: '🕳️', corteLuz: '💡❌', corteAgua: '💧❌',
+    escombros: '🧱', maleza: '🌿', perrosCallejeros: '🐕',
+    veredaMala: '🚶‍♂️⚠️', mueblesAbandonados: '🪑', autoAbandonado: '🚙❌',
+    arbolCaido: '🌳⤵️', cableCaido: '🔌⤵️', zonaEscolar: '🏫',
+  };
+  return iconos[tipo] || '📍';
 };
 
 
@@ -876,37 +891,49 @@ useEffect(() => {
             <Text style={styles.categorySectionTitle}>TRÁNSITO</Text>
           </View>
           <View style={styles.modernOptionsGrid}>
-            <TouchableOpacity
-              style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]}
-              onPress={() => crearReporte('embotellamiento', region)}
-              disabled={loadingReporte}
-            >
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('embotellamiento', region)} disabled={loadingReporte}>
               <Text style={styles.optionEmoji}>🚗🚗🚗</Text>
               <Text style={styles.modernOptionText}>Embotellamiento</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]}
-              onPress={() => crearReporte('choque', region)}
-              disabled={loadingReporte}
-            >
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('choque', region)} disabled={loadingReporte}>
               <Text style={styles.optionEmoji}>💥</Text>
               <Text style={styles.modernOptionText}>Choque</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]}
-              onPress={() => crearReporte('semaforoRoto', region)}
-              disabled={loadingReporte}
-            >
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('semaforoRoto', region)} disabled={loadingReporte}>
               <Text style={styles.optionEmoji}>🚦❌</Text>
               <Text style={styles.modernOptionText}>Semáforo roto</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]}
-              onPress={() => crearReporte('calleCortada', region)}
-              disabled={loadingReporte}
-            >
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('calleCortada', region)} disabled={loadingReporte}>
               <Text style={styles.optionEmoji}>🚧</Text>
               <Text style={styles.modernOptionText}>Calle cortada</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('objetoPeligroso', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>⚠️</Text>
+              <Text style={styles.modernOptionText}>Objeto peligroso</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('controlCarabineros', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>👮‍♂️🚔</Text>
+              <Text style={styles.modernOptionText}>Control Carabineros</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('obrasEnVia', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🏗️</Text>
+              <Text style={styles.modernOptionText}>Obras en la vía</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('calleInundada', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>💧🚗</Text>
+              <Text style={styles.modernOptionText}>Calle inundada</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('manifestacion', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>✊</Text>
+              <Text style={styles.modernOptionText}>Manifestación</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('emergenciaVehicular', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🚘⚠️</Text>
+              <Text style={styles.modernOptionText}>Emergencia vehicular</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('actividadDeportiva', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🏃‍♂️</Text>
+              <Text style={styles.modernOptionText}>Actividad deportiva</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -918,29 +945,37 @@ useEffect(() => {
             <Text style={styles.categorySectionTitle}>SEGURIDAD</Text>
           </View>
           <View style={styles.modernOptionsGrid}>
-            <TouchableOpacity
-              style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]}
-              onPress={() => crearReporte('asalto', region)}
-              disabled={loadingReporte}
-            >
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('asalto', region)} disabled={loadingReporte}>
               <Text style={styles.optionEmoji}>🔫</Text>
               <Text style={styles.modernOptionText}>Asalto</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]}
-              onPress={() => crearReporte('actitudSospechosa', region)}
-              disabled={loadingReporte}
-            >
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('actitudSospechosa', region)} disabled={loadingReporte}>
               <Text style={styles.optionEmoji}>👀</Text>
               <Text style={styles.modernOptionText}>Actitud sospechosa</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]}
-              onPress={() => crearReporte('balacera', region)}
-              disabled={loadingReporte}
-            >
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('balacera', region)} disabled={loadingReporte}>
               <Text style={styles.optionEmoji}>🔫🔫🔫</Text>
               <Text style={styles.modernOptionText}>Balacera</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('carabinerosLugar', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>👮‍♂️</Text>
+              <Text style={styles.modernOptionText}>Carabineros en el lugar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('patrulla', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🚔</Text>
+              <Text style={styles.modernOptionText}>Patrulla</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('camaraSeguridad', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>📹</Text>
+              <Text style={styles.modernOptionText}>Cámara de seguridad</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('zonaOscura', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🌑</Text>
+              <Text style={styles.modernOptionText}>Zona oscura</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('casaAbandonada', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🏚️</Text>
+              <Text style={styles.modernOptionText}>Casa abandonada</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -952,21 +987,45 @@ useEffect(() => {
             <Text style={styles.categorySectionTitle}>EMERGENCIAS</Text>
           </View>
           <View style={styles.modernOptionsGrid}>
-            <TouchableOpacity
-              style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]}
-              onPress={() => crearReporte('incendio', region)}
-              disabled={loadingReporte}
-            >
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('incendio', region)} disabled={loadingReporte}>
               <Text style={styles.optionEmoji}>🔥</Text>
               <Text style={styles.modernOptionText}>Incendio</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]}
-              onPress={() => crearReporte('inundacion', region)}
-              disabled={loadingReporte}
-            >
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('inundacion', region)} disabled={loadingReporte}>
               <Text style={styles.optionEmoji}>🌊</Text>
               <Text style={styles.modernOptionText}>Inundación</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('accidenteGrave', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🚑💥</Text>
+              <Text style={styles.modernOptionText}>Accidente grave</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('bomberosLugar', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🚒</Text>
+              <Text style={styles.modernOptionText}>Bomberos en el lugar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('personaHerida', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🤕</Text>
+              <Text style={styles.modernOptionText}>Persona herida</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('rescate', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🛟</Text>
+              <Text style={styles.modernOptionText}>Rescate</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('fenomenoClimatico', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🌪️</Text>
+              <Text style={styles.modernOptionText}>Fenómeno climático</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('cortoCircuito', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>⚡</Text>
+              <Text style={styles.modernOptionText}>Corto circuito</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('derrumbe', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🏚️⤵️</Text>
+              <Text style={styles.modernOptionText}>Derrumbe</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('alertaSeguridad', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🚨</Text>
+              <Text style={styles.modernOptionText}>Alerta de seguridad</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -978,29 +1037,53 @@ useEffect(() => {
             <Text style={styles.categorySectionTitle}>COMUNIDAD</Text>
           </View>
           <View style={styles.modernOptionsGrid}>
-            <TouchableOpacity
-              style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]}
-              onPress={() => crearReporte('bache', region)}
-              disabled={loadingReporte}
-            >
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('bache', region)} disabled={loadingReporte}>
               <Text style={styles.optionEmoji}>🕳️</Text>
               <Text style={styles.modernOptionText}>Bache</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]}
-              onPress={() => crearReporte('corteLuz', region)}
-              disabled={loadingReporte}
-            >
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('corteLuz', region)} disabled={loadingReporte}>
               <Text style={styles.optionEmoji}>💡❌</Text>
               <Text style={styles.modernOptionText}>Corte de luz</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]}
-              onPress={() => crearReporte('corteAgua', region)}
-              disabled={loadingReporte}
-            >
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('corteAgua', region)} disabled={loadingReporte}>
               <Text style={styles.optionEmoji}>💧❌</Text>
               <Text style={styles.modernOptionText}>Corte de agua</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('escombros', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🧱</Text>
+              <Text style={styles.modernOptionText}>Escombros</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('maleza', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🌿</Text>
+              <Text style={styles.modernOptionText}>Maleza</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('perrosCallejeros', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🐕</Text>
+              <Text style={styles.modernOptionText}>Perros callejeros</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('veredaMala', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🚶‍♂️⚠️</Text>
+              <Text style={styles.modernOptionText}>Vereda en mal estado</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('mueblesAbandonados', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🪑</Text>
+              <Text style={styles.modernOptionText}>Muebles abandonados</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('autoAbandonado', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🚙❌</Text>
+              <Text style={styles.modernOptionText}>Auto abandonado</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('arbolCaido', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🌳⤵️</Text>
+              <Text style={styles.modernOptionText}>Árbol caído</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('cableCaido', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🔌⤵️</Text>
+              <Text style={styles.modernOptionText}>Cable caído</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('zonaEscolar', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🏫</Text>
+              <Text style={styles.modernOptionText}>Zona escolar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -1101,11 +1184,22 @@ useEffect(() => {
   .filter(reporte => {
     if (filtroCategoria === 'todos') return true;
     const categorias: { [key: string]: string } = {
-      embotellamiento: 'transito', choque: 'transito', semaforoRoto: 'transito', calleCortada: 'transito',
+      embotellamiento: 'transito', choque: 'transito', semaforoRoto: 'transito',
+      calleCortada: 'transito', accidente: 'transito', trafico: 'transito',
+      objetoPeligroso: 'transito', controlCarabineros: 'transito', obrasEnVia: 'transito',
+      calleInundada: 'transito', manifestacion: 'transito', emergenciaVehicular: 'transito',
+      actividadDeportiva: 'transito',
       asalto: 'seguridad', actitudSospechosa: 'seguridad', balacera: 'seguridad',
-      incendio: 'emergencias', inundacion: 'emergencias',
+      delito: 'seguridad', carabinerosLugar: 'seguridad', patrulla: 'seguridad',
+      camaraSeguridad: 'seguridad', zonaOscura: 'seguridad', casaAbandonada: 'seguridad',
+      incendio: 'emergencias', inundacion: 'emergencias', clima: 'emergencias',
+      accidenteGrave: 'emergencias', bomberosLugar: 'emergencias', personaHerida: 'emergencias',
+      rescate: 'emergencias', fenomenoClimatico: 'emergencias', cortoCircuito: 'emergencias',
+      derrumbe: 'emergencias', alertaSeguridad: 'emergencias',
       bache: 'comunidad', corteLuz: 'comunidad', corteAgua: 'comunidad',
-      accidente: 'transito', delito: 'seguridad', trafico: 'transito', clima: 'emergencias'
+      escombros: 'comunidad', maleza: 'comunidad', perrosCallejeros: 'comunidad',
+      veredaMala: 'comunidad', mueblesAbandonados: 'comunidad', autoAbandonado: 'comunidad',
+      arbolCaido: 'comunidad', cableCaido: 'comunidad', zonaEscolar: 'comunidad',
     };
     return categorias[reporte.tipo] === filtroCategoria;
   })
