@@ -46,9 +46,20 @@ const reporteSchema = new mongoose.Schema({
     enum: [
       "accidente", "delito", "trafico", "clima",
       "embotellamiento", "choque", "semaforoRoto", "calleCortada",
+      "objetoPeligroso", "controlCarabineros", "obrasEnVia",
+      "calleInundada", "manifestacion", "emergenciaVehicular",
+      "actividadDeportiva",
       "asalto", "actitudSospechosa", "balacera",
+      "carabinerosLugar", "patrulla", "camaraSeguridad",
+      "zonaOscura", "casaAbandonada",
       "incendio", "inundacion",
-      "bache", "corteLuz", "corteAgua"
+      "accidenteGrave", "bomberosLugar", "personaHerida",
+      "rescate", "fenomenoClimatico", "cortoCircuito",
+      "derrumbe", "alertaSeguridad",
+      "bache", "corteLuz", "corteAgua",
+      "escombros", "maleza", "perrosCallejeros",
+      "veredaMala", "mueblesAbandonados", "autoAbandonado",
+      "arbolCaido", "cableCaido", "zonaEscolar"
     ]
   },
   descripcion: {
