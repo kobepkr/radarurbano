@@ -1029,23 +1029,32 @@ useEffect(() => {
         <View style={styles.regionSelector}>
           <TouchableOpacity 
             style={styles.regionDropdown}
-            onPress={() => setRegionDropdownOpen(!regionDropdownOpen)}
+            onPress={() => setRegionDropdownOpen(true)}
           >
             <Text style={styles.regionDropdownText}>
               {regionSeleccionada === 0 ? '📍 Mi ubicación' : `📍 ${regionesChile[regionSeleccionada].nombre}`}
             </Text>
-            <Text style={styles.regionDropdownArrow}>{regionDropdownOpen ? '▲' : '▼'}</Text>
+            <Text style={styles.regionDropdownArrow}>▼</Text>
           </TouchableOpacity>
-          
-          {regionDropdownOpen && (
-            <View style={styles.regionDropdownList}>
-              <ScrollView style={{ maxHeight: 200 }} nestedScrollEnabled>
+        </View>
+
+        {/* Modal de selección de región */}
+        <Modal visible={regionDropdownOpen} transparent={true} animationType="slide" onRequestClose={() => setRegionDropdownOpen(false)}>
+          <View style={styles.regionModalOverlay}>
+            <View style={styles.regionModalContent}>
+              <View style={styles.regionModalHeader}>
+                <Text style={styles.regionModalTitle}>Seleccionar región</Text>
+                <TouchableOpacity onPress={() => setRegionDropdownOpen(false)}>
+                  <X size={24} color="#8E8E93" />
+                </TouchableOpacity>
+              </View>
+              <ScrollView style={styles.regionModalList} showsVerticalScrollIndicator={true}>
                 {regionesChile.map((region, index) => (
                   <TouchableOpacity
                     key={region.nombre}
                     style={[
-                      styles.regionDropdownItem,
-                      regionSeleccionada === index && styles.regionDropdownItemActive
+                      styles.regionModalItem,
+                      regionSeleccionada === index && styles.regionModalItemActive
                     ]}
                     onPress={() => {
                       setRegionSeleccionada(index);
@@ -1054,17 +1063,20 @@ useEffect(() => {
                     }}
                   >
                     <Text style={[
-                      styles.regionDropdownItemText,
-                      regionSeleccionada === index && styles.regionDropdownItemTextActive
+                      styles.regionModalItemText,
+                      regionSeleccionada === index && styles.regionModalItemTextActive
                     ]}>
                       {index === 0 ? '📍 Mi ubicación' : region.nombre}
                     </Text>
+                    {regionSeleccionada === index && (
+                      <Text style={{ color: '#DC2626', fontSize: 16 }}>✓</Text>
+                    )}
                   </TouchableOpacity>
                 ))}
               </ScrollView>
             </View>
-          )}
-        </View>
+          </View>
+        </Modal>
 
         <View style={styles.iconRow}>
           <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'todos' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('todos')}>
@@ -1316,6 +1328,52 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   regionDropdownItemTextActive: {
+    color: '#DC2626',
+    fontWeight: '700',
+  },
+  regionModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  regionModalContent: {
+    backgroundColor: '#1C1C1E',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '70%',
+    paddingBottom: 30,
+  },
+  regionModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2C2C2E',
+  },
+  regionModalTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  regionModalList: {
+    paddingVertical: 8,
+  },
+  regionModalItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+  },
+  regionModalItemActive: {
+    backgroundColor: '#DC262620',
+  },
+  regionModalItemText: {
+    color: '#CCCCCC',
+    fontSize: 15,
+  },
+  regionModalItemTextActive: {
     color: '#DC2626',
     fontWeight: '700',
   },
