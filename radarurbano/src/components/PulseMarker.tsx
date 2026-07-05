@@ -19,7 +19,7 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
     Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
-          toValue: 1.3,
+          toValue: 1.4,
           duration: 1200,
           useNativeDriver: true,
         }),
@@ -36,22 +36,25 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
     <Marker
       coordinate={coordinate}
       onPress={onPress}
-      anchor={{ x: 0.5, y: 0.5 }}
+      tracksViewChanges={false}
     >
       <View style={styles.container}>
-        {/* Círculo de pulso */}
         <Animated.View
           style={[
             styles.pulseCircle,
             {
               backgroundColor: color,
-              opacity: 0.4,
+              opacity: pulseAnim.interpolate({
+                inputRange: [1, 1.4],
+                outputRange: [0.4, 0],
+              }),
               transform: [{ scale: pulseAnim }],
             },
           ]}
         />
-        {/* Solo el icono */}
-        <Text style={styles.iconText}>{icono}</Text>
+        <View style={styles.iconContainer}>
+          <Text style={styles.iconText}>{icono}</Text>
+        </View>
       </View>
     </Marker>
   );
@@ -59,22 +62,28 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
 
 const styles = StyleSheet.create({
   container: {
+    width: 48,
+    height: 48,
     justifyContent: 'center',
     alignItems: 'center',
-    width: 50,
-    height: 50,
   },
   pulseCircle: {
     position: 'absolute',
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+  },
+  iconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(30,30,30,0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
   },
   iconText: {
-    fontSize: 18,
+    fontSize: 16,
     textAlign: 'center',
-    textShadowColor: 'rgba(0,0,0,0.5)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
   },
-}); 
+});
