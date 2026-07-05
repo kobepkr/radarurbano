@@ -26,7 +26,7 @@ import {
   X, MapPin, Layout, Car, ShieldPlus, Siren, Home,
   Clock, AlertCircle, Power, XCircle, AlertTriangle,
   EyeOff, Target, Flame, Droplet, Circle, PowerOff,
-  DropletOff, CheckCircle, Share2, ScrollText
+  DropletOff, CheckCircle, Share2, ScrollText, RefreshCw
 } from 'lucide-react-native';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { offlineReportService, OfflineReport } from '../services/OfflineReportService';
@@ -238,9 +238,11 @@ const getIconoPorTipo = (tipo: string): string => {
 
   // ========== FUNCIONES ==========
   const cargarReportes = async (lat: number, lng: number, radio: number = 50) => {
+    const storedRadio = await AsyncStorage.getItem('radioBusqueda');
+    const radioKm = storedRadio ? Number(storedRadio) : radio;
     try {
       const response: AxiosResponse<Reporte[]> = await axios.get(`${API_URL}/reportes/cercanos`, {
-        params: { lat, lng, radio }
+        params: { lat, lng, radio: radioKm }
       });
       
       const reportesLimpios = response.data.map(reporte => ({
@@ -827,6 +829,13 @@ const centrarMapa = () => {
           >
             <Send size={18} color="#FFFFFF" />
           </TouchableOpacity>
+        {/* Botón de refrescar */}
+        <TouchableOpacity 
+          style={styles.customLocationButton}
+          onPress={() => region && cargarReportes(region.latitude, region.longitude)}
+        >
+          <RefreshCw size={18} color="#FFFFFF" />
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
           <Menu size={28} color={mapaOscuro ? "#FFF" : "#000"} />
         </TouchableOpacity>
