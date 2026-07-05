@@ -38,7 +38,7 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
     <Marker
       coordinate={coordinate}
       onPress={onPress}
-      centerOffset={{ x: 0, y: -16 }}
+      anchor={{ x: 0.5, y: 0.5 }}
     >
       <View style={styles.container}>
         <Animated.View
@@ -59,6 +59,8 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
 
 const styles = StyleSheet.create({
   container: {
+    width: 40,
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -69,7 +71,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
   },
   icon: {
-    fontSize: 20,
+    fontSize: 22,
     textAlign: 'center',
   },
 });
