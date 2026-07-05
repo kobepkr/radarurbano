@@ -217,8 +217,8 @@ const getIconoPorTipo = (tipo: string): string => {
     obrasEnVia: '🏗️', calleInundada: '💧🚗',
     manifestacion: '✊', emergenciaVehicular: '🚘⚠️',
     actividadDeportiva: '🏃‍♂️',
-    asalto: '🔫', actitudSospechosa: '👀', balacera: '🔫🔫🔫',
-    delito: '🔫', carabinerosLugar: '👮‍♂️', patrulla: '🚔',
+    asalto: '👊💰', actitudSospechosa: '👀', balacera: '💥💥💥',
+    delito: '⚠️', carabinerosLugar: '👮‍♂️', patrulla: '🚔',
     camaraSeguridad: '📹', zonaOscura: '🌑', casaAbandonada: '🏚️',
     incendio: '🔥', inundacion: '🌊', clima: '🌧️',
     accidenteGrave: '🚑💥', bomberosLugar: '🚒', personaHerida: '🤕',
@@ -960,7 +960,7 @@ const centrarMapa = () => {
           </View>
           <View style={styles.modernOptionsGrid}>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('asalto', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>🔫</Text>
+              <Text style={styles.optionEmoji}>👊💰</Text>
               <Text style={styles.modernOptionText}>Asalto</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('actitudSospechosa', region)} disabled={loadingReporte}>
@@ -968,7 +968,7 @@ const centrarMapa = () => {
               <Text style={styles.modernOptionText}>Actitud sospechosa</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('balacera', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>🔫🔫🔫</Text>
+              <Text style={styles.optionEmoji}>💥💥💥</Text>
               <Text style={styles.modernOptionText}>Balacera</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('carabinerosLugar', region)} disabled={loadingReporte}>
