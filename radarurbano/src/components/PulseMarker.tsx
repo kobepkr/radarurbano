@@ -16,10 +16,10 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    Animated.loop(
+    const animation = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
-          toValue: 1.4,
+          toValue: 1.5,
           duration: 1200,
           useNativeDriver: true,
         }),
@@ -29,31 +29,25 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
           useNativeDriver: true,
         }),
       ])
-    ).start();
+    );
+    animation.start();
+    return () => animation.stop();
   }, []);
 
   return (
-    <Marker
-      coordinate={coordinate}
-      onPress={onPress}
-      tracksViewChanges={false}
-    >
-      <View style={styles.container}>
+    <Marker coordinate={coordinate} onPress={onPress}>
+      <View style={styles.wrapper}>
         <Animated.View
           style={[
-            styles.pulseCircle,
+            styles.pulse,
             {
-              backgroundColor: color,
-              opacity: pulseAnim.interpolate({
-                inputRange: [1, 1.4],
-                outputRange: [0.4, 0],
-              }),
+              backgroundColor: color + '40',
               transform: [{ scale: pulseAnim }],
             },
           ]}
         />
-        <View style={styles.iconContainer}>
-          <Text style={styles.iconText}>{icono}</Text>
+        <View style={[styles.iconBg, { borderColor: color }]}>
+          <Text style={styles.icon}>{icono}</Text>
         </View>
       </View>
     </Marker>
@@ -61,29 +55,30 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: 48,
-    height: 48,
+  wrapper: {
+    width: 52,
+    height: 52,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  pulseCircle: {
+  pulse: {
     position: 'absolute',
     width: 36,
     height: 36,
     borderRadius: 18,
   },
-  iconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(30,30,30,0.85)',
+  iconBg: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#1C1C1E',
+    borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1,
+    zIndex: 2,
   },
-  iconText: {
-    fontSize: 16,
+  icon: {
+    fontSize: 14,
     textAlign: 'center',
   },
 });
