@@ -118,6 +118,15 @@ const handleLogout = async () => {
         <Text style={styles.userName}>{user?.nombre}</Text>
         <Text style={styles.userEmail}>{user?.email}</Text>
         <Text style={styles.userPhone}>{user?.telefono}</Text>
+        <View style={styles.levelBadge}>
+          <Text style={styles.levelText}>
+            {stats.total >= 50 ? '🏆 Maestro' :
+             stats.total >= 25 ? '🥇 Avanzado' :
+             stats.total >= 10 ? '🥈 Intermedio' :
+             stats.total >= 3 ? '🥉 Principiante' : '🌱 Nuevo'}
+          </Text>
+          <Text style={styles.levelSubtext}>{stats.total} reportes</Text>
+        </View>
       </View>
 
 
@@ -235,6 +244,24 @@ const styles = StyleSheet.create({
   userPhone: {
     color: '#8E8E93',
     fontSize: 16,
+  },
+  levelBadge: {
+    backgroundColor: '#DC262620',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  levelText: {
+    color: '#DC2626',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  levelSubtext: {
+    color: '#8E8E93',
+    fontSize: 12,
+    marginTop: 2,
   },
   statsContainer: {
     flexDirection: 'row',

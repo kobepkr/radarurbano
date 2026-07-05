@@ -25,6 +25,7 @@ interface EventCardProps {
   onOpenComments?: () => void;
   onLocate?: () => void;
   creadoPorNombre?: string;
+  yaConfirmado?: boolean;
 }
 
 const categoriaLabels: { [key: string]: string } = {
@@ -53,7 +54,8 @@ export default function EventCard({
   comentariosCount = 0,
   onOpenComments,
   onLocate,
-  creadoPorNombre
+  creadoPorNombre,
+  yaConfirmado
 }: EventCardProps) {
   
   const getEstadoColor = () => {
@@ -128,9 +130,9 @@ export default function EventCard({
 
       <View style={styles.actionsRow}>
         <TouchableOpacity style={styles.actionButton} onPress={onConfirm}>
-          <Text style={styles.actionIcon}>✅</Text>
-          <Text style={styles.actionCount}>{confirmaciones}</Text>
-          <Text style={styles.actionLabel}>Confirmar</Text>
+          <Text style={[styles.actionIcon, yaConfirmado && { opacity: 0.4 }]}>✅</Text>
+          <Text style={[styles.actionCount, yaConfirmado && { color: '#4CAF50' }]}>{confirmaciones}</Text>
+          <Text style={[styles.actionLabel, yaConfirmado && { color: '#4CAF50' }]}>{yaConfirmado ? 'Confirmado' : 'Confirmar'}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionButton} onPress={onFalseReport}>

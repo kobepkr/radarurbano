@@ -111,6 +111,9 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
   const [regionDropdownOpen, setRegionDropdownOpen] = useState(false);
   const [filtroEstado, setFiltroEstado] = useState<string>('todos');
   const [estadoDropdownOpen, setEstadoDropdownOpen] = useState(false);
+  const [ordenActual, setOrdenActual] = useState<string>('recientes');
+  const [ordenDropdownOpen, setOrdenDropdownOpen] = useState(false);
+  const [reportesConfirmados, setReportesConfirmados] = useState<Set<string>>(new Set());
   const [direcciones, setDirecciones] = useState<{ [key: string]: string }>({});
   const [alertConfig, setAlertConfig] = useState({
     title: '',
@@ -290,6 +293,12 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
       setReportes(prev => [nuevoReporte, ...prev]);
       setModalVisible(false);
       setSelectedCoordinate(null);
+      mapRef.current?.animateToRegion({
+        latitude: targetCoord.latitude,
+        longitude: targetCoord.longitude,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005,
+      }, 500);
       showAlert('✅ Éxito', 'Reporte creado correctamente', 'success');
       
     } else {
@@ -365,10 +374,10 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
       await axios.post(`${API_URL}/reportes/${id}/confirmar`, {}, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      showAlert('✅ Confirmado', 'Reporte confirmado correctamente', 'success');
+      setReportesConfirmados(prev => new Set(prev).add(id));
     } catch (error: any) {
       if (error.response?.status === 400) {
-        showAlert('⚠️ Ya confirmado', 'Ya has confirmado este reporte anteriormente', 'info');
+        showAlert('⚠️ Ya confirmado', 'Ya habías confirmado este reporte', 'info');
       } else {
         showAlert('❌ Error', 'No se pudo confirmar el reporte', 'error');
       }
@@ -417,10 +426,12 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
 
   const compartirReporte = async (reporte: Reporte) => {
     try {
+      const [lng, lat] = reporte.ubicacion.coordinates;
+      const mapsLink = `https://maps.google.com/?q=${lat},${lng}`;
       const mensaje = 
-        `🚨 *${reporte.tipo.toUpperCase()}* 🚨\n\n` +
+        `🚨 *${getNombreTipo(reporte.tipo)}* 🚨\n\n` +
         `${reporte.descripcion}\n\n` +
-        `📍 Ubicación cercana\n` +
+        `📍 Ver en mapa: ${mapsLink}\n` +
         `✅ Confirmaciones: ${reporte.confirmaciones}\n` +
         `📊 Estado: ${reporte.estado === 'confirmado' ? 'Confirmado' : reporte.estado === 'falso' ? 'Falso' : 'Pendiente'}\n\n` +
         `🕒 ${new Date(reporte.createdAt || '').toLocaleString()}\n\n` +
@@ -1228,6 +1239,52 @@ const centrarMapa = () => {
           </View>
         </Modal>
 
+        {/* Filtro de orden */}
+        <View style={{ paddingHorizontal: 16, paddingBottom: 8 }}>
+          <TouchableOpacity 
+            style={styles.regionDropdown}
+            onPress={() => setOrdenDropdownOpen(true)}
+          >
+            <Text style={styles.regionDropdownText}>
+              {ordenActual === 'recientes' ? '🕐 Más recientes' :
+               ordenActual === 'confirmados' ? '✅ Más confirmados' : '📍 Más cercanos'}
+            </Text>
+            <Text style={styles.regionDropdownArrow}>▼</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Modal de orden */}
+        <Modal visible={ordenDropdownOpen} transparent={true} animationType="slide" onRequestClose={() => setOrdenDropdownOpen(false)}>
+          <View style={styles.regionModalOverlay}>
+            <View style={styles.regionModalContent}>
+              <View style={styles.regionModalHeader}>
+                <Text style={styles.regionModalTitle}>Ordenar por</Text>
+                <TouchableOpacity onPress={() => setOrdenDropdownOpen(false)}>
+                  <X size={24} color="#8E8E93" />
+                </TouchableOpacity>
+              </View>
+              {[
+                { key: 'recientes', label: '🕐 Más recientes' },
+                { key: 'confirmados', label: '✅ Más confirmados' },
+                { key: 'cercanos', label: '📍 Más cercanos' },
+              ].map(item => (
+                <TouchableOpacity
+                  key={item.key}
+                  style={[styles.regionModalItem, ordenActual === item.key && styles.regionModalItemActive]}
+                  onPress={() => {
+                    setOrdenActual(item.key);
+                    setOrdenDropdownOpen(false);
+                  }}
+                >
+                  <Text style={[styles.regionModalItemText, ordenActual === item.key && styles.regionModalItemTextActive]}>
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </Modal>
+
         <View style={styles.iconRow}>
           <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'todos' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('todos')}>
             <ScrollText size={24} color={filtroCategoria === 'todos' ? '#FFF' : '#8E8E93'} />
@@ -1247,7 +1304,16 @@ const centrarMapa = () => {
         </View>
 
         <BottomSheetScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.cardsContainerVertical}>
-         {reportes
+          {reportes
+  .sort((a, b) => {
+    if (ordenActual === 'confirmados') return b.confirmaciones - a.confirmaciones;
+    if (ordenActual === 'cercanos') {
+      const distA = region ? calcularDistancia(region.latitude, region.longitude, a.ubicacion.coordinates[1], a.ubicacion.coordinates[0]) : 0;
+      const distB = region ? calcularDistancia(region.latitude, region.longitude, b.ubicacion.coordinates[1], b.ubicacion.coordinates[0]) : 0;
+      return distA - distB;
+    }
+    return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+  })
   .filter(reporte => {
     if (filtroCategoria === 'todos') return true;
     const categorias: { [key: string]: string } = {
@@ -1315,6 +1381,7 @@ const centrarMapa = () => {
             }, 500);
           }}
           creadoPorNombre={(reporte as any).creadoPorNombre}
+          yaConfirmado={reportesConfirmados.has(reporte._id)}
         />
     );
   })}
