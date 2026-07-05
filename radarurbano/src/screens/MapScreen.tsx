@@ -23,10 +23,10 @@ import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useNavigation } from '@react-navigation/native';
 import { 
   Menu, User,
-  X, MapPin, Car, ShieldPlus, Siren, Home,
+  X, MapPin, Layout, Car, ShieldPlus, Siren, Home,
   Clock, AlertCircle, Power, XCircle, AlertTriangle,
   EyeOff, Target, Flame, Droplet, Circle, PowerOff,
-  DropletOff, CheckCircle, Share2, List
+  DropletOff, CheckCircle, Share2
 } from 'lucide-react-native';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { offlineReportService, OfflineReport } from '../services/OfflineReportService';
@@ -1173,7 +1173,7 @@ const centrarMapa = () => {
 
         <View style={styles.iconRow}>
           <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'todos' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('todos')}>
-            <List size={24} color={filtroCategoria === 'todos' ? '#FFF' : '#8E8E93'} />
+            <Layout size={24} color={filtroCategoria === 'todos' ? '#FFF' : '#8E8E93'} />
           </TouchableOpacity>
           <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'transito' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('transito')}>
             <Car size={24} color={filtroCategoria === 'transito' ? '#FFF' : '#8E8E93'} />
