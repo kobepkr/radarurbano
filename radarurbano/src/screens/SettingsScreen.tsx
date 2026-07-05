@@ -47,6 +47,8 @@ Sos responsable de mantener la confidencialidad de tu cuenta y contraseña. Cual
 5. CONTENIDO GENERADO POR USUARIOS
 Los reportes y comentarios son responsabilidad de quien los publica. Radar Urbano no verifica la exactitud de la información. Las alertas falsas pueden resultar en la suspensión de tu cuenta.
 
+Al publicar cualquier contenido en Radar Urbano (alertas, reportes, comentarios, reacciones, ubicaciones y datos asociados), cedés a Radar Urbano todos los derechos sobre dicha información. Radar Urbano podrá usar, reproducir, analizar, almacenar y distribuir estos datos de forma libre y sin restricción, incluyendo pero no limitado a: recopilación de datos estadísticos, elaboración de gráficos, mapas de calor, informes, estudios de mercado, comercialización de datos anonimizados y cualquier otro uso que la plataforma considere pertinente. Esta cesión es gratuita, irrevocable y de carácter mundial.
+
 6. LIMITACIÓN DE RESPONSABILIDAD
 Radar Urbano se proporciona "tal cual". No garantizamos la disponibilidad continua del servicio ni la exactitud de los reportes. No somos responsables por daños derivados del uso de la app.
 
