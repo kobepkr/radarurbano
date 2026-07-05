@@ -75,23 +75,22 @@ const politicaPrivacidad = `POLÍTICA DE PRIVACIDAD
 • Prevenir fraudes y usos indebidos.
 
 3. COMPARTIR INFORMACIÓN
-No vendemos tus datos personales. Compartimos información solo en estos casos:
+Podemos compartir tu información en los siguientes casos:
 • Con otros usuarios: tu nombre aparece en los reportes y comentarios que publicás.
+• Con terceros: para fines comerciales, estadísticos, publicitarios o de análisis de datos.
 • Por obligación legal: si una autoridad lo requiere con orden judicial.
+• Para mejorar nuestros servicios: con proveedores y socios tecnológicos.
 
-4. ALMACENAMIENTO
-Tus datos se almacenan en servidores seguros con MongoDB Atlas y Render. Implementamos medidas de seguridad para proteger tu información.
-
-5. TUS DERECHOS
+4. TUS DERECHOS
 • Acceder a tus datos personales.
 • Solicitar la eliminación de tu cuenta y datos.
 • Desactivar notificaciones push desde Configuración.
 • Modificar tus preferencias de ubicación.
 
-6. ELIMINACIÓN DE DATOS
+5. ELIMINACIÓN DE DATOS
 Podés eliminar tu cuenta desde Configuración. Esto borrará tu perfil, pero los reportes y comentarios que hayas creado permanecerán de forma anónima.
 
-7. CONTACTO
+6. CONTACTO
 Para ejercer tus derechos o consultas: victorlabbe26@gmail.com`;
 
 export default function SettingsScreen() {
