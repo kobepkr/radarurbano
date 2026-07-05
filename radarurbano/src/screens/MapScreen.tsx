@@ -213,7 +213,7 @@ const getIconoPorTipo = (tipo: string): string => {
   const iconos: { [key: string]: string } = {
     embotellamiento: '🚗', choque: '💥', semaforoRoto: '🚦',
     calleCortada: '🚧', accidente: '🚘', trafico: '🚙',
-    objetoPeligroso: '⚠️', controlCarabineros: '🛑',
+    objetoPeligroso: '⚠️', controlCarabineros: '👮',
     obrasEnVia: '🏗️', calleInundada: '🌊',
     manifestacion: '✊', emergenciaVehicular: '🛟',
     actividadDeportiva: '🏃', bache: '🕳️',
