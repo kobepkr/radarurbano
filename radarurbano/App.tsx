@@ -5,8 +5,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginScreen from './src/screens/LoginScreen';
 import MapScreen from './src/screens/MapScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
 import CustomDrawer from './src/components/CustomDrawer';
-import { MapPin, User } from 'lucide-react-native';
+import { MapPin, User, Settings } from 'lucide-react-native';
 import { navigationRef } from './src/navigation/RootNavigation';
 
 const Drawer = createDrawerNavigator();
@@ -67,6 +68,16 @@ export default function App() {
               drawerLabel: 'Perfil',
               drawerIcon: ({ color }) => (
                 <User size={24} color={color} />
+              ),
+            }}
+          />
+          <Drawer.Screen 
+            name="Settings" 
+            component={SettingsScreen}
+            options={{
+              drawerLabel: 'Configuración',
+              drawerIcon: ({ color }) => (
+                <Settings size={24} color={color} />
               ),
             }}
           />

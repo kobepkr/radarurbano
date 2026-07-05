@@ -177,7 +177,7 @@ const getCategoriaReporte = (tipo: string): string => {
     accidenteGrave: 'emergencias', bomberosLugar: 'emergencias', personaHerida: 'emergencias',
     rescate: 'emergencias', fenomenoClimatico: 'emergencias', cortoCircuito: 'emergencias',
     derrumbe: 'emergencias', alertaSeguridad: 'emergencias',
-    bache: 'transito', corteLuz: 'comunidad', corteAgua: 'comunidad',
+    corteLuz: 'comunidad', corteAgua: 'comunidad',
     escombros: 'comunidad', maleza: 'comunidad', perrosCallejeros: 'comunidad',
     veredaMala: 'comunidad', mueblesAbandonados: 'comunidad', autoAbandonado: 'comunidad',
     arbolCaido: 'comunidad', cableCaido: 'comunidad', zonaEscolar: 'comunidad',

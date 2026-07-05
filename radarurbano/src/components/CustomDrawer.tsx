@@ -115,7 +115,10 @@ const handleLogout = async () => {
 
         <TouchableOpacity 
           style={styles.menuItem}
-          onPress={() => alert('Configuración - Próximamente')}
+          onPress={() => {
+            props.navigation.closeDrawer();
+            props.navigation.navigate('Settings');
+          }}
         >
           <Settings size={24} color="#FFF" />
           <Text style={styles.menuItemText}>Configuración</Text>
