@@ -51,37 +51,22 @@ router.post("/registro", async (req, res) => {
     }
 
     // Crear nuevo usuario
+    const codigo = Math.floor(100000 + Math.random() * 900000).toString();
     const nuevoUsuario = new Usuario({
       nombre,
       email,
       password,
-      telefono
+      telefono,
+      codigoVerificacion: codigo,
+      verificado: false
     });
 
     await nuevoUsuario.save();
 
-    // Generar token JWT
-    const token = jwt.sign(
-      { 
-        id: nuevoUsuario._id, 
-        email: nuevoUsuario.email, 
-        rol: nuevoUsuario.rol 
-      },
-      getJwtSecret(),
-      { expiresIn: "7d" }
-    );
-
     res.status(201).json({
-      message: "Usuario registrado exitosamente",
-      token,
-      usuario: {
-        id: nuevoUsuario._id,
-        nombre: nuevoUsuario.nombre,
-        email: nuevoUsuario.email,
-        telefono: nuevoUsuario.telefono,
-        rol: nuevoUsuario.rol,
-        premium: nuevoUsuario.premium || false
-      }
+      message: "Usuario registrado. Revisá tu email para el código de verificación.",
+      codigoVerificacion: codigo,
+      usuarioId: nuevoUsuario._id
     });
 
   } catch (error) {
@@ -93,7 +78,45 @@ router.post("/registro", async (req, res) => {
 });
 
 // ============================================
-// LOGIN DE USUARIO (POST /api/usuarios/login)
+// VERIFICAR CÓDIGO (POST /api/usuarios/verificar)
+// ============================================
+router.post("/verificar", async (req, res) => {
+  try {
+    const { usuarioId, codigo } = req.body;
+    const usuario = await Usuario.findById(usuarioId);
+    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+    
+    if (usuario.codigoVerificacion !== codigo) {
+      return res.status(400).json({ error: "Código incorrecto" });
+    }
+
+    usuario.verificado = true;
+    usuario.codigoVerificacion = null;
+    await usuario.save();
+
+    const token = jwt.sign(
+      { id: usuario._id, email: usuario.email, rol: usuario.rol },
+      getJwtSecret(),
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      message: "Cuenta verificada exitosamente",
+      token,
+      usuario: {
+        id: usuario._id,
+        nombre: usuario.nombre,
+        email: usuario.email,
+        telefono: usuario.telefono,
+        rol: usuario.rol,
+        premium: usuario.premium || false
+      }
+    });
+  } catch (error) { res.status(500).json({ error: "Error al verificar" }); }
+});
+
+// ============================================
+// LOGIN (POST /api/usuarios/login)
 // ============================================
 router.post("/login", async (req, res) => {
   try {
@@ -121,6 +144,15 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ 
         error: "Credenciales inválidas" 
       });
+    }
+
+    if (!usuario.verificado && usuario.codigoVerificacion) {
+      return res.status(403).json({ error: "Cuenta no verificada. Revisá tu email." });
+    }
+
+    if (!usuario.verificado) {
+      usuario.verificado = true;
+      await usuario.save();
     }
 
     // Generar token

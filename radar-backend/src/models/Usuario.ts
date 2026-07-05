@@ -20,6 +20,8 @@ interface IUsuario extends mongoose.Document {
   };
   pushToken: string | null;
   notificacionesActivas: boolean;
+  codigoVerificacion: string | null;
+  verificado: boolean;
   compararPassword(password: string): Promise<boolean>;
 }
 
@@ -101,6 +103,16 @@ premiumHasta: {
   notificacionesActivas: {
     type: Boolean,
     default: true
+  },
+  
+  codigoVerificacion: {
+    type: String,
+    default: null
+  },
+  
+  verificado: {
+    type: Boolean,
+    default: false
   }
   
 }, {

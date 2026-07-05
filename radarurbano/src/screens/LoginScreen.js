@@ -21,21 +21,20 @@ export default function LoginScreen() {
   const [isRegistro, setIsRegistro] = useState(false);
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
+  const [mostrarVerificacion, setMostrarVerificacion] = useState(false);
+  const [codigoVerificacion, setCodigoVerificacion] = useState('');
+  const [usuarioIdTemporal, setUsuarioIdTemporal] = useState('');
 
-  // Función para guardar push token
   const savePushToken = async (userId, token) => {
     try {
       const pushToken = await Notifications.getExpoPushTokenAsync();
-      console.log('Push token obtenido:', pushToken.data);
-      
       await axios.post(`${API_URL}/usuarios/push-token`, {
         pushToken: pushToken.data
       }, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      console.log('✅ Push token guardado en backend');
     } catch (error) {
-      console.error('❌ Error guardando push token:', error);
+      console.error('Error guardando push token:', error);
     }
   };
 
@@ -80,23 +79,70 @@ export default function LoginScreen() {
 
       const response = await axios.post(`${API_URL}${endpoint}`, body);
       
-      // Guardar token y usuario
-      await AsyncStorage.setItem('token', response.data.token);
-      await AsyncStorage.setItem('usuario', JSON.stringify(response.data.usuario));
-      
-      // Guardar push token (solo después de login, no registro)
-      if (!isRegistro) {
-        await savePushToken(response.data.usuario.id, response.data.token);
+      if (isRegistro) {
+        setUsuarioIdTemporal(response.data.usuarioId);
+        setCodigoVerificacion('');
+        setMostrarVerificacion(true);
+        Alert.alert('Verificación', `Se envió un código a tu email. Código: ${response.data.codigoVerificacion}`);
+        setLoading(false);
+        return;
       }
       
-     Alert.alert('Éxito', isRegistro ? 'Registro exitoso' : 'Login exitoso');
-      
+      await AsyncStorage.setItem('token', response.data.token);
+      await AsyncStorage.setItem('usuario', JSON.stringify(response.data.usuario));
+      await savePushToken(response.data.usuario.id, response.data.token);
     } catch (error) {
       Alert.alert('Error', error.response?.data?.error || 'Error de conexión');
     } finally {
       setLoading(false);
     }
   };
+
+  const verificarCodigo = async () => {
+    if (codigoVerificacion.length !== 6) {
+      Alert.alert('Error', 'Ingresá el código de 6 dígitos');
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await axios.post(`${API_URL}/usuarios/verificar`, {
+        usuarioId: usuarioIdTemporal,
+        codigo: codigoVerificacion,
+      });
+      await AsyncStorage.setItem('token', res.data.token);
+      await AsyncStorage.setItem('usuario', JSON.stringify(res.data.usuario));
+      await savePushToken(res.data.usuario.id, res.data.token);
+      Alert.alert('Éxito', 'Cuenta verificada');
+    } catch (error) {
+      Alert.alert('Error', error.response?.data?.error || 'Código incorrecto');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (mostrarVerificacion) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Verificar cuenta</Text>
+        <Text style={styles.subtitle}>Ingresá el código de 6 dígitos enviado a tu email</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Código de verificación"
+          placeholderTextColor="#999"
+          value={codigoVerificacion}
+          onChangeText={setCodigoVerificacion}
+          keyboardType="number-pad"
+          maxLength={6}
+        />
+        <TouchableOpacity style={styles.button} onPress={verificarCodigo} disabled={loading}>
+          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Verificar</Text>}
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setMostrarVerificacion(false)}>
+          <Text style={styles.link}>Volver</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

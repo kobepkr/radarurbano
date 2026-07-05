@@ -14,6 +14,12 @@ const LoginStyles = StyleSheet.create({
     marginBottom: 40,
     color: '#DC2626',
   },
+  subtitle: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 20,
+    color: '#666',
+  },
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
