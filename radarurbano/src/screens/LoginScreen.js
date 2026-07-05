@@ -108,9 +108,11 @@ export default function LoginScreen() {
       setUsuarioIdTemporal(response.data.usuarioId);
       setCodigoVerificacion('');
       setMostrarVerificacion(true);
-      const msg = response.data.codigoVerificacion
-        ? `Revisá tu email. Código de prueba: ${response.data.codigoVerificacion}`
-        : 'Se envió un código de 6 dígitos a tu email. Revisá tu bandeja de entrada.';
+      const msg = response.data.emailStatus === 'fallo_envio'
+        ? `No se pudo enviar el email. Código de prueba: ${response.data.codigoVerificacion}`
+        : response.data.codigoVerificacion
+          ? `Revisá tu email. Código de prueba: ${response.data.codigoVerificacion}`
+          : 'Se envió un código de 6 dígitos a tu email. Revisá tu bandeja de entrada o spam.';
       Alert.alert('Código enviado', msg);
     } catch (error) {
       Alert.alert('Error', error.response?.data?.error || 'Error de conexión');

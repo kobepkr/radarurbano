@@ -11,8 +11,14 @@ const transporter = nodemailer.createTransport({
 });
 
 export const enviarCodigoVerificacion = async (email: string, codigo: string) => {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.log("⚠️ SMTP no configurado. Usando modo prueba.");
+    return false;
+  }
+
+  console.log(`📧 Intentando enviar email a ${email}...`);
   try {
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: `"Radar Urbano" <${process.env.SMTP_USER}>`,
       to: email,
       subject: "Código de verificación - Radar Urbano",
@@ -37,9 +43,10 @@ export const enviarCodigoVerificacion = async (email: string, codigo: string) =>
         </div>
       `,
     });
+    console.log(`✅ Email enviado a ${email}: ${info.messageId}`);
     return true;
-  } catch (error) {
-    console.error("Error enviando email:", error);
+  } catch (error: any) {
+    console.error("❌ Error enviando email:", error.message || error);
     return false;
   }
 };

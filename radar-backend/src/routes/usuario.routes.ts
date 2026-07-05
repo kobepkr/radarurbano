@@ -65,12 +65,16 @@ router.post("/registro", async (req, res) => {
 
     await nuevoUsuario.save();
 
-    const emailEnviado = await enviarCodigoVerificacion(email, codigo);
+    const emailEnviado = await enviarCodigoVerificacion(email, codigo).catch(err => {
+      console.error("❌ Error email:", err.message);
+      return false;
+    });
 
     res.status(201).json({
       message: "Usuario registrado. Revisá tu email para el código de verificación.",
       codigoVerificacion: emailEnviado ? undefined : codigo,
-      usuarioId: nuevoUsuario._id
+      usuarioId: nuevoUsuario._id,
+      emailStatus: emailEnviado ? 'enviado' : 'fallo_envio'
     });
 
   } catch (error) {
