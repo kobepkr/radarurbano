@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { Usuario } from "../models/Usuario";
 import { authMiddleware, AuthRequest } from "../middlewares/auth.middleware";
 import { ReporteDiario } from "../models/ReporteDiario";
+import { enviarCodigoVerificacion } from "../config/email";
 
 const router = express.Router();
 
@@ -64,9 +65,11 @@ router.post("/registro", async (req, res) => {
 
     await nuevoUsuario.save();
 
+    const emailEnviado = await enviarCodigoVerificacion(email, codigo);
+
     res.status(201).json({
       message: "Usuario registrado. Revisá tu email para el código de verificación.",
-      codigoVerificacion: codigo,
+      codigoVerificacion: emailEnviado ? undefined : codigo,
       usuarioId: nuevoUsuario._id
     });
 
