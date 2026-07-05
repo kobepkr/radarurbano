@@ -167,12 +167,13 @@ const handleLogout = async () => {
   <TouchableOpacity style={styles.premiumUpgrade} onPress={async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      await axios.post(`${API_URL}/usuarios/make-premium`, {}, {
+      const res = await axios.post(`${API_URL}/usuarios/checkout-premium`, {}, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      Alert.alert('⭐ ¡Premium!', 'Ahora sos usuario premium. Reiniciá la app para ver los cambios.');
+      const { Linking } = require('react-native');
+      if (res.data.url) Linking.openURL(res.data.url);
     } catch (e) {
-      Alert.alert('Error', 'No se pudo activar premium');
+      Alert.alert('Error', 'No se pudo iniciar el pago');
     }
   }}>
     <Text style={styles.premiumEmoji}>⭐</Text>

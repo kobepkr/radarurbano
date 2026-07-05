@@ -4,6 +4,7 @@ import { Usuario } from "../models/Usuario";
 import { authMiddleware, AuthRequest } from "../middlewares/auth.middleware";
 import { ReporteDiario } from "../models/ReporteDiario";
 import { enviarCodigoVerificacion } from "../config/email";
+import { crearSesionCheckout } from "../config/stripe";
 
 const router = express.Router();
 
@@ -395,6 +396,22 @@ router.post("/confirmar-recuperacion", async (req, res) => {
 
     res.json({ message: "Contraseña actualizada" });
   } catch (error) { res.status(500).json({ error: "Error al actualizar" }); }
+});
+
+// ============================================
+// CREAR CHECKOUT DE STRIPE (POST /api/usuarios/checkout-premium)
+// ============================================
+router.post("/checkout-premium", authMiddleware, async (req: AuthRequest, res) => {
+  try {
+    const usuario = await Usuario.findById(req.usuario.id);
+    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    const url = await crearSesionCheckout(usuario._id.toString(), usuario.email);
+    res.json({ url });
+  } catch (error) {
+    console.error("Error checkout:", error);
+    res.status(500).json({ error: "Error al crear checkout" });
+  }
 });
 
 export default router;
