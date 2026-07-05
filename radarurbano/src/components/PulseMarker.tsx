@@ -19,7 +19,7 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
     const animation = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
-          toValue: 1.5,
+          toValue: 1.6,
           duration: 1200,
           useNativeDriver: true,
         }),
@@ -41,14 +41,13 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
           style={[
             styles.pulse,
             {
-              backgroundColor: color + '40',
+              backgroundColor: color,
+              opacity: 0.35,
               transform: [{ scale: pulseAnim }],
             },
           ]}
         />
-        <View style={[styles.iconBg, { borderColor: color }]}>
-          <Text style={styles.icon}>{icono}</Text>
-        </View>
+        <Text style={styles.icon}>{icono}</Text>
       </View>
     </Marker>
   );
@@ -56,29 +55,20 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
 
 const styles = StyleSheet.create({
   wrapper: {
-    width: 52,
-    height: 52,
+    width: 60,
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
   },
   pulse: {
     position: 'absolute',
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-  },
-  iconBg: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#1C1C1E',
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 2,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
   icon: {
-    fontSize: 14,
+    fontSize: 20,
     textAlign: 'center',
+    zIndex: 1,
   },
 });
