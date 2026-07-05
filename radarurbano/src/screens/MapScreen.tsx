@@ -1430,6 +1430,7 @@ const centrarMapa = () => {
               </TouchableOpacity>
             </View>
             
+            <ScrollView showsVerticalScrollIndicator={false}>
             {selectedReporte && (
               <>
                 <View style={styles.modernCard}>
@@ -1508,9 +1509,10 @@ const centrarMapa = () => {
 
               
 
-
+              
               </>
             )}
+            </ScrollView>
           </View>
         </View>
       </Modal>
