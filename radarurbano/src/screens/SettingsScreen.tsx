@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   Switch,
+  Modal,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -22,12 +23,13 @@ import {
   ArrowLeft,
 } from 'lucide-react-native';
 
-const RADIOS = [10, 25, 50, 100];
+const API_URL = 'https://radarurbano-1.onrender.com/api';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
   const [notificaciones, setNotificaciones] = useState(true);
   const [radioBusqueda, setRadioBusqueda] = useState(50);
+  const [radioModalOpen, setRadioModalOpen] = useState(false);
   const [regionDefault, setRegionDefault] = useState('Mi ubicación');
 
   useEffect(() => {
@@ -55,18 +57,9 @@ export default function SettingsScreen() {
     }
   };
 
-  const elegirRadio = () => {
-    Alert.alert(
-      'Radio de búsqueda',
-      '¿Cuántos kilómetros alrededor querés buscar?',
-      RADIOS.map(r => ({
-        text: `${r} km${r === radioBusqueda ? ' ✓' : ''}`,
-        onPress: async () => {
-          setRadioBusqueda(r);
-          await AsyncStorage.setItem('radioBusqueda', String(r));
-        },
-      })),
-    );
+  const elegirRadio = (r: number) => {
+    setRadioBusqueda(r);
+    AsyncStorage.setItem('radioBusqueda', String(r));
   };
 
   const elegirRegion = () => {
@@ -116,7 +109,7 @@ export default function SettingsScreen() {
         />
       </View>
 
-      <TouchableOpacity style={styles.item} onPress={elegirRadio}>
+      <TouchableOpacity style={styles.item} onPress={() => setRadioModalOpen(true)}>
         <Map size={22} color="#DC2626" />
         <Text style={styles.itemText}>Radio de búsqueda</Text>
         <Text style={styles.itemValue}>{radioBusqueda} km</Text>
@@ -152,6 +145,37 @@ export default function SettingsScreen() {
       </TouchableOpacity>
 
       <Text style={styles.version}>Radar Urbano v1.0.0</Text>
+
+      {/* Modal slider de radio */}
+      <Modal visible={radioModalOpen} transparent={true} animationType="slide" onRequestClose={() => setRadioModalOpen(false)}>
+        <View style={styles.sliderOverlay}>
+          <View style={styles.sliderContent}>
+            <Text style={styles.sliderTitle}>Radio de búsqueda</Text>
+            <Text style={styles.sliderValue}>{radioBusqueda} km</Text>
+
+            <View style={styles.sliderTrack}>
+              <View style={[styles.sliderFill, { width: `${((radioBusqueda - 10) / 90) * 100}%` }]} />
+              {[10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(r => (
+                <TouchableOpacity
+                  key={r}
+                  style={[styles.sliderMarker, { left: `${((r - 10) / 90) * 100}%` }]}
+                  onPress={() => elegirRadio(r)}
+                >
+                  <View style={[styles.sliderDot, radioBusqueda >= r && styles.sliderDotActive]} />
+                  <Text style={styles.sliderLabel}>{r}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.sliderHint}>Deslizá para seleccionar distancia</Text>
+
+            <TouchableOpacity style={styles.sliderButton} onPress={() => setRadioModalOpen(false)}>
+              <Text style={styles.sliderButtonText}>Listo</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <View style={{ height: 40 }} />
     </ScrollView>
   );
@@ -217,5 +241,87 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     marginTop: 30,
+  },
+  sliderOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  sliderContent: {
+    backgroundColor: '#1C1C1E',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 24,
+    paddingBottom: 40,
+  },
+  sliderTitle: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  sliderValue: {
+    color: '#DC2626',
+    fontSize: 36,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  sliderTrack: {
+    height: 60,
+    marginHorizontal: 20,
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  sliderFill: {
+    position: 'absolute',
+    height: 4,
+    backgroundColor: '#DC2626',
+    borderRadius: 2,
+    left: 0,
+    top: 28,
+  },
+  sliderMarker: {
+    position: 'absolute',
+    alignItems: 'center',
+    top: 0,
+    marginLeft: -12,
+  },
+  sliderDot: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#3A3A3C',
+    borderWidth: 2,
+    borderColor: '#6B6B6B',
+    marginBottom: 4,
+  },
+  sliderDotActive: {
+    backgroundColor: '#DC2626',
+    borderColor: '#DC2626',
+  },
+  sliderLabel: {
+    color: '#8E8E93',
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  sliderHint: {
+    color: '#6B6B6B',
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: 16,
+  },
+  sliderButton: {
+    backgroundColor: '#DC2626',
+    padding: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  sliderButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
