@@ -153,6 +153,8 @@ export default function LoginScreen() {
       setLoading(false);
     }
   };
+
+  const realizarRegistro = async (endpoint, body) => {
     setLoading(true);
     try {
       const response = await axios.post(`${API_URL}${endpoint}`, body);
