@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 import LoginScreen from './src/screens/LoginScreen';
 import MapScreen from './src/screens/MapScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
@@ -27,7 +28,19 @@ export default function App() {
     checkToken();
 
     const interval = setInterval(checkToken, 500);
-    return () => clearInterval(interval);
+    
+    const sub = Notifications.addNotificationResponseReceivedListener(async (response) => {
+      const data = response.notification.request.content.data;
+      if (data?.lat && data?.lng) {
+        await AsyncStorage.setItem('targetLat', String(data.lat));
+        await AsyncStorage.setItem('targetLng', String(data.lng));
+      }
+    });
+
+    return () => {
+      clearInterval(interval);
+      sub.remove();
+    };
   }, []);
 
   if (isLoading) return null;

@@ -294,6 +294,7 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
       setReportes(prev => [nuevoReporte, ...prev]);
       setModalVisible(false);
       setSelectedCoordinate(null);
+      await AsyncStorage.setItem('ultimaFechaReporte', new Date().toISOString().split('T')[0]);
       mapRef.current?.animateToRegion({
         latitude: targetCoord.latitude,
         longitude: targetCoord.longitude,
@@ -376,6 +377,8 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setReportesConfirmados(prev => new Set(prev).add(id));
+      const confDadas = await AsyncStorage.getItem('confirmacionesDadas');
+      await AsyncStorage.setItem('confirmacionesDadas', String((confDadas ? Number(confDadas) : 0) + 1));
     } catch (error: any) {
       if (error.response?.status === 400) {
         showAlert('⚠️ Ya confirmado', 'Ya habías confirmado este reporte', 'info');
@@ -533,6 +536,19 @@ useEffect(() => {
       
       console.log('🔵 Cargando reportes...');
       await cargarReportes(newRegion.latitude, newRegion.longitude);
+      
+      const targetLat = await AsyncStorage.getItem('targetLat');
+      const targetLng = await AsyncStorage.getItem('targetLng');
+      if (targetLat && targetLng && isMounted) {
+        const tLat = parseFloat(targetLat);
+        const tLng = parseFloat(targetLng);
+        setRegion({ latitude: tLat, longitude: tLng, latitudeDelta: 0.01, longitudeDelta: 0.01 });
+        setTimeout(() => {
+          mapRef.current?.animateToRegion({ latitude: tLat, longitude: tLng, latitudeDelta: 0.01, longitudeDelta: 0.01 }, 800);
+        }, 1000);
+        await AsyncStorage.removeItem('targetLat');
+        await AsyncStorage.removeItem('targetLng');
+      }
       
       console.log('✅ Inicialización completa');
       if (isMounted) setLoading(false);

@@ -25,6 +25,8 @@ export default function ProfileScreen({ navigation }: any) {
     falsos: 0,
     pendientes: 0
   });
+  const [racha, setRacha] = useState(0);
+  const [confirmacionesDadas, setConfirmacionesDadas] = useState(0);
 
   useEffect(() => {
     cargarDatosUsuario();
@@ -59,6 +61,26 @@ const cargarDatosUsuario = async () => {
       pendientes: reportes.filter((r: any) => r.estado === 'no_confirmado').length
     };
     setStats(statsCalc);
+
+    const hoy = new Date().toISOString().split('T')[0];
+    const ultimaFecha = await AsyncStorage.getItem('ultimaFechaReporte');
+    const rachaStorage = await AsyncStorage.getItem('rachaDias');
+    let rachaActual = rachaStorage ? Number(rachaStorage) : 0;
+
+    if (ultimaFecha) {
+      const ayer = new Date();
+      ayer.setDate(ayer.getDate() - 1);
+      const ayerStr = ayer.toISOString().split('T')[0];
+      if (ultimaFecha === ayerStr) rachaActual += 1;
+      else if (ultimaFecha !== hoy) rachaActual = stats.total > 0 ? 1 : 0;
+    } else if (stats.total > 0) {
+      rachaActual = 1;
+    }
+    setRacha(rachaActual);
+    await AsyncStorage.setItem('rachaDias', String(rachaActual));
+
+    const confDadas = await AsyncStorage.getItem('confirmacionesDadas');
+    setConfirmacionesDadas(confDadas ? Number(confDadas) : 0);
     
     // ✅ NUEVO: Cargar límite de reportes
     const limiteRes = await axios.get(`${API_URL}/usuarios/limite-reportes`, {
@@ -126,6 +148,10 @@ const handleLogout = async () => {
              stats.total >= 3 ? '🥉 Principiante' : '🌱 Nuevo'}
           </Text>
           <Text style={styles.levelSubtext}>{stats.total} reportes</Text>
+        </View>
+        <View style={styles.rachaRow}>
+          <Text style={styles.rachaText}>🔥 Racha: {racha} días</Text>
+          <Text style={styles.rachaText}>✅ {confirmacionesDadas} confirmaciones</Text>
         </View>
       </View>
 
@@ -262,6 +288,17 @@ const styles = StyleSheet.create({
     color: '#8E8E93',
     fontSize: 12,
     marginTop: 2,
+  },
+  rachaRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+    marginTop: 12,
+  },
+  rachaText: {
+    color: '#FFD700',
+    fontSize: 14,
+    fontWeight: '600',
   },
   statsContainer: {
     flexDirection: 'row',
