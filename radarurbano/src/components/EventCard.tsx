@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 
 interface EventCardProps {
   title: string;
@@ -139,29 +139,9 @@ export default function EventCard({
           <Text style={styles.actionLabel}>Falso</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.actionButton}
-          onPress={() => onReaccion && onReaccion('like')}
-        >
-          <Text style={styles.actionIcon}>👍</Text>
-          <Text style={styles.actionCount}>{reacciones?.like || 0}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.actionButton}
-          onPress={() => onReaccion && onReaccion('urgente')}
-        >
-          <Text style={styles.actionIcon}>🔥</Text>
-          <Text style={styles.actionCount}>{reacciones?.urgente || 0}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.actionButton}
-          onPress={() => onReaccion && onReaccion('peligro')}
-        >
-          <Text style={styles.actionIcon}>🚨</Text>
-          <Text style={styles.actionCount}>{reacciones?.peligro || 0}</Text>
-        </TouchableOpacity>
+        <ReactionButton emoji="👍" count={reacciones?.like || 0} onPress={() => onReaccion && onReaccion('like')} />
+        <ReactionButton emoji="🔥" count={reacciones?.urgente || 0} onPress={() => onReaccion && onReaccion('urgente')} />
+        <ReactionButton emoji="🚨" count={reacciones?.peligro || 0} onPress={() => onReaccion && onReaccion('peligro')} />
 
         <TouchableOpacity 
           style={styles.actionButton}
@@ -173,6 +153,27 @@ export default function EventCard({
       </View>
 
       <View style={styles.divider} />
+    </TouchableOpacity>
+  );
+}
+
+function ReactionButton({ emoji, count, onPress }: { emoji: string; count: number; onPress: () => void }) {
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const handlePress = () => {
+    Animated.sequence([
+      Animated.timing(scale, { toValue: 1.4, duration: 100, useNativeDriver: true }),
+      Animated.timing(scale, { toValue: 1, duration: 100, useNativeDriver: true }),
+    ]).start();
+    onPress();
+  };
+
+  return (
+    <TouchableOpacity style={styles.actionButton} onPress={handlePress}>
+      <Animated.View style={{ transform: [{ scale }] }}>
+        <Text style={styles.actionIcon}>{emoji}</Text>
+      </Animated.View>
+      <Text style={styles.actionCount}>{count}</Text>
     </TouchableOpacity>
   );
 }

@@ -400,8 +400,6 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
           ? { ...r, reacciones: response.data.reacciones }
           : r
       ));
-      
-      showAlert('✅ Reacción agregada', `Has reaccionado con ${tipo}`, 'success');
     }
   } catch (error: any) {
       const msg = error.response?.data?.error || error.message || 'No se pudo agregar la reacción';
