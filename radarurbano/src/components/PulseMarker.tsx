@@ -19,7 +19,7 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
     const animation = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
-          toValue: 1.6,
+          toValue: 1.5,
           duration: 1200,
           useNativeDriver: true,
         }),
@@ -35,14 +35,18 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
   }, []);
 
   return (
-    <Marker coordinate={coordinate} onPress={onPress}>
-      <View style={styles.wrapper}>
+    <Marker
+      coordinate={coordinate}
+      onPress={onPress}
+      centerOffset={{ x: 0, y: -14 }}
+    >
+      <View style={styles.container}>
         <Animated.View
           style={[
             styles.pulse,
             {
               backgroundColor: color,
-              opacity: 0.35,
+              opacity: 0.3,
               transform: [{ scale: pulseAnim }],
             },
           ]}
@@ -54,21 +58,18 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    width: 60,
-    height: 60,
+  container: {
     justifyContent: 'center',
     alignItems: 'center',
   },
   pulse: {
     position: 'absolute',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
   },
   icon: {
-    fontSize: 20,
+    fontSize: 18,
     textAlign: 'center',
-    zIndex: 1,
   },
 });
