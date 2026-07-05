@@ -60,8 +60,8 @@ export default function LoginScreen() {
         Alert.alert('Error', 'La contraseña debe tener al menos 6 caracteres');
         return;
       }
-      if (nombre.trim().length < 2) {
-        Alert.alert('Error', 'El nombre debe tener al menos 2 caracteres');
+      if (nombre.trim().length < 4) {
+        Alert.alert('Error', 'El nombre debe tener al menos 4 caracteres');
         return;
       }
       const telefonoRegex = /^\+?[0-9]{8,15}$/;

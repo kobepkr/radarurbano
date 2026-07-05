@@ -35,8 +35,8 @@ router.post("/registro", async (req, res) => {
     if (password.length < 6) {
       return res.status(400).json({ error: "La contraseña debe tener al menos 6 caracteres" });
     }
-    if (nombre.trim().length < 2) {
-      return res.status(400).json({ error: "El nombre debe tener al menos 2 caracteres" });
+    if (nombre.trim().length < 4) {
+      return res.status(400).json({ error: "El nombre debe tener al menos 4 caracteres" });
     }
 
     // Verificar si el usuario ya existe
