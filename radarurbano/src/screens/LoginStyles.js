@@ -29,6 +29,22 @@ const LoginStyles = StyleSheet.create({
     fontSize: 16,
     color: '#000',
   },
+  passwordRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  passwordInput: {
+    flex: 1,
+    marginBottom: 15,
+  },
+  eyeButton: {
+    padding: 10,
+    marginBottom: 15,
+    marginLeft: -50,
+  },
+  eyeIcon: {
+    fontSize: 20,
+  },
   button: {
     backgroundColor: '#DC2626',
     padding: 15,

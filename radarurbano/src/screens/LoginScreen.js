@@ -24,6 +24,7 @@ export default function LoginScreen() {
   const [mostrarVerificacion, setMostrarVerificacion] = useState(false);
   const [codigoVerificacion, setCodigoVerificacion] = useState('');
   const [usuarioIdTemporal, setUsuarioIdTemporal] = useState('');
+  const [mostrarPassword, setMostrarPassword] = useState(false);
 
   const savePushToken = async (userId, token) => {
     try {
@@ -192,14 +193,19 @@ export default function LoginScreen() {
         autoCapitalize="none"
       />
       
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#999"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      <View style={styles.passwordRow}>
+        <TextInput
+          style={[styles.input, styles.passwordInput]}
+          placeholder="Password"
+          placeholderTextColor="#999"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!mostrarPassword}
+        />
+        <TouchableOpacity style={styles.eyeButton} onPress={() => setMostrarPassword(!mostrarPassword)}>
+          <Text style={styles.eyeIcon}>{mostrarPassword ? '🙈' : '👁️'}</Text>
+        </TouchableOpacity>
+      </View>
       
       <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={loading}>
         {loading ? (
