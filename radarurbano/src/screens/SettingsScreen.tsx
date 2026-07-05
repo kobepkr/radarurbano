@@ -213,7 +213,7 @@ export default function SettingsScreen() {
         <Text style={[styles.itemText, styles.dangerText]}>Eliminar cuenta</Text>
       </TouchableOpacity>
 
-      <Text style={styles.version}>Radar Urbano v1.0.0</Text>
+      <Text style={styles.version}>Radar Urbano v1.5.0</Text>
 
       {/* Modal slider de radio */}
       <Modal visible={radioModalOpen} transparent={true} animationType="slide" onRequestClose={() => setRadioModalOpen(false)}>

@@ -126,7 +126,7 @@ const handleLogout = async () => {
 
         <TouchableOpacity 
           style={styles.menuItem}
-          onPress={() => alert('Acerca de - Versión 1.0.0')}
+          onPress={() => alert('Acerca de - Versión 1.5.0')}
         >
           <Info size={24} color="#FFF" />
           <Text style={styles.menuItemText}>Acerca de</Text>
