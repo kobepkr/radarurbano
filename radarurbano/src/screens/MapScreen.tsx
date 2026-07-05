@@ -592,19 +592,19 @@ useEffect(() => {
     socketRef.current.on('nuevo-reporte', (nuevoReporte: Reporte) => {
       console.log('📢 Nuevo reporte recibido:', nuevoReporte._id);
       
-      if (userLocation) {
-        const [rLng, rLat] = nuevoReporte.ubicacion.coordinates;
-        const dist = calcularDistancia(userLocation.latitude, userLocation.longitude, rLat, rLng);
-        if (dist > 50) {
-          console.log('⚠️ Reporte fuera de rango (50km), ignorando');
-          return;
-        }
-      }
-      
       setReportes(prev => {
-        if (prev.some(r => r._id === nuevoReporte._id)) {
-          console.log('⚠️ Reporte ya existe, ignorando');
+        const existe = prev.find(r => r._id === nuevoReporte._id);
+        if (existe) {
+          console.log('⚠️ Reporte ya existe en la lista, ignorando');
           return prev;
+        }
+        if (userLocation) {
+          const [rLng, rLat] = nuevoReporte.ubicacion.coordinates;
+          const dist = calcularDistancia(userLocation.latitude, userLocation.longitude, rLat, rLng);
+          if (dist > 50) {
+            console.log('⚠️ Reporte fuera de rango (50km), ignorando');
+            return prev;
+          }
         }
         console.log('✅ Agregando nuevo reporte');
         return [nuevoReporte, ...prev];
@@ -831,7 +831,7 @@ const centrarMapa = () => {
             setSelectedCoordinate({ latitude, longitude });
           }}
         >
-          {reportes.map((reporte) => {
+          {[...new Map(reportes.map(r => [r._id, r])).values()].map((reporte) => {
             const icono = getIconoPorTipo(reporte.tipo);
             const color = colores[reporte.tipo] || '#757575';
             
