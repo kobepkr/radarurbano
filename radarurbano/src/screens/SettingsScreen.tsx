@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#DC2626',
     borderRadius: 2,
     left: 0,
-    top: 28,
+    top: 34,
   },
   sliderMarker: {
     position: 'absolute',
