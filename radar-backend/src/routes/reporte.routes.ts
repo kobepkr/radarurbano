@@ -59,7 +59,12 @@ router.post("/", authMiddleware, verificarLimiteReportes, async (req: AuthReques
     });
     await nuevoReporte.save();
     try {
-      const usuariosCerca = await Usuario.find({ ubicacion: { $near: { $geometry: { type: "Point", coordinates: [lng, lat] }, $maxDistance: 50000 } }, pushToken: { $exists: true, $ne: null }, _id: { $ne: req.usuario.id } });
+      const usuariosCerca = await Usuario.find({
+        ubicacion: { $near: { $geometry: { type: "Point", coordinates: [lng, lat] }, $maxDistance: 50000 } },
+        pushToken: { $exists: true, $ne: null },
+        notificacionesActivas: true,
+        _id: { $ne: req.usuario.id }
+      });
       for (const usuario of usuariosCerca) {
         await fetch('https://exp.host/--/api/v2/push/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to: usuario.pushToken, sound: 'default', title: '🚨 Nuevo reporte cerca', body: `${tipo} reportado en tu zona`, data: { reporteId: nuevoReporte._id, tipo, lat, lng } }) });
       }

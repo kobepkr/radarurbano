@@ -280,4 +280,25 @@ router.get("/limite-reportes", authMiddleware, async (req: AuthRequest, res) => 
   }
 });
 
+// ============================================
+// TOGGLE NOTIFICACIONES (POST /api/usuarios/toggle-notificaciones)
+// ============================================
+router.post("/toggle-notificaciones", authMiddleware, async (req: AuthRequest, res) => {
+  try {
+    const usuario = await Usuario.findById(req.usuario.id);
+    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+    
+    usuario.notificacionesActivas = !usuario.notificacionesActivas;
+    await usuario.save();
+    
+    res.json({ 
+      success: true, 
+      notificacionesActivas: usuario.notificacionesActivas 
+    });
+  } catch (error) {
+    console.error("Error toggle notificaciones:", error);
+    res.status(500).json({ error: "Error al actualizar notificaciones" });
+  }
+});
+
 export default router;

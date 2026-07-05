@@ -19,6 +19,7 @@ interface IUsuario extends mongoose.Document {
     coordinates: number[];
   };
   pushToken: string | null;
+  notificacionesActivas: boolean;
   compararPassword(password: string): Promise<boolean>;
 }
 
@@ -95,6 +96,11 @@ premiumHasta: {
   pushToken: {
     type: String,
     default: null
+  },
+  
+  notificacionesActivas: {
+    type: Boolean,
+    default: true
   }
   
 }, {
@@ -127,4 +133,4 @@ usuarioSchema.methods.compararPassword = async function(this: IUsuario, password
   }
 };
 
-export const Usuario = mongoose.model("Usuario", usuarioSchema);
+export const Usuario = mongoose.model<IUsuario>("Usuario", usuarioSchema);

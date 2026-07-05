@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 import {
   Bell,
   Map,
@@ -44,6 +45,14 @@ export default function SettingsScreen() {
   const toggleNotificaciones = async (value: boolean) => {
     setNotificaciones(value);
     await AsyncStorage.setItem('notificaciones', String(value));
+    try {
+      const token = await AsyncStorage.getItem('token');
+      await axios.post(`${API_URL}/usuarios/toggle-notificaciones`, {}, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+    } catch (e) {
+      setNotificaciones(!value);
+    }
   };
 
   const elegirRadio = () => {
