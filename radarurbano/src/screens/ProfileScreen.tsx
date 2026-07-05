@@ -157,13 +157,28 @@ const handleLogout = async () => {
 
 
 
-{/* Si es premium, mostrar badge */}
-{limite?.es_premium && (
+{limite?.es_premium ? (
   <View style={styles.premiumCard}>
     <Text style={styles.premiumEmoji}>⭐</Text>
     <Text style={styles.premiumTitle}>Usuario Premium</Text>
-    <Text style={styles.premiumInfo}>Reportes ilimitados</Text>
+    <Text style={styles.premiumInfo}>Reportes ilimitados · Descripción personalizada</Text>
   </View>
+) : (
+  <TouchableOpacity style={styles.premiumUpgrade} onPress={async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      await axios.post(`${API_URL}/usuarios/make-premium`, {}, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      Alert.alert('⭐ ¡Premium!', 'Ahora sos usuario premium. Reiniciá la app para ver los cambios.');
+    } catch (e) {
+      Alert.alert('Error', 'No se pudo activar premium');
+    }
+  }}>
+    <Text style={styles.premiumEmoji}>⭐</Text>
+    <Text style={styles.premiumTitle}>Hacerte Premium</Text>
+    <Text style={styles.premiumInfo}>Reportes ilimitados · Descripción personalizada</Text>
+  </TouchableOpacity>
 )}
 
 
@@ -429,8 +444,17 @@ premiumTitle: {
   fontWeight: 'bold',
   marginBottom: 4,
 },
-premiumInfo: {
-  color: '#8E8E93',
-  fontSize: 12,
-},
+  premiumInfo: {
+    color: '#8E8E93',
+    fontSize: 12,
+  },
+  premiumUpgrade: {
+    backgroundColor: '#FFD70015',
+    margin: 16,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#FFD70040',
+    alignItems: 'center',
+  },
 });
