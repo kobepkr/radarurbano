@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Alert } from 'react-native';
 
 interface EventCardProps {
   title: string;
@@ -26,6 +26,10 @@ interface EventCardProps {
   onLocate?: () => void;
   creadoPorNombre?: string;
   yaConfirmado?: boolean;
+  esPropio?: boolean;
+  onDelete?: () => void;
+  onOcultar?: () => void;
+  onEdit?: () => void;
 }
 
 const categoriaLabels: { [key: string]: string } = {
@@ -55,7 +59,11 @@ export default function EventCard({
   onOpenComments,
   onLocate,
   creadoPorNombre,
-  yaConfirmado
+  yaConfirmado,
+  esPropio,
+  onDelete,
+  onOcultar,
+  onEdit
 }: EventCardProps) {
   
   const getEstadoColor = () => {
@@ -93,6 +101,18 @@ export default function EventCard({
               <Text style={styles.locateIcon}>📍</Text>
             </TouchableOpacity>
           )}
+          <TouchableOpacity onPress={() => {
+            const opciones: { text: string; style?: 'destructive' | 'cancel'; onPress?: () => void }[] = [];
+            if (esPropio) {
+              opciones.push({ text: '🗑️ Eliminar', style: 'destructive', onPress: onDelete });
+            } else {
+              opciones.push({ text: '🙈 Ocultar', onPress: onOcultar });
+            }
+            opciones.push({ text: 'Cancelar', style: 'cancel' });
+            Alert.alert('Opciones', '', opciones as any);
+          }} style={styles.menuButton}>
+            <Text style={styles.menuDots}>⋮</Text>
+          </TouchableOpacity>
           <View style={[styles.estadoBadge, { backgroundColor: getEstadoColor() + '25' }]}>
             <Text style={styles.estadoIcon}>{getEstadoIcon()}</Text>
             <Text style={[styles.estadoText, { color: getEstadoColor() }]}>
@@ -214,6 +234,14 @@ const styles = StyleSheet.create({
   },
   locateIcon: {
     fontSize: 16,
+  },
+  menuButton: {
+    padding: 4,
+  },
+  menuDots: {
+    fontSize: 20,
+    color: '#8E8E93',
+    fontWeight: 'bold',
   },
   estadoIcon: {
     fontSize: 10,

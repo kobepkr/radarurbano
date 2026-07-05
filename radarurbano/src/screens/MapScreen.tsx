@@ -115,6 +115,7 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
   const [ordenActual, setOrdenActual] = useState<string>('recientes');
   const [ordenDropdownOpen, setOrdenDropdownOpen] = useState(false);
   const [reportesConfirmados, setReportesConfirmados] = useState<Set<string>>(new Set());
+  const [userIdActual, setUserIdActual] = useState<string>('');
   const [direcciones, setDirecciones] = useState<{ [key: string]: string }>({});
   const [alertConfig, setAlertConfig] = useState({
     title: '',
@@ -512,6 +513,7 @@ useEffect(() => {
       if (usuarioStr && isMounted) {
         const usuario = JSON.parse(usuarioStr);
         setEsPremium(usuario.premium || false);
+        setUserIdActual(usuario.id || '');
         console.log('👤 Usuario premium:', usuario.premium);
       }
       
@@ -1413,6 +1415,16 @@ const centrarMapa = () => {
           }}
           creadoPorNombre={(reporte as any).creadoPorNombre}
           yaConfirmado={reportesConfirmados.has(reporte._id)}
+          esPropio={(reporte as any).creadoPor === userIdActual}
+          onDelete={() => {
+            Alert.alert('Eliminar', '¿Eliminar este reporte?', [
+              { text: 'Cancelar', style: 'cancel' },
+              { text: 'Eliminar', style: 'destructive', onPress: () => eliminarReporte(reporte._id) },
+            ]);
+          }}
+          onOcultar={() => {
+            setReportes(prev => prev.filter(r => r._id !== reporte._id));
+          }}
         />
     );
   })}
@@ -1422,7 +1434,7 @@ const centrarMapa = () => {
       {/* Modal de opciones */}
       <Modal transparent={true} visible={cardModalVisible} animationType="fade" onRequestClose={() => setCardModalVisible(false)}>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { maxHeight: '80%' }]}>
+          <View style={[styles.modalContent, { maxHeight: 550 }]}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Opciones del reporte</Text>
               <TouchableOpacity onPress={() => setCardModalVisible(false)}>
@@ -1430,7 +1442,6 @@ const centrarMapa = () => {
               </TouchableOpacity>
             </View>
             
-            <ScrollView showsVerticalScrollIndicator={false}>
             {selectedReporte && (
               <>
                 <View style={styles.modernCard}>
@@ -1497,22 +1508,8 @@ const centrarMapa = () => {
                   </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity style={styles.deleteButton} onPress={() => {
-                  if (!selectedReporte?._id) return;
-                  Alert.alert('Eliminar', '¿Eliminar este reporte?', [
-                    { text: 'Cancelar', style: 'cancel' },
-                    { text: 'Eliminar', style: 'destructive', onPress: () => eliminarReporte(selectedReporte._id) },
-                  ]);
-                }}>
-                  <Text style={styles.deleteButtonText}>🗑️ Eliminar reporte</Text>
-                </TouchableOpacity>
-
-              
-
-              
               </>
             )}
-            </ScrollView>
           </View>
         </View>
       </Modal>
