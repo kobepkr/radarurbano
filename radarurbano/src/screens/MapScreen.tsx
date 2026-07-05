@@ -1279,8 +1279,7 @@ const centrarMapa = () => {
             onPress={() => setOrdenDropdownOpen(true)}
           >
             <Text style={styles.regionDropdownText}>
-              {`📋 Orden: ${ordenActual === 'recientes' ? 'Más recientes' :
-               ordenActual === 'confirmados' ? 'Más confirmados' : 'Más cercanos'}`}
+              📋 Ordenar por
             </Text>
             <Text style={styles.regionDropdownArrow}>▼</Text>
           </TouchableOpacity>
