@@ -32,8 +32,9 @@ router.post("/registro", async (req, res) => {
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: "Formato de email inválido" });
     }
-    if (password.length < 6) {
-      return res.status(400).json({ error: "La contraseña debe tener al menos 6 caracteres" });
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ error: "Contraseña: mínimo 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial" });
     }
     if (nombre.trim().length < 4) {
       return res.status(400).json({ error: "El nombre debe tener al menos 4 caracteres" });

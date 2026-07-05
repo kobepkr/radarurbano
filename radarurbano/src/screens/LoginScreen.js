@@ -55,8 +55,9 @@ export default function LoginScreen() {
         Alert.alert('Error', 'Ingresá un correo electrónico válido (ejemplo@correo.com)');
         return;
       }
-      if (password.length < 6) {
-        Alert.alert('Error', 'La contraseña debe tener al menos 6 caracteres');
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+      if (!passwordRegex.test(password)) {
+        Alert.alert('Error', 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial');
         return;
       }
       if (nombre.trim().length < 4) {
