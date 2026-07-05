@@ -66,12 +66,12 @@ const styles = StyleSheet.create({
   },
   pulse: {
     position: 'absolute',
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
   },
   icon: {
-    fontSize: 22,
+    fontSize: 18,
     textAlign: 'center',
   },
 });
