@@ -74,24 +74,37 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       const endpoint = isRegistro ? '/usuarios/registro' : '/usuarios/login';
-      const body = isRegistro 
-        ? { nombre, email, password, telefono }
-        : { email, password };
-
-      const response = await axios.post(`${API_URL}${endpoint}`, body);
       
       if (isRegistro) {
-        setUsuarioIdTemporal(response.data.usuarioId);
-        setCodigoVerificacion('');
-        setMostrarVerificacion(true);
-        Alert.alert('Verificación', `Se envió un código a tu email. Código: ${response.data.codigoVerificacion}`);
-        setLoading(false);
+        Alert.alert(
+          'Verificación de cuenta',
+          'Se enviará un código de 6 dígitos a tu correo electrónico para verificar tu cuenta.',
+          [
+            { text: 'Cancelar', style: 'cancel', onPress: () => setLoading(false) },
+            { text: 'Aceptar', onPress: () => realizarRegistro(endpoint, body) },
+          ]
+        );
         return;
       }
       
+      const response = await axios.post(`${API_URL}${endpoint}`, body);
       await AsyncStorage.setItem('token', response.data.token);
       await AsyncStorage.setItem('usuario', JSON.stringify(response.data.usuario));
       await savePushToken(response.data.usuario.id, response.data.token);
+    } catch (error) {
+      Alert.alert('Error', error.response?.data?.error || 'Error de conexión');
+      setLoading(false);
+    }
+  };
+
+  const realizarRegistro = async (endpoint, body) => {
+    setLoading(true);
+    try {
+      const response = await axios.post(`${API_URL}${endpoint}`, body);
+      setUsuarioIdTemporal(response.data.usuarioId);
+      setCodigoVerificacion('');
+      setMostrarVerificacion(true);
+      Alert.alert('Código enviado', `Se envió un código de 6 dígitos a tu email.\nCódigo de prueba: ${response.data.codigoVerificacion}`);
     } catch (error) {
       Alert.alert('Error', error.response?.data?.error || 'Error de conexión');
     } finally {
