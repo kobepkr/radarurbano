@@ -101,6 +101,12 @@ export default function EventCard({
               <Text style={styles.locateIcon}>📍</Text>
             </TouchableOpacity>
           )}
+          <View style={[styles.estadoBadge, { backgroundColor: getEstadoColor() + '25' }]}>
+            <Text style={styles.estadoIcon}>{getEstadoIcon()}</Text>
+            <Text style={[styles.estadoText, { color: getEstadoColor() }]}>
+              {getEstadoText()}
+            </Text>
+          </View>
           <TouchableOpacity onPress={() => {
             const opciones: { text: string; style?: 'destructive' | 'cancel'; onPress?: () => void }[] = [];
             if (esPropio) {
@@ -113,12 +119,6 @@ export default function EventCard({
           }} style={styles.menuButton}>
             <Text style={styles.menuDots}>⋮</Text>
           </TouchableOpacity>
-          <View style={[styles.estadoBadge, { backgroundColor: getEstadoColor() + '25' }]}>
-            <Text style={styles.estadoIcon}>{getEstadoIcon()}</Text>
-            <Text style={[styles.estadoText, { color: getEstadoColor() }]}>
-              {getEstadoText()}
-            </Text>
-          </View>
         </View>
       </View>
 
