@@ -7,7 +7,8 @@ import {
   TouchableOpacity, 
   Modal, 
   ScrollView, 
-  ActivityIndicator 
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -393,6 +394,20 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
     } catch (error) {
       console.error('Error reportando falso:', error);
       showAlert('❌ Error', 'No se pudo reportar como falso', 'error');
+    }
+  };
+
+  const eliminarReporte = async (id: string) => {
+    try {
+      await axios.delete(`${API_URL}/reportes/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setReportes(prev => prev.map(r => r._id === id ? { ...r, archivado: true, estado: 'falso' } : r));
+      setReportes(prev => prev.filter(r => !r.archivado));
+      setCardModalVisible(false);
+      showAlert('✅ Eliminado', 'Reporte eliminado correctamente', 'success');
+    } catch (error) {
+      showAlert('❌ Error', 'No se pudo eliminar', 'error');
     }
   };
 
@@ -1465,6 +1480,16 @@ const centrarMapa = () => {
                   </TouchableOpacity>
                 </View>
 
+                <TouchableOpacity style={styles.deleteButton} onPress={() => {
+                  if (!selectedReporte?._id) return;
+                  Alert.alert('Eliminar', '¿Eliminar este reporte?', [
+                    { text: 'Cancelar', style: 'cancel' },
+                    { text: 'Eliminar', style: 'destructive', onPress: () => eliminarReporte(selectedReporte._id) },
+                  ]);
+                }}>
+                  <Text style={styles.deleteButtonText}>🗑️ Eliminar reporte</Text>
+                </TouchableOpacity>
+
               
 
 
@@ -1947,8 +1972,21 @@ const styles = StyleSheet.create({
   },
   shareModern: {
     backgroundColor: '#2196F320',
-    borderLeftWidth: 4,
-    borderLeftColor: '#2196F3',
+    borderColor: '#2196F3',
+  },
+  deleteButton: {
+    marginHorizontal: 16,
+    marginTop: 8,
+    padding: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#F4433640',
+    alignItems: 'center',
+  },
+  deleteButtonText: {
+    color: '#F44336',
+    fontSize: 15,
+    fontWeight: '600',
   },
   categoryIconEmoji: {
   fontSize: 20,

@@ -108,6 +108,31 @@ router.get("/:id", async (req, res) => {
   catch (error) { console.error("❌ Error al obtener reporte:", error); res.status(500).json({ error: "Error al obtener reporte" }); }
 });
 
+router.put("/:id", authMiddleware, async (req: AuthRequest, res) => {
+  try {
+    const reporte = await Reporte.findById(req.params.id);
+    if (!reporte) return res.status(404).json({ error: "Reporte no encontrado" });
+    if (reporte.creadoPor.toString() !== req.usuario.id) return res.status(403).json({ error: "Solo el creador puede editar" });
+    const { descripcion } = req.body;
+    if (descripcion) reporte.descripcion = descripcion;
+    await reporte.save();
+    io.emit('reporte-actualizado', reporte);
+    res.json(reporte);
+  } catch (error) { console.error("❌ Error al editar:", error); res.status(500).json({ error: "Error al editar" }); }
+});
+
+router.delete("/:id", authMiddleware, async (req: AuthRequest, res) => {
+  try {
+    const reporte = await Reporte.findById(req.params.id);
+    if (!reporte) return res.status(404).json({ error: "Reporte no encontrado" });
+    if (reporte.creadoPor.toString() !== req.usuario.id) return res.status(403).json({ error: "Solo el creador puede eliminar" });
+    reporte.archivado = true;
+    await reporte.save();
+    io.emit('reporte-actualizado', reporte);
+    res.json({ success: true });
+  } catch (error) { console.error("❌ Error al eliminar:", error); res.status(500).json({ error: "Error al eliminar" }); }
+});
+
 router.post("/:id/confirmar", authMiddleware, async (req: AuthRequest, res) => {
   try {
     const reporte = await Reporte.findById(req.params.id);
