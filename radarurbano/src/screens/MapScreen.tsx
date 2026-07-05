@@ -109,6 +109,8 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
   const [selectedCoordinate, setSelectedCoordinate] = useState<Coordinate | null>(null);
   const [regionSeleccionada, setRegionSeleccionada] = useState(0);
   const [regionDropdownOpen, setRegionDropdownOpen] = useState(false);
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos');
+  const [estadoDropdownOpen, setEstadoDropdownOpen] = useState(false);
   const [direcciones, setDirecciones] = useState<{ [key: string]: string }>({});
   const [alertConfig, setAlertConfig] = useState({
     title: '',
@@ -1169,6 +1171,54 @@ const centrarMapa = () => {
           </View>
         </Modal>
 
+        {/* Filtro de estado */}
+        <View style={{ paddingHorizontal: 16, paddingBottom: 8 }}>
+          <TouchableOpacity 
+            style={styles.regionDropdown}
+            onPress={() => setEstadoDropdownOpen(true)}
+          >
+            <Text style={styles.regionDropdownText}>
+              {filtroEstado === 'todos' ? '📋 Todos los estados' :
+               filtroEstado === 'confirmado' ? '✅ Confirmados' :
+               filtroEstado === 'no_confirmado' ? '⏳ Pendientes' : '❌ Falsos'}
+            </Text>
+            <Text style={styles.regionDropdownArrow}>▼</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Modal de selección de estado */}
+        <Modal visible={estadoDropdownOpen} transparent={true} animationType="slide" onRequestClose={() => setEstadoDropdownOpen(false)}>
+          <View style={styles.regionModalOverlay}>
+            <View style={styles.regionModalContent}>
+              <View style={styles.regionModalHeader}>
+                <Text style={styles.regionModalTitle}>Filtrar por estado</Text>
+                <TouchableOpacity onPress={() => setEstadoDropdownOpen(false)}>
+                  <X size={24} color="#8E8E93" />
+                </TouchableOpacity>
+              </View>
+              {[
+                { key: 'todos', label: '📋 Todos' },
+                { key: 'confirmado', label: '✅ Confirmados' },
+                { key: 'no_confirmado', label: '⏳ Pendientes' },
+                { key: 'falso', label: '❌ Falsos' },
+              ].map(item => (
+                <TouchableOpacity
+                  key={item.key}
+                  style={[styles.regionModalItem, filtroEstado === item.key && styles.regionModalItemActive]}
+                  onPress={() => {
+                    setFiltroEstado(item.key);
+                    setEstadoDropdownOpen(false);
+                  }}
+                >
+                  <Text style={[styles.regionModalItemText, filtroEstado === item.key && styles.regionModalItemTextActive]}>
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </Modal>
+
         <View style={styles.iconRow}>
           <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'todos' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('todos')}>
             <ScrollText size={24} color={filtroCategoria === 'todos' ? '#FFF' : '#8E8E93'} />
@@ -1210,6 +1260,10 @@ const centrarMapa = () => {
       arbolCaido: 'comunidad', cableCaido: 'comunidad', zonaEscolar: 'comunidad',
     };
     return categorias[reporte.tipo] === filtroCategoria;
+  })
+  .filter(reporte => {
+    if (filtroEstado === 'todos') return true;
+    return (reporte.estado || 'no_confirmado') === filtroEstado;
   })
   .map((reporte) => {  // ✅ QUITAR EL INDEX
     const distanciaReal = region ? calcularDistancia(
