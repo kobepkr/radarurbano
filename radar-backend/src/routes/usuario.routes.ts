@@ -352,4 +352,49 @@ router.post("/toggle-notificaciones", authMiddleware, async (req: AuthRequest, r
   }
 });
 
+// ============================================
+// RECUPERAR PASSWORD - SOLICITAR CÓDIGO (POST /api/usuarios/recuperar-password)
+// ============================================
+router.post("/recuperar-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const usuario = await Usuario.findOne({ email });
+    if (!usuario) return res.status(404).json({ error: "Email no encontrado" });
+
+    const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+    usuario.codigoVerificacion = codigo;
+    await usuario.save();
+
+    await enviarCodigoVerificacion(email, codigo).catch(() => {});
+
+    res.json({ message: "Código enviado", usuarioId: usuario._id, codigo: process.env.RESEND_API_KEY ? undefined : codigo });
+  } catch (error) { res.status(500).json({ error: "Error al procesar" }); }
+});
+
+// ============================================
+// RECUPERAR PASSWORD - CONFIRMAR CÓDIGO (POST /api/usuarios/confirmar-recuperacion)
+// ============================================
+router.post("/confirmar-recuperacion", async (req, res) => {
+  try {
+    const { usuarioId, codigo, nuevaPassword } = req.body;
+    const usuario = await Usuario.findById(usuarioId);
+    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    if (usuario.codigoVerificacion !== codigo) {
+      return res.status(400).json({ error: "Código incorrecto" });
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+    if (!passwordRegex.test(nuevaPassword)) {
+      return res.status(400).json({ error: "Contraseña no cumple requisitos" });
+    }
+
+    usuario.password = nuevaPassword;
+    usuario.codigoVerificacion = null;
+    await usuario.save();
+
+    res.json({ message: "Contraseña actualizada" });
+  } catch (error) { res.status(500).json({ error: "Error al actualizar" }); }
+});
+
 export default router;

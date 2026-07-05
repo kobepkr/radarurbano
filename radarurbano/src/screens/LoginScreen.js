@@ -24,6 +24,10 @@ export default function LoginScreen() {
   const [mostrarVerificacion, setMostrarVerificacion] = useState(false);
   const [codigoVerificacion, setCodigoVerificacion] = useState('');
   const [usuarioIdTemporal, setUsuarioIdTemporal] = useState('');
+  const [mostrarRecuperar, setMostrarRecuperar] = useState(false);
+  const [codigoReset, setCodigoReset] = useState('');
+  const [nuevaPassword, setNuevaPassword] = useState('');
+  const [pasoRecuperar, setPasoRecuperar] = useState(0);
   const [mostrarPassword, setMostrarPassword] = useState(false);
 
   const savePushToken = async (userId, token) => {
@@ -101,7 +105,54 @@ export default function LoginScreen() {
     }
   };
 
-  const realizarRegistro = async (endpoint, body) => {
+  const solicitarRecuperacion = async () => {
+    if (!email) {
+      Alert.alert('Error', 'Ingresá tu email');
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await axios.post(`${API_URL}/usuarios/recuperar-password`, { email });
+      setUsuarioIdTemporal(response.data.usuarioId);
+      setCodigoReset('');
+      setPasoRecuperar(1);
+      const msg = response.data.codigo
+        ? `Código enviado a tu email. Código: ${response.data.codigo}`
+        : 'Se envió un código de 6 dígitos a tu email.';
+      Alert.alert('Recuperación', msg);
+    } catch (error) {
+      Alert.alert('Error', error.response?.data?.error || 'Email no encontrado');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const confirmarRecuperacion = async () => {
+    if (codigoReset.length !== 6) {
+      Alert.alert('Error', 'Ingresá el código de 6 dígitos');
+      return;
+    }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+    if (!passwordRegex.test(nuevaPassword)) {
+      Alert.alert('Error', 'La contraseña debe contener:\n\n• Mínimo 8 caracteres\n• Al menos 1 letra mayúscula\n• Al menos 1 letra minúscula\n• Al menos 1 número\n• Al menos 1 carácter especial');
+      return;
+    }
+    setLoading(true);
+    try {
+      await axios.post(`${API_URL}/usuarios/confirmar-recuperacion`, {
+        usuarioId: usuarioIdTemporal,
+        codigo: codigoReset,
+        nuevaPassword,
+      });
+      Alert.alert('Éxito', 'Contraseña actualizada. Iniciá sesión.');
+      setMostrarRecuperar(false);
+      setPasoRecuperar(0);
+    } catch (error) {
+      Alert.alert('Error', error.response?.data?.error || 'Error al cambiar contraseña');
+    } finally {
+      setLoading(false);
+    }
+  };
     setLoading(true);
     try {
       const response = await axios.post(`${API_URL}${endpoint}`, body);
@@ -162,6 +213,60 @@ export default function LoginScreen() {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setMostrarVerificacion(false)}>
           <Text style={styles.link}>Volver</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (mostrarRecuperar) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Recuperar cuenta</Text>
+        
+        {pasoRecuperar === 0 ? (
+          <>
+            <Text style={styles.subtitle}>Ingresá tu email para recibir un código</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor="#999"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <TouchableOpacity style={styles.button} onPress={solicitarRecuperacion} disabled={loading}>
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Enviar código</Text>}
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <Text style={styles.subtitle}>Ingresá el código y tu nueva contraseña</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Código de 6 dígitos"
+              placeholderTextColor="#999"
+              value={codigoReset}
+              onChangeText={setCodigoReset}
+              keyboardType="number-pad"
+              maxLength={6}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Nueva contraseña"
+              placeholderTextColor="#999"
+              value={nuevaPassword}
+              onChangeText={setNuevaPassword}
+              secureTextEntry
+            />
+            <TouchableOpacity style={styles.button} onPress={confirmarRecuperacion} disabled={loading}>
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Cambiar contraseña</Text>}
+            </TouchableOpacity>
+          </>
+        )}
+        
+        <TouchableOpacity onPress={() => { setMostrarRecuperar(false); setPasoRecuperar(0); }}>
+          <Text style={styles.link}>Volver al inicio</Text>
         </TouchableOpacity>
       </View>
     );
@@ -228,6 +333,12 @@ export default function LoginScreen() {
           {isRegistro ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}
         </Text>
       </TouchableOpacity>
+      
+      {!isRegistro && (
+        <TouchableOpacity onPress={() => setMostrarRecuperar(true)}>
+          <Text style={[styles.link, { marginTop: 8 }]}>¿Olvidaste tu contraseña?</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
