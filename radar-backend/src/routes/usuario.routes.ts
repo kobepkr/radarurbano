@@ -28,6 +28,17 @@ router.post("/registro", async (req, res) => {
       });
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: "Formato de email inválido" });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ error: "La contraseña debe tener al menos 6 caracteres" });
+    }
+    if (nombre.trim().length < 2) {
+      return res.status(400).json({ error: "El nombre debe tener al menos 2 caracteres" });
+    }
+
     // Verificar si el usuario ya existe
     const usuarioExistente = await Usuario.findOne({ 
       $or: [{ email }, { telefono }] 

@@ -50,6 +50,27 @@ export default function LoginScreen() {
       return;
     }
 
+    if (isRegistro) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        Alert.alert('Error', 'Ingresá un correo electrónico válido (ejemplo@correo.com)');
+        return;
+      }
+      if (password.length < 6) {
+        Alert.alert('Error', 'La contraseña debe tener al menos 6 caracteres');
+        return;
+      }
+      if (nombre.trim().length < 2) {
+        Alert.alert('Error', 'El nombre debe tener al menos 2 caracteres');
+        return;
+      }
+      const telefonoRegex = /^\+?[0-9]{8,15}$/;
+      if (!telefonoRegex.test(telefono.replace(/\s/g, ''))) {
+        Alert.alert('Error', 'Ingresá un número de teléfono válido');
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       const endpoint = isRegistro ? '/usuarios/registro' : '/usuarios/login';
