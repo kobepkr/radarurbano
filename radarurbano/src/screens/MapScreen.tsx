@@ -167,7 +167,7 @@ const getCategoriaReporte = (tipo: string): string => {
     calleCortada: 'transito', accidente: 'transito', trafico: 'transito',
     objetoPeligroso: 'transito', controlCarabineros: 'transito', obrasEnVia: 'transito',
     calleInundada: 'transito', manifestacion: 'transito', emergenciaVehicular: 'transito',
-    actividadDeportiva: 'transito',
+    actividadDeportiva: 'transito', bache: 'transito',
     asalto: 'seguridad', actitudSospechosa: 'seguridad', balacera: 'seguridad',
     delito: 'seguridad', carabinerosLugar: 'seguridad', patrulla: 'seguridad',
     camaraSeguridad: 'seguridad', zonaOscura: 'seguridad', casaAbandonada: 'seguridad',
@@ -175,7 +175,7 @@ const getCategoriaReporte = (tipo: string): string => {
     accidenteGrave: 'emergencias', bomberosLugar: 'emergencias', personaHerida: 'emergencias',
     rescate: 'emergencias', fenomenoClimatico: 'emergencias', cortoCircuito: 'emergencias',
     derrumbe: 'emergencias', alertaSeguridad: 'emergencias',
-    bache: 'comunidad', corteLuz: 'comunidad', corteAgua: 'comunidad',
+    bache: 'transito', corteLuz: 'comunidad', corteAgua: 'comunidad',
     escombros: 'comunidad', maleza: 'comunidad', perrosCallejeros: 'comunidad',
     veredaMala: 'comunidad', mueblesAbandonados: 'comunidad', autoAbandonado: 'comunidad',
     arbolCaido: 'comunidad', cableCaido: 'comunidad', zonaEscolar: 'comunidad',
@@ -211,7 +211,7 @@ const getNombreTipo = (tipo: string): string => {
 
 const getIconoPorTipo = (tipo: string): string => {
   const iconos: { [key: string]: string } = {
-    embotellamiento: '🚗🚗🚗', choque: '💥', semaforoRoto: '🚦❌',
+    embotellamiento: '🚗', choque: '💥', semaforoRoto: '🚦❌',
     calleCortada: '🚧', accidente: '💥', trafico: '🚗',
     objetoPeligroso: '⚠️', controlCarabineros: '👮‍♂️🚔',
     obrasEnVia: '🏗️', calleInundada: '💧🚗',
@@ -902,7 +902,7 @@ const centrarMapa = () => {
           </View>
           <View style={styles.modernOptionsGrid}>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('embotellamiento', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>🚗🚗🚗</Text>
+              <Text style={styles.optionEmoji}>🚗</Text>
               <Text style={styles.modernOptionText}>Embotellamiento</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('choque', region)} disabled={loadingReporte}>
@@ -944,6 +944,10 @@ const centrarMapa = () => {
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('actividadDeportiva', region)} disabled={loadingReporte}>
               <Text style={styles.optionEmoji}>🏃‍♂️</Text>
               <Text style={styles.modernOptionText}>Actividad deportiva</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('bache', region)} disabled={loadingReporte}>
+              <Text style={styles.optionEmoji}>🕳️</Text>
+              <Text style={styles.modernOptionText}>Bache</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -1047,10 +1051,6 @@ const centrarMapa = () => {
             <Text style={styles.categorySectionTitle}>COMUNIDAD</Text>
           </View>
           <View style={styles.modernOptionsGrid}>
-            <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('bache', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>🕳️</Text>
-              <Text style={styles.modernOptionText}>Bache</Text>
-            </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('corteLuz', region)} disabled={loadingReporte}>
               <Text style={styles.optionEmoji}>💡❌</Text>
               <Text style={styles.modernOptionText}>Corte de luz</Text>
@@ -1206,7 +1206,7 @@ const centrarMapa = () => {
       accidenteGrave: 'emergencias', bomberosLugar: 'emergencias', personaHerida: 'emergencias',
       rescate: 'emergencias', fenomenoClimatico: 'emergencias', cortoCircuito: 'emergencias',
       derrumbe: 'emergencias', alertaSeguridad: 'emergencias',
-      bache: 'comunidad', corteLuz: 'comunidad', corteAgua: 'comunidad',
+      bache: 'transito', corteLuz: 'comunidad', corteAgua: 'comunidad',
       escombros: 'comunidad', maleza: 'comunidad', perrosCallejeros: 'comunidad',
       veredaMala: 'comunidad', mueblesAbandonados: 'comunidad', autoAbandonado: 'comunidad',
       arbolCaido: 'comunidad', cableCaido: 'comunidad', zonaEscolar: 'comunidad',

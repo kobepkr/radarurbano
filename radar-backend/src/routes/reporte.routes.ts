@@ -23,7 +23,7 @@ const categoriaMap: { [key: string]: string } = {
   inundacion: "emergencias", accidenteGrave: "emergencias", bomberosLugar: "emergencias",
   personaHerida: "emergencias", rescate: "emergencias", fenomenoClimatico: "emergencias",
   cortoCircuito: "emergencias", derrumbe: "emergencias", alertaSeguridad: "emergencias",
-  bache: "comunidad", corteLuz: "comunidad", corteAgua: "comunidad",
+  bache: "transito", corteLuz: "comunidad", corteAgua: "comunidad",
   escombros: "comunidad", maleza: "comunidad", perrosCallejeros: "comunidad",
   veredaMala: "comunidad", mueblesAbandonados: "comunidad", autoAbandonado: "comunidad",
   arbolCaido: "comunidad", cableCaido: "comunidad", zonaEscolar: "comunidad"
