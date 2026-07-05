@@ -1422,7 +1422,7 @@ const centrarMapa = () => {
       {/* Modal de opciones */}
       <Modal transparent={true} visible={cardModalVisible} animationType="fade" onRequestClose={() => setCardModalVisible(false)}>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { maxHeight: 550 }]}>
+          <View style={[styles.modalContent, { maxHeight: '80%' }]}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Opciones del reporte</Text>
               <TouchableOpacity onPress={() => setCardModalVisible(false)}>
@@ -1994,11 +1994,12 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     marginHorizontal: 16,
-    marginTop: 8,
+    marginTop: 12,
     padding: 14,
     borderRadius: 12,
+    backgroundColor: '#F4433615',
     borderWidth: 1,
-    borderColor: '#F4433640',
+    borderColor: '#F44336',
     alignItems: 'center',
   },
   deleteButtonText: {
