@@ -46,7 +46,7 @@ const cargarDatosUsuario = async () => {
     setUser(usuario);
 
     // Cargar reportes
-    const response = await axios.get(`${API_URL}/reportes/filtros?creadoPor=${usuario.id}`, {
+    const response = await axios.get(`${API_URL}/reportes/filtros?creadoPor=${usuario.id}&limit=1000`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
