@@ -75,6 +75,9 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       const endpoint = isRegistro ? '/usuarios/registro' : '/usuarios/login';
+      const body = isRegistro 
+        ? { nombre, email, password, telefono }
+        : { email, password };
       
       if (isRegistro) {
         Alert.alert(
