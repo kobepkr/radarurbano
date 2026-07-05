@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, View, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { Marker } from 'react-native-maps';
 
 interface PulseMarkerProps {
@@ -13,44 +13,13 @@ interface PulseMarkerProps {
 }
 
 export default function PulseMarker({ coordinate, color, icono, onPress }: PulseMarkerProps) {
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    const animation = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.5,
-          duration: 1200,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1200,
-          useNativeDriver: true,
-        }),
-      ])
-    );
-    animation.start();
-    return () => animation.stop();
-  }, []);
-
   return (
     <Marker
       coordinate={coordinate}
       onPress={onPress}
       anchor={{ x: 0.5, y: 0.5 }}
     >
-      <View style={styles.container}>
-        <Animated.View
-          style={[
-            styles.pulse,
-            {
-              backgroundColor: color,
-              opacity: 0.25,
-              transform: [{ scale: pulseAnim }],
-            },
-          ]}
-        />
+      <View style={[styles.container, { borderColor: color }]}>
         <Text style={styles.icon}>{icono}</Text>
       </View>
     </Marker>
@@ -59,16 +28,13 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
 
 const styles = StyleSheet.create({
   container: {
-    width: 40,
-    height: 40,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#1C1C1E',
+    borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  pulse: {
-    position: 'absolute',
-    width: 28,
-    height: 28,
-    borderRadius: 14,
   },
   icon: {
     fontSize: 18,
