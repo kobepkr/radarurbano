@@ -140,7 +140,7 @@ export default function EventCard({
       {/* Tiempo */}
       <Text style={styles.time}>{time}</Text>
       {creadoPorNombre ? (
-        <Text style={styles.creadoPor}>📢 Publicado por {creadoPorNombre}</Text>
+        <Text style={styles.creadoPor}>📢 Publicado por {creadoPorNombre}{esPremium ? ' ⭐' : ''}</Text>
       ) : null}
 
       {/* Descripción */}

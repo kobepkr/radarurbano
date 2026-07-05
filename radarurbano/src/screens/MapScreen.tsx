@@ -8,7 +8,8 @@ import {
   Modal, 
   ScrollView, 
   ActivityIndicator,
-  Alert
+  Alert,
+  TextInput
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -106,6 +107,7 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
   const [esPremium, setEsPremium] = useState(false);
   const [commentModalVisible, setCommentModalVisible] = useState(false);
   const [reporteParaComentar, setReporteParaComentar] = useState<Reporte | null>(null);
+  const [descripcionCustom, setDescripcionCustom] = useState('');
   const [userLocation, setUserLocation] = useState<Coordinate | null>(null);
   const [selectedCoordinate, setSelectedCoordinate] = useState<Coordinate | null>(null);
   const [regionSeleccionada, setRegionSeleccionada] = useState(0);
@@ -282,9 +284,13 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
   
   try {
     if (isOnline) {
+      const desc = esPremium && descripcionCustom.trim()
+        ? descripcionCustom.trim()
+        : `Reporte de ${getNombreTipo(tipo)}`;
+      
       const response: AxiosResponse<Reporte> = await axios.post(`${API_URL}/reportes`, {
         tipo,
-        descripcion: `Reporte de ${tipo}`,
+        descripcion: desc,
         lat: targetCoord.latitude,
         lng: targetCoord.longitude
       }, {
@@ -295,6 +301,7 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
       setReportes(prev => [nuevoReporte, ...prev]);
       setModalVisible(false);
       setSelectedCoordinate(null);
+      setDescripcionCustom('');
       await AsyncStorage.setItem('ultimaFechaReporte', new Date().toISOString().split('T')[0]);
       mapRef.current?.animateToRegion({
         latitude: targetCoord.latitude,
@@ -942,6 +949,20 @@ const centrarMapa = () => {
           </TouchableOpacity>
         )}
       </View>
+
+      {esPremium && (
+        <View style={{ marginBottom: 16 }}>
+          <TextInput
+            style={styles.descripcionInput}
+            placeholder="Describí la alerta (opcional, máx 200 caracteres)"
+            placeholderTextColor="#8E8E93"
+            value={descripcionCustom}
+            onChangeText={setDescripcionCustom}
+            maxLength={200}
+            multiline
+          />
+        </View>
+      )}
 
       <Text style={styles.sectionTitle}>Categorías</Text>
       
@@ -2025,7 +2046,16 @@ customLocationButton: {
   zIndex: 1,
 },
 customLocationButtonText: {
-  fontSize: 14,  // Esto sí funciona con emoji
+  fontSize: 14,
   color: 'white',
+},
+descripcionInput: {
+  backgroundColor: '#2C2C2E',
+  borderRadius: 12,
+  padding: 12,
+  color: '#FFFFFF',
+  fontSize: 14,
+  minHeight: 50,
+  textAlignVertical: 'top',
 },
 });
