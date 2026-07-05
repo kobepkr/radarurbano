@@ -25,11 +25,79 @@ import {
 
 const API_URL = 'https://radarurbano-1.onrender.com/api';
 
+const terminosCondiciones = `TÉRMINOS Y CONDICIONES DE USO
+
+Última actualización: Julio 2026
+
+1. ACEPTACIÓN DE LOS TÉRMINOS
+Al descargar y usar la aplicación Radar Urbano, aceptás estos términos y condiciones. Si no estás de acuerdo, no uses la aplicación.
+
+2. DESCRIPCIÓN DEL SERVICIO
+Radar Urbano es una plataforma comunitaria para reportar y visualizar incidentes urbanos como accidentes de tránsito, emergencias, problemas de seguridad y servicios comunitarios. Los usuarios pueden crear alertas, confirmarlas, comentar y reaccionar.
+
+3. USO RESPONSABLE
+• No publiques información falsa o engañosa.
+• No uses la app para acosar, amenazar o difamar a otros.
+• No publiques contenido ilegal, violento o inapropiado.
+• Respetá la privacidad de terceros.
+
+4. CUENTA DE USUARIO
+Sos responsable de mantener la confidencialidad de tu cuenta y contraseña. Cualquier actividad bajo tu cuenta es tu responsabilidad.
+
+5. CONTENIDO GENERADO POR USUARIOS
+Los reportes y comentarios son responsabilidad de quien los publica. Radar Urbano no verifica la exactitud de la información. Las alertas falsas pueden resultar en la suspensión de tu cuenta.
+
+6. LIMITACIÓN DE RESPONSABILIDAD
+Radar Urbano se proporciona "tal cual". No garantizamos la disponibilidad continua del servicio ni la exactitud de los reportes. No somos responsables por daños derivados del uso de la app.
+
+7. MODIFICACIONES
+Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios entrarán en vigor al publicarse.
+
+8. CONTACTO
+Para consultas: victorlabbe26@gmail.com`;
+
+const politicaPrivacidad = `POLÍTICA DE PRIVACIDAD
+
+Última actualización: Julio 2026
+
+1. INFORMACIÓN QUE RECOPILAMOS
+• Datos de registro: nombre, email, teléfono.
+• Datos de ubicación: para mostrar alertas cercanas y enviar notificaciones relevantes.
+• Contenido que publicás: reportes, comentarios, reacciones.
+• Token de dispositivo: para enviar notificaciones push.
+
+2. USO DE LA INFORMACIÓN
+• Mostrar y crear alertas en el mapa.
+• Enviar notificaciones push sobre alertas cercanas (solo si las tenés activadas).
+• Mejorar la calidad del servicio.
+• Prevenir fraudes y usos indebidos.
+
+3. COMPARTIR INFORMACIÓN
+No vendemos tus datos personales. Compartimos información solo en estos casos:
+• Con otros usuarios: tu nombre aparece en los reportes y comentarios que publicás.
+• Por obligación legal: si una autoridad lo requiere con orden judicial.
+
+4. ALMACENAMIENTO
+Tus datos se almacenan en servidores seguros con MongoDB Atlas y Render. Implementamos medidas de seguridad para proteger tu información.
+
+5. TUS DERECHOS
+• Acceder a tus datos personales.
+• Solicitar la eliminación de tu cuenta y datos.
+• Desactivar notificaciones push desde Configuración.
+• Modificar tus preferencias de ubicación.
+
+6. ELIMINACIÓN DE DATOS
+Podés eliminar tu cuenta desde Configuración. Esto borrará tu perfil, pero los reportes y comentarios que hayas creado permanecerán de forma anónima.
+
+7. CONTACTO
+Para ejercer tus derechos o consultas: victorlabbe26@gmail.com`;
+
 export default function SettingsScreen() {
   const navigation = useNavigation();
   const [notificaciones, setNotificaciones] = useState(true);
   const [radioBusqueda, setRadioBusqueda] = useState(50);
   const [radioModalOpen, setRadioModalOpen] = useState(false);
+  const [legalModal, setLegalModal] = useState<'terminos' | 'privacidad' | null>(null);
   const [regionDefault, setRegionDefault] = useState('Mi ubicación');
 
   useEffect(() => {
@@ -125,13 +193,13 @@ export default function SettingsScreen() {
 
       <Text style={styles.sectionTitle}>Legal</Text>
 
-      <TouchableOpacity style={styles.item}>
+      <TouchableOpacity style={styles.item} onPress={() => setLegalModal('terminos')}>
         <FileText size={22} color="#8E8E93" />
         <Text style={styles.itemText}>Términos y condiciones</Text>
         <ChevronRight size={18} color="#8E8E93" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.item}>
+      <TouchableOpacity style={styles.item} onPress={() => setLegalModal('privacidad')}>
         <Shield size={22} color="#8E8E93" />
         <Text style={styles.itemText}>Política de privacidad</Text>
         <ChevronRight size={18} color="#8E8E93" />
@@ -171,6 +239,25 @@ export default function SettingsScreen() {
 
             <TouchableOpacity style={styles.sliderButton} onPress={() => setRadioModalOpen(false)}>
               <Text style={styles.sliderButtonText}>Listo</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal Legal */}
+      <Modal visible={legalModal !== null} transparent={true} animationType="slide" onRequestClose={() => setLegalModal(null)}>
+        <View style={styles.sliderOverlay}>
+          <View style={[styles.sliderContent, { maxHeight: '80%' }]}>
+            <Text style={styles.sliderTitle}>
+              {legalModal === 'terminos' ? 'Términos y condiciones' : 'Política de privacidad'}
+            </Text>
+            <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={true}>
+              <Text style={styles.legalText}>
+                {legalModal === 'terminos' ? terminosCondiciones : politicaPrivacidad}
+              </Text>
+            </ScrollView>
+            <TouchableOpacity style={styles.sliderButton} onPress={() => setLegalModal(null)}>
+              <Text style={styles.sliderButtonText}>Cerrar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -323,5 +410,11 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  legalText: {
+    color: '#CCCCCC',
+    fontSize: 14,
+    lineHeight: 22,
+    paddingHorizontal: 4,
   },
 });
