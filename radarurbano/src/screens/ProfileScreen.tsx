@@ -178,7 +178,7 @@ const handleLogout = async () => {
   }}>
     <Text style={styles.premiumEmoji}>⭐</Text>
     <Text style={styles.premiumTitle}>Hacerte Premium</Text>
-    <Text style={styles.premiumInfo}>Reportes ilimitados · Descripción personalizada</Text>
+    <Text style={styles.premiumInfo}>$2.990/mes · Reportes ilimitados · Descripción personalizada</Text>
   </TouchableOpacity>
 )}
 
