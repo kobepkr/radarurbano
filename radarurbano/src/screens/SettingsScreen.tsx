@@ -112,12 +112,6 @@ Por solo $2.990/mes obtenés:
 • Borde dorado en tus reportes.
 • Insignia ⭐ en tu perfil y en tus publicaciones.
 
-📊 PRÓXIMAMENTE
-• Estadísticas avanzadas y mapas de calor.
-• Filtros por fecha y tipo de alerta.
-• Notificaciones personalizadas.
-• Exportación de datos.
-
 ¿Preguntas? Escribinos a victorlabbe26@gmail.com`;
 
 export default function SettingsScreen() {
