@@ -31,7 +31,7 @@ export const crearOrdenPago = async (usuarioId: string, email: string) => {
     commerceOrder,
     subject: "Radar Urbano Premium",
     currency: "CLP",
-    amount: "4990",
+    amount: "2900",
     email,
     urlConfirmation: `${process.env.BACKEND_URL || "https://radarurbano-1.onrender.com"}/api/usuarios/flow-confirm`,
     urlReturn: `${process.env.BACKEND_URL || "https://radarurbano-1.onrender.com"}/api/usuarios/flow-return`,
