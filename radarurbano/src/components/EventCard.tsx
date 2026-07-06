@@ -91,7 +91,7 @@ export default function EventCard({
   };
 
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
+    <TouchableOpacity style={[styles.card, esPremium && styles.cardPremium]} onPress={onPress}>
       {/* Tipo + Estado + Locate */}
       <View style={styles.headerRow}>
         <Text style={styles.title}>{title}</Text>
@@ -207,6 +207,10 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     marginHorizontal: 16,
     marginBottom: 10,
+  },
+  cardPremium: {
+    borderWidth: 1,
+    borderColor: '#FFD700',
   },
   headerRow: {
     flexDirection: 'row',

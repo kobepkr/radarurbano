@@ -891,7 +891,7 @@ const centrarMapa = () => {
           <Menu size={28} color={mapaOscuro ? "#FFF" : "#000"} />
         </TouchableOpacity>
         
-        <Text style={[styles.headerTitle, { color: '#DC2626' }]}>RADAR URBANO</Text>
+        <Text style={[styles.headerTitle, { color: '#DC2626' }]}>RADAR URBANO{esPremium ? ' ⭐' : ''}</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
           <User size={28} color={mapaOscuro ? "#FFF" : "#000"} />
         </TouchableOpacity>
