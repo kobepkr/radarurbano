@@ -229,10 +229,10 @@ export default function SettingsScreen() {
 
             <View style={styles.sliderTrack}>
               {(() => {
+                const values = esPremium 
+                  ? [10, 50, 100, 200, 300, 400, 500]
+                  : [10, 25, 50, 75, 100];
                 const maxR = esPremium ? 500 : 100;
-                const step = esPremium ? 25 : 10;
-                const values: number[] = [];
-                for (let v = 10; v <= maxR; v += step) values.push(v);
                 const fillPct = ((radioBusqueda - 10) / (maxR - 10)) * 100;
                 return (
                   <>
