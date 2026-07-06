@@ -17,6 +17,13 @@ const firmar = (params: Record<string, string>, secretKey: string): string => {
 export const crearOrdenPago = async (usuarioId: string, email: string) => {
   const apiKey = process.env.FLOW_API_KEY || "";
   const secretKey = process.env.FLOW_SECRET_KEY || "";
+  const sandbox = process.env.FLOW_SANDBOX || "";
+  console.log(`🔑 Flow API Key: ${apiKey.substring(0, 8)}... Sandbox: ${sandbox}`);
+  
+  if (!apiKey || !secretKey) {
+    console.error("❌ Flow: API Key o Secret Key no configurados");
+    return null;
+  }
   const commerceOrder = `premium_${usuarioId}_${Date.now()}`;
 
   const params: Record<string, string> = {
