@@ -2,6 +2,7 @@ import express from "express";
 import { Reporte, IReporte } from "../models/reporte";
 import { authMiddleware, AuthRequest } from "../middlewares/auth.middleware";
 import { Usuario } from "../models/Usuario";
+import { ReporteDiario } from "../models/ReporteDiario";
 import { io } from '../index'; 
 import { verificarLimiteReportes } from "../middlewares/limiteReportes.middleware";
 
@@ -92,6 +93,13 @@ router.post("/", authMiddleware, verificarLimiteReportes, async (req: AuthReques
     const creador = await Usuario.findById(req.usuario.id, 'nombre');
     const nuevoReporte = new Reporte({ categoria: categoriaMap[tipo], tipo, descripcion, ubicacion: { coordinates: [lng, lat] }, expiraEn, creadoPor: req.usuario.id, creadoPorNombre: creador?.nombre || 'Anónimo' });
     await nuevoReporte.save();
+
+    const hoy = new Date().toISOString().split('T')[0];
+    await ReporteDiario.findOneAndUpdate(
+      { usuarioId: req.usuario.id, fecha: hoy },
+      { $inc: { contador: 1 } },
+      { upsert: true }
+    );
     try {
       const usuariosCerca = await Usuario.find({ ubicacion: { $near: { $geometry: { type: "Point", coordinates: [lng, lat] }, $maxDistance: 50000 } }, pushToken: { $exists: true, $ne: null }, notificacionesActivas: true, _id: { $ne: req.usuario.id } });
       for (const usuario of usuariosCerca) {

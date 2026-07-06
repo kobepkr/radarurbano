@@ -108,8 +108,8 @@ Por solo $2.990/mes obtenés:
 
 ✨ FUNCIONES AVANZADAS
 • Reportes ilimitados (normal: 5 por día).
+• Sin límite de vistas de alertas y comentarios.
 • Descripción personalizada en tus alertas.
-• Vista ilimitada de detalles y comentarios.
 • Borde dorado en tus reportes.
 • Insignia ⭐ en tu perfil y en tus publicaciones.
 
