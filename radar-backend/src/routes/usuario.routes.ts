@@ -4,7 +4,7 @@ import { Usuario } from "../models/Usuario";
 import { authMiddleware, AuthRequest } from "../middlewares/auth.middleware";
 import { ReporteDiario } from "../models/ReporteDiario";
 import { enviarCodigoVerificacion } from "../config/email";
-import { crearSesionCheckout } from "../config/stripe";
+import { crearOrdenPago, verificarFirmaFlow } from "../config/flow";
 
 const router = express.Router();
 
@@ -399,19 +399,56 @@ router.post("/confirmar-recuperacion", async (req, res) => {
 });
 
 // ============================================
-// CREAR CHECKOUT DE STRIPE (POST /api/usuarios/checkout-premium)
+// CREAR PAGO FLOW (POST /api/usuarios/checkout-premium)
 // ============================================
 router.post("/checkout-premium", authMiddleware, async (req: AuthRequest, res) => {
   try {
     const usuario = await Usuario.findById(req.usuario.id);
     if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
 
-    const url = await crearSesionCheckout(usuario._id.toString(), usuario.email);
-    res.json({ url });
+    const url = await crearOrdenPago(req.usuario.id, usuario.email);
+    if (url) res.json({ url });
+    else res.status(500).json({ error: "Error al crear pago" });
   } catch (error) {
     console.error("Error checkout:", error);
     res.status(500).json({ error: "Error al crear checkout" });
   }
+});
+
+// ============================================
+// FLOW CONFIRMACIÓN (POST /api/usuarios/flow-confirm)
+// ============================================
+router.post("/flow-confirm", async (req, res) => {
+  try {
+    const params = req.body;
+    if (!verificarFirmaFlow(params)) {
+      return res.status(400).json({ error: "Firma inválida" });
+    }
+
+    if (params.status === "2") {
+      const commerceOrder = params.commerceOrder || "";
+      const match = commerceOrder.match(/^premium_(.+?)_/);
+      if (match) {
+        await Usuario.findByIdAndUpdate(match[1], {
+          premium: true,
+          premiumDesde: new Date(),
+          premiumHasta: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+        });
+        console.log(`✅ Premium activado para usuario ${match[1]}`);
+      }
+    }
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error flow confirm:", error);
+    res.status(500).json({ error: "Error" });
+  }
+});
+
+// ============================================
+// FLOW RETURN (GET/POST /api/usuarios/flow-return)
+// ============================================
+router.get("/flow-return", (req, res) => {
+  res.send("<h1>✅ ¡Gracias por tu compra!</h1><p>Volvé a la app e iniciá sesión de nuevo para ver tus beneficios premium.</p>");
 });
 
 export default router;
