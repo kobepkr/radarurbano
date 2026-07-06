@@ -277,9 +277,11 @@ const getIconoPorTipo = (tipo: string): string => {
   const cargarReportes = async (lat: number, lng: number, radio: number = 50) => {
     const storedRadio = await AsyncStorage.getItem('radioBusqueda');
     const radioKm = storedRadio ? Number(storedRadio) : radio;
+    const maxRadio = esPremium ? 500 : 100;
+    const radioFinal = Math.min(radioKm, maxRadio);
     try {
       const response: AxiosResponse<Reporte[]> = await axios.get(`${API_URL}/reportes/cercanos`, {
-        params: { lat, lng, radio: radioKm }
+        params: { lat, lng, radio: radioFinal }
       });
       
       const reportesLimpios = response.data.map(reporte => ({
