@@ -282,7 +282,7 @@ router.post("/make-premium", authMiddleware, async (req: AuthRequest, res) => {
       { 
         premium: true, 
         premiumDesde: new Date(),
-        premiumHasta: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+        premiumHasta: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
       },
       { new: true }
     );
@@ -432,7 +432,7 @@ router.post("/flow-confirm", async (req, res) => {
         await Usuario.findByIdAndUpdate(match[1], {
           premium: true,
           premiumDesde: new Date(),
-          premiumHasta: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+          premiumHasta: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         });
         console.log(`✅ Premium activado para usuario ${match[1]}`);
       }
