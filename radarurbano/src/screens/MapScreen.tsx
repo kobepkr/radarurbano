@@ -180,9 +180,15 @@ const getCategoriaReporte = (tipo: string): string => {
     objetoPeligroso: 'transito', controlCarabineros: 'transito', obrasEnVia: 'transito',
     calleInundada: 'transito', manifestacion: 'transito', emergenciaVehicular: 'transito',
     actividadDeportiva: 'transito', bache: 'transito',
+    reduccionCarril: 'transito', carreraIlegal: 'transito', semaforoApagado: 'transito',
+    barreraPeaje: 'transito', camionVolcado: 'transito', autoPanne: 'transito',
+    gruaEnVia: 'transito', pasoSinLuz: 'transito', motoEnVereda: 'transito', autoAltaVelocidad: 'transito',
     asalto: 'seguridad', actitudSospechosa: 'seguridad', balacera: 'seguridad',
     delito: 'seguridad', carabinerosLugar: 'seguridad', patrulla: 'seguridad',
     camaraSeguridad: 'seguridad', zonaOscura: 'seguridad', casaAbandonada: 'seguridad',
+    alarmaVecinal: 'seguridad', intentoRobo: 'seguridad', personaMerodeando: 'seguridad',
+    autoRobado: 'seguridad', camaraFalsa: 'seguridad', carabineroBici: 'seguridad',
+    controlIdentidad: 'seguridad', ocupacionIlegal: 'seguridad', gritosCalle: 'seguridad',
     incendio: 'emergencias', inundacion: 'emergencias', clima: 'emergencias',
     accidenteGrave: 'emergencias', bomberosLugar: 'emergencias', personaHerida: 'emergencias',
     rescate: 'emergencias', fenomenoClimatico: 'emergencias', cortoCircuito: 'emergencias',
@@ -1193,6 +1199,98 @@ const centrarMapa = () => {
             </TouchableOpacity>
           </View>
         </View>
+        {esPremium && (
+          <View style={{ marginTop: 8, borderTopWidth: 1, borderTopColor: '#3A3A3C', paddingTop: 12 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8, paddingHorizontal: 4 }}>
+              <Text style={{ fontSize: 18 }}>⭐</Text>
+              <Text style={{ color: '#FFD700', fontSize: 14, fontWeight: 'bold' }}>ALERTAS PREMIUM</Text>
+            </View>
+
+            <View style={styles.categorySection}>
+              <View style={styles.categoryHeader}>
+                <Text style={styles.categoryIconEmoji}>🐾</Text>
+                <Text style={styles.categorySectionTitle}>MASCOTAS</Text>
+              </View>
+              <View style={styles.modernOptionsGrid}>
+                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('perroPerdido', region)} disabled={loadingReporte}>
+                  <Text style={styles.optionEmoji}>🐕🔍</Text>
+                  <Text style={styles.modernOptionText}>Perro perdido</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('gatoPerdido', region)} disabled={loadingReporte}>
+                  <Text style={styles.optionEmoji}>🐈🔍</Text>
+                  <Text style={styles.modernOptionText}>Gato perdido</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('animalAgresivo', region)} disabled={loadingReporte}>
+                  <Text style={styles.optionEmoji}>🐕⚠️</Text>
+                  <Text style={styles.modernOptionText}>Animal agresivo</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.categorySection}>
+              <View style={styles.categoryHeader}>
+                <Text style={styles.categoryIconEmoji}>🌳</Text>
+                <Text style={styles.categorySectionTitle}>MEDIO AMBIENTE</Text>
+              </View>
+              <View style={styles.modernOptionsGrid}>
+                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('fugaGas', region)} disabled={loadingReporte}>
+                  <Text style={styles.optionEmoji}>💨🔥</Text>
+                  <Text style={styles.modernOptionText}>Fuga de gas</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('incendioForestal', region)} disabled={loadingReporte}>
+                  <Text style={styles.optionEmoji}>🧯🌳</Text>
+                  <Text style={styles.modernOptionText}>Incendio forestal</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('talaIlegal', region)} disabled={loadingReporte}>
+                  <Text style={styles.optionEmoji}>🪓🌳</Text>
+                  <Text style={styles.modernOptionText}>Tala ilegal</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.categorySection}>
+              <View style={styles.categoryHeader}>
+                <Text style={styles.categoryIconEmoji}>🛠️</Text>
+                <Text style={styles.categorySectionTitle}>SERVICIOS</Text>
+              </View>
+              <View style={styles.modernOptionsGrid}>
+                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('internetCaido', region)} disabled={loadingReporte}>
+                  <Text style={styles.optionEmoji}>📡❌</Text>
+                  <Text style={styles.modernOptionText}>Internet caído</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('posteDanado', region)} disabled={loadingReporte}>
+                  <Text style={styles.optionEmoji}>💡❌</Text>
+                  <Text style={styles.modernOptionText}>Poste dañado</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('transportePublico', region)} disabled={loadingReporte}>
+                  <Text style={styles.optionEmoji}>🚌</Text>
+                  <Text style={styles.modernOptionText}>Transporte público</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.categorySection}>
+              <View style={styles.categoryHeader}>
+                <Text style={styles.categoryIconEmoji}>🏙️</Text>
+                <Text style={styles.categorySectionTitle}>URBANISMO</Text>
+              </View>
+              <View style={styles.modernOptionsGrid}>
+                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('construccion', region)} disabled={loadingReporte}>
+                  <Text style={styles.optionEmoji}>🏗️</Text>
+                  <Text style={styles.modernOptionText}>Construcción</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('cierreCalle', region)} disabled={loadingReporte}>
+                  <Text style={styles.optionEmoji}>🚧</Text>
+                  <Text style={styles.modernOptionText}>Cierre de calle</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('ciclovia', region)} disabled={loadingReporte}>
+                  <Text style={styles.optionEmoji}>🚲</Text>
+                  <Text style={styles.modernOptionText}>Ciclovía</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
         <View style={{ height: 20 }} />
       </ScrollView>
 
@@ -1377,6 +1475,22 @@ const centrarMapa = () => {
           <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'comunidad' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('comunidad')}>
             <Home size={24} color={filtroCategoria === 'comunidad' ? '#FFF' : '#8E8E93'} />
           </TouchableOpacity>
+          {esPremium && (
+            <>
+              <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'mascotas' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('mascotas')}>
+                <Text style={{ fontSize: 18, color: filtroCategoria === 'mascotas' ? '#FFF' : '#8E8E93' }}>🐾</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'ambiente' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('ambiente')}>
+                <Text style={{ fontSize: 18, color: filtroCategoria === 'ambiente' ? '#FFF' : '#8E8E93' }}>🌳</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'servicios' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('servicios')}>
+                <Text style={{ fontSize: 18, color: filtroCategoria === 'servicios' ? '#FFF' : '#8E8E93' }}>🛠️</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'urbanismo' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('urbanismo')}>
+                <Text style={{ fontSize: 18, color: filtroCategoria === 'urbanismo' ? '#FFF' : '#8E8E93' }}>🏙️</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
 
         <BottomSheetScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.cardsContainerVertical}>
@@ -1404,11 +1518,28 @@ const centrarMapa = () => {
       incendio: 'emergencias', inundacion: 'emergencias', clima: 'emergencias',
       accidenteGrave: 'emergencias', bomberosLugar: 'emergencias', personaHerida: 'emergencias',
       rescate: 'emergencias', fenomenoClimatico: 'emergencias', cortoCircuito: 'emergencias',
-      derrumbe: 'emergencias', alertaSeguridad: 'emergencias',
+    derrumbe: 'emergencias', alertaSeguridad: 'emergencias',
+    ambulanciaLugar: 'emergencias', rescateAcuatico: 'emergencias', rescateAltura: 'emergencias',
+    fugaGas: 'emergencias', derrumbeParcial: 'emergencias', tornado: 'emergencias',
+    incendioForestal: 'emergencias', alarmaIncendio: 'emergencias',
       bache: 'transito', corteLuz: 'comunidad', corteAgua: 'comunidad',
       escombros: 'comunidad', maleza: 'comunidad', perrosCallejeros: 'comunidad',
       veredaMala: 'comunidad', mueblesAbandonados: 'comunidad', autoAbandonado: 'comunidad',
-      arbolCaido: 'comunidad', cableCaido: 'comunidad', zonaEscolar: 'comunidad',
+    arbolCaido: 'comunidad', cableCaido: 'comunidad', zonaEscolar: 'comunidad',
+    basuraIlegal: 'comunidad', escombrosVereda: 'comunidad', plagas: 'comunidad',
+    perroAbandonado: 'comunidad', gatoCallejero: 'comunidad', mosquitos: 'comunidad',
+    ruidoConstruccion: 'comunidad', musicaAlta: 'comunidad', mueblesCalle: 'comunidad', senalCaida: 'comunidad',
+    perroPerdido: 'mascotas', gatoPerdido: 'mascotas', mascotaEncontrada: 'mascotas',
+    mascotaAdopcion: 'mascotas', animalAtropellado: 'mascotas', animalAgresivo: 'mascotas',
+    gatoHerido: 'mascotas', aveHerida: 'mascotas', perroEnCelo: 'mascotas', refugioAnimales: 'mascotas',
+    arbolDerribado: 'ambiente', basuraParque: 'ambiente', quemaBasura: 'ambiente',
+    aguaEstancada: 'ambiente', olorQuimico: 'ambiente', talaIlegal: 'ambiente',
+    puntoReciclaje: 'ambiente', arbolEnRiesgo: 'ambiente', areaProtegida: 'ambiente',
+    internetCaido: 'servicios', senalCelular: 'servicios', centroSalud: 'servicios',
+    colegio: 'servicios', transportePublico: 'servicios', estacionamiento: 'servicios',
+    posteDanado: 'servicios', aguaPotable: 'servicios', bancoCajero: 'servicios',
+    construccion: 'urbanismo', cierreCalle: 'urbanismo', nuevoPavimento: 'urbanismo',
+    veredaNueva: 'urbanismo', areaVerdeNueva: 'urbanismo', ciclovia: 'urbanismo', edificioConstruccion: 'urbanismo',
     };
     return categorias[reporte.tipo] === filtroCategoria;
   })
