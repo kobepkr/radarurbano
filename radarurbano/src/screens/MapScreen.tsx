@@ -246,6 +246,27 @@ const getIconoPorTipo = (tipo: string): string => {
     escombros: '🧱', maleza: '🌿', perrosCallejeros: '🐕',
     veredaMala: '👣', mueblesAbandonados: '🛋', autoAbandonado: '🚙',
     arbolCaido: '🌲', cableCaido: '🔌', zonaEscolar: '🏫',
+    basuraIlegal: '🗑️', escombrosVereda: '🧱', plagas: '🐀',
+    perroAbandonado: '🐕', gatoCallejero: '🐈', mosquitos: '🦟',
+    ruidoConstruccion: '🔇', musicaAlta: '🔊', mueblesCalle: '🪑', senalCaida: '🛑',
+    perroPerdido: '🐕', gatoPerdido: '🐈', mascotaEncontrada: '🐾',
+    mascotaAdopcion: '🏡', animalAtropellado: '🚗', animalAgresivo: '🐕',
+    gatoHerido: '🐈', aveHerida: '🐦', perroEnCelo: '❤️', refugioAnimales: '🏠',
+    arbolDerribado: '🌳', basuraParque: '🗑️', quemaBasura: '🔥',
+    aguaEstancada: '💧', olorQuimico: '⚠️', talaIlegal: '🪓',
+    puntoReciclaje: '♻️', arbolEnRiesgo: '🌱', areaProtegida: '🏞️',
+    internetCaido: '📡', senalCelular: '📱', centroSalud: '🏥',
+    colegio: '🏫', transportePublico: '🚌', estacionamiento: '🅿️',
+    posteDanado: '💡', aguaPotable: '🚰', bancoCajero: '🏦',
+    reduccionCarril: '🚧', carreraIlegal: '🏍️', semaforoApagado: '🚦',
+    barreraPeaje: '🚧', camionVolcado: '🚛', autoPanne: '🚗',
+    gruaEnVia: '🏗️', pasoSinLuz: '🚶', motoEnVereda: '🛵', autoAltaVelocidad: '🚗',
+    alarmaVecinal: '🚨', intentoRobo: '🏠', personaMerodeando: '🔦',
+    autoRobado: '🚗', camaraFalsa: '📷', carabineroBici: '🚴',
+    controlIdentidad: '🪪', ocupacionIlegal: '🏚️', gritosCalle: '🔊',
+    ambulanciaLugar: '🚑', rescateAcuatico: '🛟', rescateAltura: '⛑️',
+    fugaGas: '💨', derrumbeParcial: '🏢', tornado: '🌪️',
+    incendioForestal: '🧯', alarmaIncendio: '🚨',
   };
   return iconos[tipo] || '📍';
 };
@@ -1213,15 +1234,15 @@ const centrarMapa = () => {
               </View>
               <View style={styles.modernOptionsGrid}>
                 <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('perroPerdido', region)} disabled={loadingReporte}>
-                  <Text style={styles.optionEmoji}>🐕🔍</Text>
+                  <Text style={styles.optionEmoji}>🐕</Text>
                   <Text style={styles.modernOptionText}>Perro perdido</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('gatoPerdido', region)} disabled={loadingReporte}>
-                  <Text style={styles.optionEmoji}>🐈🔍</Text>
+                  <Text style={styles.optionEmoji}>🐈</Text>
                   <Text style={styles.modernOptionText}>Gato perdido</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('animalAgresivo', region)} disabled={loadingReporte}>
-                  <Text style={styles.optionEmoji}>🐕⚠️</Text>
+                  <Text style={styles.optionEmoji}>🐕</Text>
                   <Text style={styles.modernOptionText}>Animal agresivo</Text>
                 </TouchableOpacity>
               </View>
@@ -1234,15 +1255,15 @@ const centrarMapa = () => {
               </View>
               <View style={styles.modernOptionsGrid}>
                 <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('fugaGas', region)} disabled={loadingReporte}>
-                  <Text style={styles.optionEmoji}>💨🔥</Text>
+                  <Text style={styles.optionEmoji}>💨</Text>
                   <Text style={styles.modernOptionText}>Fuga de gas</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('incendioForestal', region)} disabled={loadingReporte}>
-                  <Text style={styles.optionEmoji}>🧯🌳</Text>
+                  <Text style={styles.optionEmoji}>🧯</Text>
                   <Text style={styles.modernOptionText}>Incendio forestal</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('talaIlegal', region)} disabled={loadingReporte}>
-                  <Text style={styles.optionEmoji}>🪓🌳</Text>
+                  <Text style={styles.optionEmoji}>🪓</Text>
                   <Text style={styles.modernOptionText}>Tala ilegal</Text>
                 </TouchableOpacity>
               </View>
@@ -1255,11 +1276,11 @@ const centrarMapa = () => {
               </View>
               <View style={styles.modernOptionsGrid}>
                 <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('internetCaido', region)} disabled={loadingReporte}>
-                  <Text style={styles.optionEmoji}>📡❌</Text>
+                  <Text style={styles.optionEmoji}>📡</Text>
                   <Text style={styles.modernOptionText}>Internet caído</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('posteDanado', region)} disabled={loadingReporte}>
-                  <Text style={styles.optionEmoji}>💡❌</Text>
+                  <Text style={styles.optionEmoji}>💡</Text>
                   <Text style={styles.modernOptionText}>Poste dañado</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('transportePublico', region)} disabled={loadingReporte}>
