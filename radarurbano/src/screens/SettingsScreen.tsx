@@ -98,6 +98,7 @@ export default function SettingsScreen() {
   const [notificaciones, setNotificaciones] = useState(true);
   const [radioBusqueda, setRadioBusqueda] = useState(50);
   const [radioModalOpen, setRadioModalOpen] = useState(false);
+  const [esPremium, setEsPremium] = useState(false);
   const [legalModal, setLegalModal] = useState<'terminos' | 'privacidad' | null>(null);
   const [regionDefault, setRegionDefault] = useState('Mi ubicación');
 
@@ -110,6 +111,9 @@ export default function SettingsScreen() {
     });
     AsyncStorage.getItem('regionDefault').then(v => {
       if (v) setRegionDefault(v);
+    });
+    AsyncStorage.getItem('usuario').then(v => {
+      if (v) setEsPremium(JSON.parse(v).premium || false);
     });
   }, []);
 
@@ -221,19 +225,31 @@ export default function SettingsScreen() {
           <View style={styles.sliderContent}>
             <Text style={styles.sliderTitle}>Radio de búsqueda</Text>
             <Text style={styles.sliderValue}>{radioBusqueda} km</Text>
+            <Text style={styles.sliderLimit}>{esPremium ? '⭐ Premium: hasta 500 km' : 'Máximo 100 km. Hacerte Premium para 500 km'}</Text>
 
             <View style={styles.sliderTrack}>
-              <View style={[styles.sliderFill, { width: `${((radioBusqueda - 10) / 90) * 100}%` }]} />
-              {[10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(r => (
-                <TouchableOpacity
-                  key={r}
-                  style={[styles.sliderMarker, { left: `${((r - 10) / 90) * 100}%` }]}
-                  onPress={() => elegirRadio(r)}
-                >
-                  <View style={[styles.sliderDot, radioBusqueda >= r && styles.sliderDotActive]} />
-                  <Text style={styles.sliderLabel}>{r}</Text>
-                </TouchableOpacity>
-              ))}
+              {(() => {
+                const maxR = esPremium ? 500 : 100;
+                const step = esPremium ? 25 : 10;
+                const values: number[] = [];
+                for (let v = 10; v <= maxR; v += step) values.push(v);
+                const fillPct = ((radioBusqueda - 10) / (maxR - 10)) * 100;
+                return (
+                  <>
+                    <View style={[styles.sliderFill, { width: `${fillPct}%` }]} />
+                    {values.map(r => (
+                      <TouchableOpacity
+                        key={r}
+                        style={[styles.sliderMarker, { left: `${((r - 10) / (maxR - 10)) * 100}%` }]}
+                        onPress={() => elegirRadio(r)}
+                      >
+                        <View style={[styles.sliderDot, radioBusqueda >= r && styles.sliderDotActive]} />
+                        <Text style={styles.sliderLabel}>{r}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </>
+                );
+              })()}
             </View>
 
             <Text style={styles.sliderHint}>Deslizá para seleccionar distancia</Text>
@@ -399,6 +415,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     marginTop: 16,
+  },
+  sliderLimit: {
+    color: '#FFD700',
+    fontSize: 12,
+    textAlign: 'center',
+    marginBottom: 12,
   },
   sliderButton: {
     backgroundColor: '#DC2626',
