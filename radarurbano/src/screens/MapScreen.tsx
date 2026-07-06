@@ -1268,27 +1268,6 @@ const centrarMapa = () => {
                 </TouchableOpacity>
               </View>
             </View>
-
-            <View style={styles.categorySection}>
-              <View style={styles.categoryHeader}>
-                <Text style={styles.categoryIconEmoji}>🏙️</Text>
-                <Text style={styles.categorySectionTitle}>URBANISMO</Text>
-              </View>
-              <View style={styles.modernOptionsGrid}>
-                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('construccion', region)} disabled={loadingReporte}>
-                  <Text style={styles.optionEmoji}>🏗️</Text>
-                  <Text style={styles.modernOptionText}>Construcción</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('cierreCalle', region)} disabled={loadingReporte}>
-                  <Text style={styles.optionEmoji}>🚧</Text>
-                  <Text style={styles.modernOptionText}>Cierre de calle</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('ciclovia', region)} disabled={loadingReporte}>
-                  <Text style={styles.optionEmoji}>🚲</Text>
-                  <Text style={styles.modernOptionText}>Ciclovía</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
           </View>
         )}
         <View style={{ height: 20 }} />
@@ -1485,9 +1464,6 @@ const centrarMapa = () => {
               </TouchableOpacity>
               <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'servicios' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('servicios')}>
                 <Text style={{ fontSize: 18, color: filtroCategoria === 'servicios' ? '#FFF' : '#8E8E93' }}>🛠️</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'urbanismo' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('urbanismo')}>
-                <Text style={{ fontSize: 18, color: filtroCategoria === 'urbanismo' ? '#FFF' : '#8E8E93' }}>🏙️</Text>
               </TouchableOpacity>
             </>
           )}
