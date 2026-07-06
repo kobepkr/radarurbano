@@ -24,7 +24,7 @@ export const crearOrdenPago = async (usuarioId: string, email: string) => {
     console.error("❌ Flow: API Key o Secret Key no configurados");
     return null;
   }
-  const commerceOrder = `premium_${usuarioId}_${Date.now()}`;
+  const commerceOrder = `prem_${usuarioId.slice(-6)}_${Date.now().toString().slice(-6)}`;
 
   const params: Record<string, string> = {
     apiKey,

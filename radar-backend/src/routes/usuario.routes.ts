@@ -427,7 +427,7 @@ router.post("/flow-confirm", async (req, res) => {
 
     if (params.status === "2") {
       const commerceOrder = params.commerceOrder || "";
-      const match = commerceOrder.match(/^premium_(.+?)_/);
+      const match = commerceOrder.match(/^prem_(.+?)_/);
       if (match) {
         await Usuario.findByIdAndUpdate(match[1], {
           premium: true,
