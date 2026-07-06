@@ -106,6 +106,7 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
   const [syncing, setSyncing] = useState(false);
   const [esPremium, setEsPremium] = useState(false);
   const [vistasPorReporte, setVistasPorReporte] = useState<{ [key: string]: number }>({});
+  const [comentariosVistos, setComentariosVistos] = useState<{ [key: string]: number }>({});
   const LIMITE_VISTAS = 5;
   const [commentModalVisible, setCommentModalVisible] = useState(false);
   const [reporteParaComentar, setReporteParaComentar] = useState<Reporte | null>(null);
@@ -542,6 +543,8 @@ useEffect(() => {
 
       const vistasStr = await AsyncStorage.getItem('vistasPorReporte');
       if (vistasStr && isMounted) setVistasPorReporte(JSON.parse(vistasStr));
+      const comentariosStr = await AsyncStorage.getItem('comentariosVistos');
+      if (comentariosStr && isMounted) setComentariosVistos(JSON.parse(comentariosStr));
       
       console.log('🔵 Solicitando permisos...');
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -1441,6 +1444,16 @@ const centrarMapa = () => {
           esPremium={esPremium}
           comentariosCount={reporte.comentarios?.length || 0}
           onOpenComments={() => {
+            if (!esPremium) {
+              const vistasActuales = (comentariosVistos[reporte._id] || 0) + 1;
+              const nuevoVistas = { ...comentariosVistos, [reporte._id]: vistasActuales };
+              setComentariosVistos(nuevoVistas);
+              AsyncStorage.setItem('comentariosVistos', JSON.stringify(nuevoVistas));
+              if (vistasActuales > LIMITE_VISTAS) {
+                Alert.alert('⭐ Límite alcanzado', `Ya viste los comentarios de esta alerta ${LIMITE_VISTAS} veces. Hacerte Premium.`, [{ text: 'OK' }]);
+                return;
+              }
+            }
             setReporteParaComentar(reporte);
             setCommentModalVisible(true);
           }}
