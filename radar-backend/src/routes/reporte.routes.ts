@@ -5,9 +5,7 @@ import { Usuario } from "../models/Usuario";
 import { io } from '../index'; 
 import { verificarLimiteReportes } from "../middlewares/limiteReportes.middleware";
 
-
 const router = express.Router();
-
 console.log("🟢 Archivo reporte.routes.ts cargado");
 
 const categoriaMap: { [key: string]: string } = {
@@ -16,32 +14,73 @@ const categoriaMap: { [key: string]: string } = {
   choque: "transito", semaforoRoto: "transito", calleCortada: "transito",
   objetoPeligroso: "transito", controlCarabineros: "transito", obrasEnVia: "transito",
   calleInundada: "transito", manifestacion: "transito", emergenciaVehicular: "transito",
-  actividadDeportiva: "transito", asalto: "seguridad",
-  actitudSospechosa: "seguridad", balacera: "seguridad",
+  actividadDeportiva: "transito", reduccionCarril: "transito", carreraIlegal: "transito",
+  semaforoApagado: "transito", barreraPeaje: "transito", camionVolcado: "transito",
+  autoPanne: "transito", gruaEnVia: "transito", pasoSinLuz: "transito",
+  motoEnVereda: "transito", autoAltaVelocidad: "transito",
+  asalto: "seguridad", actitudSospechosa: "seguridad", balacera: "seguridad",
   carabinerosLugar: "seguridad", patrulla: "seguridad", camaraSeguridad: "seguridad",
   zonaOscura: "seguridad", casaAbandonada: "seguridad",
+  alarmaVecinal: "seguridad", intentoRobo: "seguridad", personaMerodeando: "seguridad",
+  autoRobado: "seguridad", camaraFalsa: "seguridad", carabineroBici: "seguridad",
+  controlIdentidad: "seguridad", ocupacionIlegal: "seguridad", gritosCalle: "seguridad",
   inundacion: "emergencias", accidenteGrave: "emergencias", bomberosLugar: "emergencias",
   personaHerida: "emergencias", rescate: "emergencias", fenomenoClimatico: "emergencias",
   cortoCircuito: "emergencias", derrumbe: "emergencias", alertaSeguridad: "emergencias",
+  ambulanciaLugar: "emergencias", rescateAcuatico: "emergencias", rescateAltura: "emergencias",
+  fugaGas: "emergencias", derrumbeParcial: "emergencias", tornado: "emergencias",
+  incendioForestal: "emergencias", alarmaIncendio: "emergencias",
   bache: "transito", corteLuz: "comunidad", corteAgua: "comunidad",
   escombros: "comunidad", maleza: "comunidad", perrosCallejeros: "comunidad",
   veredaMala: "comunidad", mueblesAbandonados: "comunidad", autoAbandonado: "comunidad",
-  arbolCaido: "comunidad", cableCaido: "comunidad", zonaEscolar: "comunidad"
+  arbolCaido: "comunidad", cableCaido: "comunidad", zonaEscolar: "comunidad",
+  basuraIlegal: "comunidad", escombrosVereda: "comunidad", plagas: "comunidad",
+  perroAbandonado: "comunidad", gatoCallejero: "comunidad", mosquitos: "comunidad",
+  ruidoConstruccion: "comunidad", musicaAlta: "comunidad", mueblesCalle: "comunidad",
+  senalCaida: "comunidad",
+  perroPerdido: "mascotas", gatoPerdido: "mascotas", mascotaEncontrada: "mascotas",
+  mascotaAdopcion: "mascotas", animalAtropellado: "mascotas", animalAgresivo: "mascotas",
+  gatoHerido: "mascotas", aveHerida: "mascotas", perroEnCelo: "mascotas", refugioAnimales: "mascotas",
+  arbolDerribado: "ambiente", basuraParque: "ambiente", quemaBasura: "ambiente",
+  aguaEstancada: "ambiente", olorQuimico: "ambiente", talaIlegal: "ambiente",
+  puntoReciclaje: "ambiente", arbolEnRiesgo: "ambiente", areaProtegida: "ambiente",
+  internetCaido: "servicios", senalCelular: "servicios", centroSalud: "servicios",
+  colegio: "servicios", transportePublico: "servicios", estacionamiento: "servicios",
+  posteDanado: "servicios", aguaPotable: "servicios", bancoCajero: "servicios",
+  construccion: "urbanismo", cierreCalle: "urbanismo", nuevoPavimento: "urbanismo",
+  veredaNueva: "urbanismo", areaVerdeNueva: "urbanismo", ciclovia: "urbanismo", edificioConstruccion: "urbanismo"
 };
 
 const horasExpiracion: { [key: string]: number } = {
-  accidente: 12, delito: 24, trafico: 8, clima: 12, incendio: 24,
-  embotellamiento: 8, choque: 12, semaforoRoto: 12, calleCortada: 12,
-  objetoPeligroso: 8, controlCarabineros: 6, obrasEnVia: 24,
-  calleInundada: 8, manifestacion: 12, emergenciaVehicular: 6,
-  actividadDeportiva: 8, asalto: 24, actitudSospechosa: 8,
-  balacera: 48, carabinerosLugar: 6, patrulla: 6, camaraSeguridad: 48,
-  zonaOscura: 24, casaAbandonada: 72, inundacion: 12,
-  accidenteGrave: 12, bomberosLugar: 8, personaHerida: 8, rescate: 8,
-  fenomenoClimatico: 12, cortoCircuito: 8, derrumbe: 24, alertaSeguridad: 8,
+  accidente: 12, delito: 24, trafico: 8, clima: 12, incendio: 24, embotellamiento: 8,
+  choque: 12, semaforoRoto: 12, calleCortada: 12, objetoPeligroso: 8,
+  controlCarabineros: 6, obrasEnVia: 24, calleInundada: 8, manifestacion: 12,
+  emergenciaVehicular: 6, actividadDeportiva: 8, reduccionCarril: 8, carreraIlegal: 12,
+  semaforoApagado: 12, barreraPeaje: 24, camionVolcado: 12, autoPanne: 8,
+  gruaEnVia: 8, pasoSinLuz: 12, motoEnVereda: 8, autoAltaVelocidad: 8,
+  asalto: 24, actitudSospechosa: 8, balacera: 48, carabinerosLugar: 6, patrulla: 6,
+  camaraSeguridad: 48, zonaOscura: 24, casaAbandonada: 72, alarmaVecinal: 8,
+  intentoRobo: 12, personaMerodeando: 8, autoRobado: 24, camaraFalsa: 72,
+  carabineroBici: 6, controlIdentidad: 8, ocupacionIlegal: 72, gritosCalle: 8,
+  inundacion: 12, accidenteGrave: 12, bomberosLugar: 8, personaHerida: 8,
+  rescate: 8, fenomenoClimatico: 12, cortoCircuito: 8, derrumbe: 24,
+  alertaSeguridad: 8, ambulanciaLugar: 8, rescateAcuatico: 8, rescateAltura: 8,
+  fugaGas: 8, derrumbeParcial: 24, tornado: 12, incendioForestal: 24, alarmaIncendio: 8,
   bache: 96, corteLuz: 8, corteAgua: 12, escombros: 72, maleza: 72,
-  perrosCallejeros: 48, veredaMala: 96, mueblesAbandonados: 72,
-  autoAbandonado: 72, arbolCaido: 48, cableCaido: 48, zonaEscolar: 48
+  perrosCallejeros: 48, veredaMala: 96, mueblesAbandonados: 72, autoAbandonado: 72,
+  arbolCaido: 48, cableCaido: 48, zonaEscolar: 48, basuraIlegal: 48,
+  escombrosVereda: 48, plagas: 24, perroAbandonado: 48, gatoCallejero: 48,
+  mosquitos: 24, ruidoConstruccion: 12, musicaAlta: 8, mueblesCalle: 48,
+  senalCaida: 48, perroPerdido: 72, gatoPerdido: 72, mascotaEncontrada: 48,
+  mascotaAdopcion: 96, animalAtropellado: 24, animalAgresivo: 12,
+  gatoHerido: 24, aveHerida: 24, perroEnCelo: 12, refugioAnimales: 168,
+  arbolDerribado: 48, basuraParque: 48, quemaBasura: 12, aguaEstancada: 24,
+  olorQuimico: 12, talaIlegal: 48, puntoReciclaje: 168, arbolEnRiesgo: 72,
+  areaProtegida: 96, internetCaido: 12, senalCelular: 12, centroSalud: 24,
+  colegio: 24, transportePublico: 12, estacionamiento: 12, posteDanado: 48,
+  aguaPotable: 12, bancoCajero: 12, construccion: 72, cierreCalle: 24,
+  nuevoPavimento: 96, veredaNueva: 96, areaVerdeNueva: 168, ciclovia: 72,
+  edificioConstruccion: 168
 };
 
 router.post("/", authMiddleware, verificarLimiteReportes, async (req: AuthRequest, res) => {
@@ -51,20 +90,10 @@ router.post("/", authMiddleware, verificarLimiteReportes, async (req: AuthReques
     const expiraEn = new Date();
     expiraEn.setHours(expiraEn.getHours() + (horasExpiracion[tipo] || 6));
     const creador = await Usuario.findById(req.usuario.id, 'nombre');
-    const nuevoReporte = new Reporte({
-      categoria: categoriaMap[tipo], tipo, descripcion,
-      ubicacion: { coordinates: [lng, lat] }, expiraEn,
-      creadoPor: req.usuario.id,
-      creadoPorNombre: creador?.nombre || 'Anónimo'
-    });
+    const nuevoReporte = new Reporte({ categoria: categoriaMap[tipo], tipo, descripcion, ubicacion: { coordinates: [lng, lat] }, expiraEn, creadoPor: req.usuario.id, creadoPorNombre: creador?.nombre || 'Anónimo' });
     await nuevoReporte.save();
     try {
-      const usuariosCerca = await Usuario.find({
-        ubicacion: { $near: { $geometry: { type: "Point", coordinates: [lng, lat] }, $maxDistance: 50000 } },
-        pushToken: { $exists: true, $ne: null },
-        notificacionesActivas: true,
-        _id: { $ne: req.usuario.id }
-      });
+      const usuariosCerca = await Usuario.find({ ubicacion: { $near: { $geometry: { type: "Point", coordinates: [lng, lat] }, $maxDistance: 50000 } }, pushToken: { $exists: true, $ne: null }, notificacionesActivas: true, _id: { $ne: req.usuario.id } });
       for (const usuario of usuariosCerca) {
         await fetch('https://exp.host/--/api/v2/push/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to: usuario.pushToken, sound: 'default', title: '🚨 Nuevo reporte cerca', body: `${tipo} reportado en tu zona`, data: { reporteId: nuevoReporte._id, tipo, lat, lng } }) });
       }

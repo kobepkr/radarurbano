@@ -39,7 +39,7 @@ const reporteSchema = new mongoose.Schema({
   categoria: {
     type: String,
     required: true,
-    enum: ["transito", "seguridad", "emergencias", "comunidad"]
+    enum: ["transito", "seguridad", "emergencias", "comunidad", "mascotas", "ambiente", "servicios", "urbanismo"]
   },
   tipo: {
     type: String,
@@ -49,18 +49,40 @@ const reporteSchema = new mongoose.Schema({
       "embotellamiento", "choque", "semaforoRoto", "calleCortada",
       "objetoPeligroso", "controlCarabineros", "obrasEnVia",
       "calleInundada", "manifestacion", "emergenciaVehicular",
-      "actividadDeportiva",
+      "actividadDeportiva", "reduccionCarril", "carreraIlegal",
+      "semaforoApagado", "barreraPeaje", "camionVolcado",
+      "autoPanne", "gruaEnVia", "pasoSinLuz", "motoEnVereda", "autoAltaVelocidad",
       "asalto", "actitudSospechosa", "balacera",
       "carabinerosLugar", "patrulla", "camaraSeguridad",
       "zonaOscura", "casaAbandonada",
+      "alarmaVecinal", "intentoRobo", "personaMerodeando",
+      "autoRobado", "camaraFalsa", "carabineroBici",
+      "controlIdentidad", "ocupacionIlegal", "gritosCalle",
       "incendio", "inundacion",
       "accidenteGrave", "bomberosLugar", "personaHerida",
       "rescate", "fenomenoClimatico", "cortoCircuito",
       "derrumbe", "alertaSeguridad",
+      "ambulanciaLugar", "rescateAcuatico", "rescateAltura",
+      "fugaGas", "derrumbeParcial", "tornado",
+      "incendioForestal", "alarmaIncendio",
       "bache", "corteLuz", "corteAgua",
       "escombros", "maleza", "perrosCallejeros",
       "veredaMala", "mueblesAbandonados", "autoAbandonado",
-      "arbolCaido", "cableCaido", "zonaEscolar"
+      "arbolCaido", "cableCaido", "zonaEscolar",
+      "basuraIlegal", "escombrosVereda", "plagas",
+      "perroAbandonado", "gatoCallejero", "mosquitos",
+      "ruidoConstruccion", "musicaAlta", "mueblesCalle", "senalCaida",
+      "perroPerdido", "gatoPerdido", "mascotaEncontrada",
+      "mascotaAdopcion", "animalAtropellado", "animalAgresivo",
+      "gatoHerido", "aveHerida", "perroEnCelo", "refugioAnimales",
+      "arbolDerribado", "basuraParque", "quemaBasura",
+      "aguaEstancada", "olorQuimico", "talaIlegal",
+      "puntoReciclaje", "arbolEnRiesgo", "areaProtegida",
+      "internetCaido", "senalCelular", "centroSalud",
+      "colegio", "transportePublico", "estacionamiento",
+      "posteDanado", "aguaPotable", "bancoCajero",
+      "construccion", "cierreCalle", "nuevoPavimento",
+      "veredaNueva", "areaVerdeNueva", "ciclovia", "edificioConstruccion"
     ]
   },
   descripcion: {
