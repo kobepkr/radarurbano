@@ -105,6 +105,8 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
   const [pendingOfflineReports, setPendingOfflineReports] = useState<OfflineReport[]>([]);
   const [syncing, setSyncing] = useState(false);
   const [esPremium, setEsPremium] = useState(false);
+  const [vistasReportes, setVistasReportes] = useState(0);
+  const LIMITE_VISTAS = 5;
   const [commentModalVisible, setCommentModalVisible] = useState(false);
   const [reporteParaComentar, setReporteParaComentar] = useState<Reporte | null>(null);
   const [descripcionCustom, setDescripcionCustom] = useState('');
@@ -473,7 +475,20 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
     }
   };
 
-  const mostrarOpcionesCard = (reporte: Reporte) => {
+  const mostrarOpcionesCard = async (reporte: Reporte) => {
+    if (!esPremium) {
+      const nuevasVistas = vistasReportes + 1;
+      setVistasReportes(nuevasVistas);
+      await AsyncStorage.setItem('vistasReportes', String(nuevasVistas));
+      if (nuevasVistas > LIMITE_VISTAS) {
+        Alert.alert(
+          '⭐ Límite alcanzado',
+          `Solo podés ver ${LIMITE_VISTAS} alertas. Hacerte Premium para ver ilimitadas.`,
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+    }
     setSelectedReporte(reporte);
     setCardModalVisible(true);
   };
@@ -522,6 +537,17 @@ useEffect(() => {
         setEsPremium(usuario.premium || false);
         setUserIdActual(usuario.id || '');
         console.log('👤 Usuario premium:', usuario.premium);
+      }
+
+      const vistasStr = await AsyncStorage.getItem('vistasReportes');
+      const fechaVistas = await AsyncStorage.getItem('fechaVistas');
+      const hoy = new Date().toISOString().split('T')[0];
+      if (fechaVistas !== hoy) {
+        await AsyncStorage.setItem('fechaVistas', hoy);
+        await AsyncStorage.setItem('vistasReportes', '0');
+        if (isMounted) setVistasReportes(0);
+      } else if (vistasStr && isMounted) {
+        setVistasReportes(Number(vistasStr));
       }
       
       console.log('🔵 Solicitando permisos...');
