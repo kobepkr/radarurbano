@@ -41,14 +41,18 @@ export const crearOrdenPago = async (usuarioId: string, email: string) => {
 
   const formData = new URLSearchParams(params).toString();
   const apiUrl = getApiUrl();
+  const fullUrl = `${apiUrl}/payment/create`;
   
-  const response = await fetch(`${apiUrl}/payment/create`, {
+  console.log(`🌐 Flow URL: ${fullUrl}`);
+  
+  const response = await fetch(fullUrl, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: formData,
   });
 
   const data: any = await response.json();
+  console.log(`📡 Flow response: ${JSON.stringify(data)}`);
   
   if (data.url && data.token) {
     return `${data.url}?token=${data.token}`;
