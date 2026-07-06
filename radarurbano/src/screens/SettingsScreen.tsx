@@ -93,13 +93,41 @@ Podés eliminar tu cuenta desde Configuración. Esto borrará tu perfil, pero lo
 6. CONTACTO
 Para ejercer tus derechos o consultas: victorlabbe26@gmail.com`;
 
+const beneficiosPremium = `⭐ RADAR URBANO PREMIUM
+
+Por solo $2.990/mes obtenés:
+
+📡 MAYOR ALCANCE
+• Radio de búsqueda de hasta 500 km (normal: 100 km).
+• Monitoreá alertas en todo Chile.
+
+🐾 CATEGORÍAS EXCLUSIVAS
+• Mascotas: perros y gatos perdidos, animales agresivos, refugios.
+• Medio Ambiente: incendios forestales, fugas de gas, tala ilegal.
+• Servicios: internet caído, transporte público, postes dañados.
+
+✨ FUNCIONES AVANZADAS
+• Reportes ilimitados (normal: 5 por día).
+• Descripción personalizada en tus alertas.
+• Vista ilimitada de detalles y comentarios.
+• Borde dorado en tus reportes.
+• Insignia ⭐ en tu perfil y en tus publicaciones.
+
+📊 PRÓXIMAMENTE
+• Estadísticas avanzadas y mapas de calor.
+• Filtros por fecha y tipo de alerta.
+• Notificaciones personalizadas.
+• Exportación de datos.
+
+¿Preguntas? Escribinos a victorlabbe26@gmail.com`;
+
 export default function SettingsScreen() {
   const navigation = useNavigation();
   const [notificaciones, setNotificaciones] = useState(true);
   const [radioBusqueda, setRadioBusqueda] = useState(50);
   const [radioModalOpen, setRadioModalOpen] = useState(false);
   const [esPremium, setEsPremium] = useState(false);
-  const [legalModal, setLegalModal] = useState<'terminos' | 'privacidad' | null>(null);
+  const [legalModal, setLegalModal] = useState<'terminos' | 'privacidad' | 'premium' | null>(null);
   const [regionDefault, setRegionDefault] = useState('Mi ubicación');
 
   useEffect(() => {
@@ -210,6 +238,14 @@ export default function SettingsScreen() {
         <ChevronRight size={18} color="#8E8E93" />
       </TouchableOpacity>
 
+      <Text style={styles.sectionTitle}>⭐ Premium</Text>
+
+      <TouchableOpacity style={styles.item} onPress={() => setLegalModal('premium')}>
+        <Text style={{ fontSize: 20, marginRight: 12 }}>⭐</Text>
+        <Text style={styles.itemText}>Beneficios Premium</Text>
+        <ChevronRight size={18} color="#8E8E93" />
+      </TouchableOpacity>
+
       <Text style={styles.sectionTitle}>Cuenta</Text>
 
       <TouchableOpacity style={[styles.item, styles.dangerItem]} onPress={eliminarCuenta}>
@@ -266,11 +302,13 @@ export default function SettingsScreen() {
         <View style={styles.sliderOverlay}>
           <View style={[styles.sliderContent, { maxHeight: '80%' }]}>
             <Text style={styles.sliderTitle}>
-              {legalModal === 'terminos' ? 'Términos y condiciones' : 'Política de privacidad'}
+              {legalModal === 'terminos' ? 'Términos y condiciones' : 
+               legalModal === 'privacidad' ? 'Política de privacidad' : 'Beneficios Premium'}
             </Text>
             <ScrollView style={{ maxHeight: 400 }} showsVerticalScrollIndicator={true}>
               <Text style={styles.legalText}>
-                {legalModal === 'terminos' ? terminosCondiciones : politicaPrivacidad}
+                {legalModal === 'terminos' ? terminosCondiciones : 
+                 legalModal === 'privacidad' ? politicaPrivacidad : beneficiosPremium}
               </Text>
             </ScrollView>
             <TouchableOpacity style={styles.sliderButton} onPress={() => setLegalModal(null)}>
