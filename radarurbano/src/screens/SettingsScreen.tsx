@@ -107,7 +107,6 @@ Por solo $2.990/mes obtenés:
 • Servicios: internet caído, transporte público, postes dañados.
 
 ✨ FUNCIONES AVANZADAS
-• Reportes ilimitados (normal: 5 por día).
 • Sin límite de vistas de alertas y comentarios.
 • Descripción personalizada en tus alertas.
 • Borde dorado en tus reportes.
