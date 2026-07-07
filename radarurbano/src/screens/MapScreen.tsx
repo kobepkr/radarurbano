@@ -1645,7 +1645,7 @@ const centrarMapa = () => {
       {/* Modal de opciones */}
       <Modal transparent={true} visible={cardModalVisible} animationType="fade" onRequestClose={() => setCardModalVisible(false)}>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { maxHeight: 550 }]}>
+          <View style={[styles.modalContent, { maxHeight: '80%' }]}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Opciones del reporte</Text>
               <TouchableOpacity onPress={() => setCardModalVisible(false)}>
@@ -1653,6 +1653,7 @@ const centrarMapa = () => {
               </TouchableOpacity>
             </View>
             
+            <ScrollView showsVerticalScrollIndicator={false}>
             {selectedReporte && (
               <>
                 <View style={styles.modernCard}>
@@ -1721,6 +1722,7 @@ const centrarMapa = () => {
 
               </>
             )}
+            </ScrollView>
           </View>
         </View>
       </Modal>
