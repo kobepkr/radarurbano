@@ -106,7 +106,7 @@ router.post("/verificar", async (req, res) => {
     const token = jwt.sign(
       { id: usuario._id, email: usuario.email, rol: usuario.rol },
       getJwtSecret(),
-      { expiresIn: "7d" }
+      { expiresIn: "365d" }
     );
 
     res.json({
@@ -172,7 +172,7 @@ router.post("/login", async (req, res) => {
         rol: usuario.rol 
       },
       getJwtSecret(),
-      { expiresIn: "7d" }
+      { expiresIn: "365d" }
     );
 
     res.json({
