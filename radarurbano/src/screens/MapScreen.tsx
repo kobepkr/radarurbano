@@ -1521,8 +1521,8 @@ const centrarMapa = () => {
         </View>
 
         <BottomSheetScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.cardsContainerVertical}>
-          {reportes
-  .sort((a, b) => {
+          {[...new Map(reportes.map(r => [r._id, r])).values()]
+  .sort((a: any, b: any) => {
     if (ordenActual === 'confirmados') return b.confirmaciones - a.confirmaciones;
     if (ordenActual === 'cercanos') {
       const distA = region ? calcularDistancia(region.latitude, region.longitude, a.ubicacion.coordinates[1], a.ubicacion.coordinates[0]) : 0;
