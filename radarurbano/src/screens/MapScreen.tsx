@@ -31,6 +31,7 @@ import {
   DropletOff, CheckCircle, Share2, ScrollText, RefreshCw
 } from 'lucide-react-native';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
+import * as ImagePicker from 'expo-image-picker';
 import { offlineReportService, OfflineReport } from '../services/OfflineReportService';
 import { ConnectionStatus } from '../components/ConnectionStatus';
 import { CommentSection } from '../components/CommentSection';
@@ -66,14 +67,15 @@ interface Reporte {
     urgente?: number;
     peligro?: number;
   };
-   comentarios?: Array<{
-    _id?: string;
-    usuarioId: string;
-    nombre: string;
-    texto: string;
-    createdAt: string;
-  }>;
-}
+    comentarios?: Array<{
+      _id?: string;
+      usuarioId: string;
+      nombre: string;
+      texto: string;
+      createdAt: string;
+    }>;
+    imagenUrl?: string | null;
+  }
 
 interface Coordinate {
   latitude: number;
@@ -111,6 +113,7 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
   const [commentModalVisible, setCommentModalVisible] = useState(false);
   const [reporteParaComentar, setReporteParaComentar] = useState<Reporte | null>(null);
   const [descripcionCustom, setDescripcionCustom] = useState('');
+  const [imagenSeleccionada, setImagenSeleccionada] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<Coordinate | null>(null);
   const [selectedCoordinate, setSelectedCoordinate] = useState<Coordinate | null>(null);
   const [regionSeleccionada, setRegionSeleccionada] = useState(0);
@@ -322,9 +325,10 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
       
       const response: AxiosResponse<Reporte> = await axios.post(`${API_URL}/reportes`, {
         tipo,
-        descripcion: desc,
+        descripcion: esPremium && descripcionCustom.trim() ? descripcionCustom.trim() : `Reporte de ${getNombreTipo(tipo)}`,
         lat: targetCoord.latitude,
-        lng: targetCoord.longitude
+        lng: targetCoord.longitude,
+        imagen: imagenSeleccionada
       }, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -334,6 +338,7 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
       setModalVisible(false);
       setSelectedCoordinate(null);
       setDescripcionCustom('');
+      setImagenSeleccionada(null);
       await AsyncStorage.setItem('ultimaFechaReporte', new Date().toISOString().split('T')[0]);
       mapRef.current?.animateToRegion({
         latitude: targetCoord.latitude,
@@ -445,12 +450,27 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
       await axios.delete(`${API_URL}/reportes/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      setReportes(prev => prev.map(r => r._id === id ? { ...r, archivado: true, estado: 'falso' } : r));
-      setReportes(prev => prev.filter(r => !r.archivado));
+      setReportes(prev => prev.filter(r => r._id !== id));
       setCardModalVisible(false);
       showAlert('✅ Eliminado', 'Reporte eliminado correctamente', 'success');
     } catch (error) {
       showAlert('❌ Error', 'No se pudo eliminar', 'error');
+    }
+  };
+
+  const seleccionarImagen = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permiso denegado', 'Necesitamos acceso a tus fotos');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.6,
+      base64: true,
+    });
+    if (!result.canceled && result.assets[0].base64) {
+      setImagenSeleccionada(result.assets[0].base64);
     }
   };
 
@@ -1002,17 +1022,24 @@ const centrarMapa = () => {
       </View>
 
       {esPremium && (
-        <View style={{ marginBottom: 16 }}>
-          <TextInput
-            style={styles.descripcionInput}
-            placeholder="Describí la alerta (opcional, máx 200 caracteres)"
-            placeholderTextColor="#8E8E93"
-            value={descripcionCustom}
-            onChangeText={setDescripcionCustom}
-            maxLength={200}
-            multiline
-          />
-        </View>
+        <>
+          <View style={{ marginBottom: 16 }}>
+            <TextInput
+              style={styles.descripcionInput}
+              placeholder="Describí la alerta (opcional, máx 200 caracteres)"
+              placeholderTextColor="#8E8E93"
+              value={descripcionCustom}
+              onChangeText={setDescripcionCustom}
+              maxLength={200}
+              multiline
+            />
+          </View>
+          <TouchableOpacity style={styles.imagenButton} onPress={seleccionarImagen}>
+            <Text style={styles.imagenButtonText}>
+              {imagenSeleccionada ? '📸 Foto seleccionada (tocar para cambiar)' : '📷 Agregar foto a la alerta'}
+            </Text>
+          </TouchableOpacity>
+        </>
       )}
 
       <Text style={styles.sectionTitle}>Categorías</Text>
@@ -2219,5 +2246,19 @@ descripcionInput: {
   fontSize: 14,
   minHeight: 50,
   textAlignVertical: 'top',
+},
+imagenButton: {
+  backgroundColor: '#2C2C2E',
+  borderRadius: 12,
+  padding: 12,
+  marginBottom: 16,
+  alignItems: 'center',
+  borderWidth: 1,
+  borderColor: '#3A3A3C',
+  borderStyle: 'dashed',
+},
+imagenButtonText: {
+  color: '#8E8E93',
+  fontSize: 13,
 },
 });

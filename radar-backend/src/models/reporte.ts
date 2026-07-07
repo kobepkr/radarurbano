@@ -26,6 +26,7 @@ export interface IReporte extends mongoose.Document {
   reportesFalsos: number;
   creadoPor: mongoose.Types.ObjectId;
   creadoPorNombre: string;
+  imagenUrl: string | null;
   confirmadoPor: mongoose.Types.ObjectId[];
   expiraEn: Date;
   archivado: boolean;
@@ -120,6 +121,10 @@ const reporteSchema = new mongoose.Schema({
   creadoPorNombre: {
     type: String,
     default: ""
+  },
+  imagenUrl: {
+    type: String,
+    default: null
   },
   confirmadoPor: [{
     type: mongoose.Schema.Types.ObjectId,

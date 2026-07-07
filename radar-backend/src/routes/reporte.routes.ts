@@ -3,6 +3,7 @@ import { Reporte, IReporte } from "../models/reporte";
 import { authMiddleware, AuthRequest } from "../middlewares/auth.middleware";
 import { Usuario } from "../models/Usuario";
 import { io } from '../index'; 
+import { subirImagenCloudinary } from "../config/cloudinary";
 
 const router = express.Router();
 console.log("🟢 Archivo reporte.routes.ts cargado");
@@ -84,12 +85,14 @@ const horasExpiracion: { [key: string]: number } = {
 
 router.post("/", authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const { tipo, descripcion, lat, lng } = req.body;
+    const { tipo, descripcion, lat, lng, imagen } = req.body;
     if (!categoriaMap[tipo]) return res.status(400).json({ error: "Tipo de evento no válido" });
     const expiraEn = new Date();
     expiraEn.setHours(expiraEn.getHours() + (horasExpiracion[tipo] || 6));
-    const creador = await Usuario.findById(req.usuario.id, 'nombre');
-    const nuevoReporte = new Reporte({ categoria: categoriaMap[tipo], tipo, descripcion, ubicacion: { coordinates: [lng, lat] }, expiraEn, creadoPor: req.usuario.id, creadoPorNombre: creador?.nombre || 'Anónimo' });
+    const creador = await Usuario.findById(req.usuario.id, 'nombre premium');
+    let imagenUrl = null;
+    if (imagen && creador?.premium) imagenUrl = await subirImagenCloudinary(imagen);
+    const nuevoReporte = new Reporte({ categoria: categoriaMap[tipo], tipo, descripcion, ubicacion: { coordinates: [lng, lat] }, expiraEn, creadoPor: req.usuario.id, creadoPorNombre: creador?.nombre || 'Anónimo', imagenUrl });
     await nuevoReporte.save();
     try {
       const usuariosCerca = await Usuario.find({ ubicacion: { $near: { $geometry: { type: "Point", coordinates: [lng, lat] }, $maxDistance: 50000 } }, pushToken: { $exists: true, $ne: null }, notificacionesActivas: true, _id: { $ne: req.usuario.id } });
