@@ -1486,30 +1486,30 @@ const centrarMapa = () => {
 
         <View style={styles.iconRow}>
           <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'todos' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('todos')}>
-            <ScrollText size={24} color={filtroCategoria === 'todos' ? '#FFF' : '#8E8E93'} />
+            <ScrollText size={20} color={filtroCategoria === 'todos' ? '#FFF' : '#8E8E93'} />
           </TouchableOpacity>
           <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'transito' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('transito')}>
-            <Car size={24} color={filtroCategoria === 'transito' ? '#FFF' : '#8E8E93'} />
+            <Car size={20} color={filtroCategoria === 'transito' ? '#FFF' : '#8E8E93'} />
           </TouchableOpacity>
           <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'seguridad' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('seguridad')}>
-            <ShieldPlus size={24} color={filtroCategoria === 'seguridad' ? '#FFF' : '#8E8E93'} />
+            <ShieldPlus size={20} color={filtroCategoria === 'seguridad' ? '#FFF' : '#8E8E93'} />
           </TouchableOpacity>
           <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'emergencias' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('emergencias')}>
-            <Siren size={24} color={filtroCategoria === 'emergencias' ? '#FFF' : '#8E8E93'} />
+            <Siren size={20} color={filtroCategoria === 'emergencias' ? '#FFF' : '#8E8E93'} />
           </TouchableOpacity>
           <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'comunidad' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('comunidad')}>
-            <Home size={24} color={filtroCategoria === 'comunidad' ? '#FFF' : '#8E8E93'} />
+            <Home size={20} color={filtroCategoria === 'comunidad' ? '#FFF' : '#8E8E93'} />
           </TouchableOpacity>
           {esPremium && (
             <>
               <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'mascotas' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('mascotas')}>
-                <Text style={{ fontSize: 18, color: filtroCategoria === 'mascotas' ? '#FFF' : '#8E8E93' }}>🐾</Text>
+                <Text style={{ fontSize: 16, color: filtroCategoria === 'mascotas' ? '#FFF' : '#8E8E93' }}>🐾</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'ambiente' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('ambiente')}>
-                <Text style={{ fontSize: 18, color: filtroCategoria === 'ambiente' ? '#FFF' : '#8E8E93' }}>🌳</Text>
+                <Text style={{ fontSize: 16, color: filtroCategoria === 'ambiente' ? '#FFF' : '#8E8E93' }}>🌳</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'servicios' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('servicios')}>
-                <Text style={{ fontSize: 18, color: filtroCategoria === 'servicios' ? '#FFF' : '#8E8E93' }}>🛠️</Text>
+                <Text style={{ fontSize: 16, color: filtroCategoria === 'servicios' ? '#FFF' : '#8E8E93' }}>🛠️</Text>
               </TouchableOpacity>
             </>
           )}
@@ -1938,14 +1938,14 @@ const styles = StyleSheet.create({
   iconRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     marginBottom: 12,
     marginTop: 4,
   },
   iconButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     backgroundColor: '#2C2C2E',
     justifyContent: 'center',
     alignItems: 'center',
