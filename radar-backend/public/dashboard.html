@@ -1,144 +1,115 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Radar Urbano - Dashboard</title>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radar Urbano - Panel de Análisis</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; }
-    .header { background: #1a1a2e; padding: 20px 30px; border-bottom: 2px solid #DC2626; }
-    .header h1 { color: #DC2626; font-size: 24px; }
-    .header p { color: #888; font-size: 14px; margin-top: 4px; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; padding: 30px; }
-    .stat-card { background: #1a1a2e; border-radius: 12px; padding: 20px; border: 1px solid #2a2a3e; }
-    .stat-card .label { color: #888; font-size: 12px; text-transform: uppercase; margin-bottom: 8px; }
-    .stat-card .value { font-size: 32px; font-weight: bold; }
-    .stat-card.total .value { color: #DC2626; }
-    .stat-card.confirmed .value { color: #4CAF50; }
-    .stat-card.false .value { color: #F44336; }
-    .stat-card.pending .value { color: #FFA500; }
-    .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 16px; padding: 0 30px 30px; }
-    .chart-card { background: #1a1a2e; border-radius: 12px; padding: 20px; border: 1px solid #2a2a3e; }
-    .chart-card h3 { font-size: 16px; margin-bottom: 16px; color: #ccc; }
-    .chart-card canvas { max-height: 300px; }
-    .refresh { background: #DC2626; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
-    .refresh:hover { background: #b91c1c; }
-    .top-bar { display: flex; justify-content: space-between; align-items: center; }
-    .loading { text-align: center; color: #888; padding: 40px; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0a;color:#fff;min-height:100vh}
+    .header{background:#1a1a2e;padding:15px 25px;border-bottom:2px solid #DC2626;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+    .header h1{color:#DC2626;font-size:22px}
+    .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .filters input,.filters select{background:#2a2a3e;border:1px solid #3a3a4e;color:#fff;padding:8px 12px;border-radius:6px;font-size:13px}
+    .filters button{background:#DC2626;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600}
+    .filters button:hover{background:#b91c1c}
+    .filters button.outline{background:transparent;border:1px solid #DC2626}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;padding:20px 25px}
+    .stat-card{background:#1a1a2e;border-radius:10px;padding:16px;border:1px solid #2a2a3e}
+    .stat-card .label{color:#888;font-size:11px;text-transform:uppercase;margin-bottom:6px}
+    .stat-card .value{font-size:28px;font-weight:bold}
+    .stat-card .sub{font-size:11px;color:#666;margin-top:4px}
+    .t-total .value{color:#DC2626}.t-confirmado .value{color:#4CAF50}.t-falso .value{color:#F44336}.t-pendiente .value{color:#FFA500}.t-hoy .value{color:#2196F3}
+    .charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px;padding:0 25px 25px}
+    .chart-card{background:#1a1a2e;border-radius:10px;padding:18px;border:1px solid #2a2a3e}
+    .chart-card h3{font-size:15px;margin-bottom:14px;color:#ccc}
+    .chart-card canvas{max-height:280px}
+    .wide{grid-column:1/-1}
+    .loading{text-align:center;color:#666;padding:40px;font-size:14px}
   </style>
 </head>
 <body>
-  <div class="header">
-    <div class="top-bar">
-      <div>
-        <h1>Radar Urbano</h1>
-        <p>Dashboard de estadísticas en tiempo real</p>
-      </div>
-      <button class="refresh" onclick="cargarTodo()">Actualizar</button>
-    </div>
+<div class="header">
+  <h1>⚡ Radar Urbano · Panel de Análisis</h1>
+  <div class="filters">
+    <input type="date" id="desde" title="Desde">
+    <input type="date" id="hasta" title="Hasta">
+    <select id="filtroCat">
+      <option value="">Todas las categorías</option>
+      <option value="transito">Tránsito</option><option value="seguridad">Seguridad</option>
+      <option value="emergencias">Emergencias</option><option value="comunidad">Comunidad</option>
+      <option value="mascotas">Mascotas</option><option value="ambiente">Ambiente</option><option value="servicios">Servicios</option>
+    </select>
+    <button onclick="cargarTodo()">Filtrar</button>
+    <button class="outline" onclick="exportarCSV()">Exportar CSV</button>
   </div>
+</div>
 
-  <div class="stats-grid">
-    <div class="stat-card total"><div class="label">Total Alertas</div><div class="value" id="total">-</div></div>
-    <div class="stat-card confirmed"><div class="label">Confirmadas</div><div class="value" id="confirmados">-</div></div>
-    <div class="stat-card false"><div class="label">Falsas</div><div class="value" id="falsos">-</div></div>
-    <div class="stat-card pending"><div class="label">Pendientes</div><div class="value" id="pendientes">-</div></div>
-  </div>
+<div class="stats-grid" id="statsContainer"></div>
 
-  <div class="charts-grid">
-    <div class="chart-card">
-      <h3>Reportes por día (últimos 30 días)</h3>
-      <canvas id="chartDias"></canvas>
-    </div>
-    <div class="chart-card">
-      <h3>Por categoría</h3>
-      <canvas id="chartCategorias"></canvas>
-    </div>
-    <div class="chart-card">
-      <h3>Por horario</h3>
-      <canvas id="chartHorario"></canvas>
-    </div>
-    <div class="chart-card">
-      <h3>Top usuarios</h3>
-      <canvas id="chartUsuarios"></canvas>
-    </div>
-  </div>
+<div class="charts-grid">
+  <div class="chart-card"><h3>📈 Evolución diaria</h3><canvas id="cDias"></canvas></div>
+  <div class="chart-card"><h3>📊 Por categoría</h3><canvas id="cCat"></canvas></div>
+  <div class="chart-card"><h3>🕐 Por horario</h3><canvas id="cHora"></canvas></div>
+  <div class="chart-card"><h3>🏆 Top usuarios</h3><canvas id="cTop"></canvas></div>
+  <div class="chart-card"><h3>📍 Mapa de calor</h3><canvas id="cRegion"></canvas></div>
+  <div class="chart-card"><h3>✅ Tasa de confirmación</h3><canvas id="cTasa"></canvas></div>
+</div>
 
-  <script>
-    const API = '/api/estadisticas';
-    let charts = {};
+<script>
+const API = '/api/estadisticas';
+let charts = {};
+const catLabels = {transito:'Tránsito',seguridad:'Seguridad',emergencias:'Emergencias',comunidad:'Comunidad',mascotas:'Mascotas',ambiente:'Ambiente',servicios:'Servicios'};
 
-    async function fetchJSON(path) {
-      const res = await fetch(path);
-      return res.json();
-    }
+function params() {
+  const p = new URLSearchParams();
+  const d = document.getElementById('desde').value, h = document.getElementById('hasta').value;
+  if(d) p.set('desde',d); if(h) p.set('hasta',h);
+  const c = document.getElementById('filtroCat').value;
+  if(c) p.set('categoria',c);
+  return p.toString() ? '?'+p.toString() : '';
+}
 
-    async function cargarResumen() {
-      const d = await fetchJSON(`${API}/resumen`);
-      document.getElementById('total').textContent = d.total || 0;
-      document.getElementById('confirmados').textContent = d.confirmados || 0;
-      document.getElementById('falsos').textContent = d.falsos || 0;
-      document.getElementById('pendientes').textContent = d.pendientes || 0;
-    }
+async function fetcher(path) { const r = await fetch(path); return r.json(); }
 
-    async function cargarDias() {
-      const hace30 = new Date();
-      hace30.setDate(hace30.getDate() - 30);
-      const d = await fetchJSON(`${API}/reportes-por-dia?desde=${hace30.toISOString().split('T')[0]}`);
-      graficar('chartDias', 'line', d.map(r => r._id), d.map(r => r.total), '#DC2626');
-    }
+function chart(id,type,labels,data,color,legend=false){
+  if(charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id).getContext('2d');
+  charts[id] = new Chart(ctx,{type,data:{labels,datasets:[{label:'Reportes',data,backgroundColor:Array.isArray(color)?color.map(c=>c+'44'):color+'44',borderColor:color,borderWidth:2,tension:0.3}]},options:{responsive:true,plugins:{legend:{display:legend}},scales:{x:{ticks:{color:'#888',maxTicksLimit:25}},y:{ticks:{color:'#888'},beginAtZero:true}}}});
+}
 
-    async function cargarCategorias() {
-      const d = await fetchJSON(`${API}/por-categoria`);
-      const labels = { transito: 'Tránsito', seguridad: 'Seguridad', emergencias: 'Emergencias', comunidad: 'Comunidad', mascotas: 'Mascotas', ambiente: 'Ambiente', servicios: 'Servicios' };
-      graficar('chartCategorias', 'bar', d.map(r => labels[r._id] || r._id), d.map(r => r.total), ['#DC2626', '#FF9800', '#F44336', '#4CAF50', '#9C27B0', '#2196F3', '#FFC107']);
-    }
+async function cargarTodo(){
+  const p = params();
+  const [resumen,dias,cat,hora,top] = await Promise.all([
+    fetcher(`${API}/resumen${p}`),fetcher(`${API}/reportes-por-dia${p}`),
+    fetcher(`${API}/por-categoria${p}`),fetcher(`${API}/por-horario${p}`),fetcher(`${API}/top-usuarios${p}`)
+  ]);
+  document.getElementById('statsContainer').innerHTML = `
+    <div class='stat-card t-total'><div class='label'>Total</div><div class='value'>${resumen.total||0}</div></div>
+    <div class='stat-card t-confirmado'><div class='label'>Confirmados</div><div class='value'>${resumen.confirmados||0}</div><div class='sub'>${resumen.total?Math.round(resumen.confirmados/resumen.total*100):0}%</div></div>
+    <div class='stat-card t-falso'><div class='label'>Falsos</div><div class='value'>${resumen.falsos||0}</div><div class='sub'>${resumen.total?Math.round(resumen.falsos/resumen.total*100):0}%</div></div>
+    <div class='stat-card t-pendiente'><div class='label'>Pendientes</div><div class='value'>${resumen.pendientes||0}</div></div>
+    <div class='stat-card t-hoy'><div class='label'>Hoy</div><div class='value'>${resumen.hoy||0}</div></div>
+  `;
+  chart('cDias','line',dias.map(r=>r._id),dias.map(r=>r.total),'#DC2626');
+  chart('cCat','bar',cat.map(r=>catLabels[r._id]||r._id),cat.map(r=>r.total),['#DC2626','#FF9800','#F44336','#4CAF50','#9C27B0','#2196F3','#FFC107']);
+  chart('cHora','bar',hora.map(r=>`${r._id}:00`),hora.map(r=>r.total),'#2196F3');
+  chart('cTop','bar',top.map(r=>r._id||'Anón'),top.map(r=>r.total),'#FF9800');
+  chart('cRegion','bar',cat.map(r=>catLabels[r._id]||r._id),cat.map(r=>r.total),'#4CAF50');
+  chart('cTasa','doughnut',['Confirmados','Falsos','Pendientes'],[resumen.confirmados||0,resumen.falsos||0,resumen.pendientes||0],['#4CAF50','#F44336','#FFA500'],true);
+}
 
-    async function cargarHorario() {
-      const d = await fetchJSON(`${API}/por-horario`);
-      const labels = d.map(r => `${r._id}:00`);
-      graficar('chartHorario', 'bar', labels, d.map(r => r.total), '#2196F3');
-    }
+function exportarCSV(){
+  fetcher(`${API}/reportes-por-dia${params()}`).then(dias => {
+    let csv = 'Fecha,Total\n';
+    dias.forEach(r => csv += `${r._id},${r.total}\n`);
+    const blob = new Blob([csv],{type:'text/csv'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'radarurbano_reportes.csv'; a.click();
+  });
+}
 
-    async function cargarUsuarios() {
-      const d = await fetchJSON(`${API}/top-usuarios`);
-      graficar('chartUsuarios', 'bar', d.map(r => r._id || 'Anónimo'), d.map(r => r.total), '#FF9800');
-    }
-
-    function graficar(id, tipo, labels, data, color) {
-      if (charts[id]) charts[id].destroy();
-      const ctx = document.getElementById(id).getContext('2d');
-      charts[id] = new Chart(ctx, {
-        type: tipo,
-        data: {
-          labels,
-          datasets: [{
-            label: 'Reportes',
-            data,
-            backgroundColor: Array.isArray(color) ? color : `${color}44`,
-            borderColor: color,
-            borderWidth: 2,
-            tension: 0.3
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { ticks: { color: '#888', maxTicksLimit: 20 } },
-            y: { ticks: { color: '#888' }, beginAtZero: true }
-          }
-        }
-      });
-    }
-
-    async function cargarTodo() {
-      await Promise.all([cargarResumen(), cargarDias(), cargarCategorias(), cargarHorario(), cargarUsuarios()]);
-    }
-
-    cargarTodo();
-  </script>
+cargarTodo();
+</script>
 </body>
 </html>

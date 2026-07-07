@@ -5,8 +5,9 @@ const router = express.Router();
 
 router.get("/reportes-por-dia", async (req, res) => {
   try {
-    const { desde, hasta } = req.query;
+    const { desde, hasta, categoria } = req.query;
     const match: any = {};
+    if (categoria) match.categoria = categoria;
     if (desde || hasta) {
       match.createdAt = {};
       if (desde) match.createdAt.$gte = new Date(desde as string);
@@ -113,12 +114,16 @@ router.get("/top-usuarios", async (req, res) => {
 
 router.get("/resumen", async (req, res) => {
   try {
+    const { categoria } = req.query;
+    const match: any = { archivado: false };
+    if (categoria) match.categoria = categoria;
     const [total, confirmados, falsos, pendientes, hoy] = await Promise.all([
-      Reporte.countDocuments({ archivado: false }),
-      Reporte.countDocuments({ estado: "confirmado", archivado: false }),
-      Reporte.countDocuments({ estado: "falso", archivado: false }),
-      Reporte.countDocuments({ estado: "no_confirmado", archivado: false }),
+      Reporte.countDocuments({ ...match, archivado: false }),
+      Reporte.countDocuments({ ...match, estado: "confirmado", archivado: false }),
+      Reporte.countDocuments({ ...match, estado: "falso", archivado: false }),
+      Reporte.countDocuments({ ...match, estado: "no_confirmado", archivado: false }),
       Reporte.countDocuments({
+        ...match,
         createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) },
         archivado: false,
       }),
