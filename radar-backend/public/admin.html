@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radar Urbano - Admin API Keys</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0a;color:#fff;min-height:100vh}
+.header{background:#1a1a2e;padding:15px 25px;border-bottom:2px solid #DC2626;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.header h1{color:#DC2626;font-size:22px}
+.header a{color:#888;font-size:13px;text-decoration:none}
+.container{padding:25px;max-width:1000px;margin:0 auto}
+.form-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.form-row input{background:#2a2a3e;border:1px solid #3a3a4e;color:#fff;padding:10px 14px;border-radius:8px;font-size:14px;flex:1;min-width:180px}
+.form-row button{background:#DC2626;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600}
+.form-row button:hover{background:#b91c1c}
+table{width:100%;border-collapse:collapse;background:#1a1a2e;border-radius:10px;overflow:hidden}
+th{text-align:left;padding:12px 16px;background:#2a2a3e;font-size:12px;text-transform:uppercase;color:#888}
+td{padding:12px 16px;border-bottom:1px solid #2a2a3e;font-size:13px}
+td code{background:#0a0a0a;padding:4px 8px;border-radius:4px;font-size:12px}
+.badge{padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.badge-on{background:#4CAF5020;color:#4CAF50}
+.badge-off{background:#F4433620;color:#F44336}
+.btn-sm{background:#3a3a4e;color:#fff;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;margin:0 2px}
+.btn-sm.danger{background:#F4433620;color:#F44336}
+.btn-sm:hover{opacity:0.8}
+.info-box{background:#1a1a2e;border:1px solid #2a2a3e;border-radius:10px;padding:16px;margin-bottom:20px;font-size:13px;line-height:1.6}
+.info-box code{background:#0a0a0a;padding:3px 6px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🔑 API Keys · Admin</h1>
+  <a href="/dashboard.html">← Dashboard</a>
+</div>
+
+<div class="container">
+  <div class="info-box">
+    <strong>📡 Cómo usar la API de estadísticas:</strong><br>
+    Agregá el header <code>x-api-key: TU_KEY</code> en cada request.<br>
+    Ejemplo: <code>curl -H "x-api-key: ru_xxx" https://radarurbano-1.onrender.com/api/estadisticas/resumen</code>
+  </div>
+
+  <div class="form-row">
+    <input type="text" id="nombre" placeholder="Nombre del cliente (ej: Municipalidad de Viña)">
+    <input type="number" id="limite" placeholder="Límite de requests (default: 10000)" value="10000">
+    <button onclick="crearKey()">+ Crear API Key</button>
+  </div>
+
+  <table id="tabla">
+    <thead><tr><th>Key</th><th>Cliente</th><th>Estado</th><th>Requests</th><th>Límite</th><th>Acciones</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+async function fetcher(path, opts={}) { const r = await fetch(path, opts); return r.json(); }
+
+async function cargarKeys(){
+  const keys = await fetcher('/api/admin/listar');
+  const tbody = document.querySelector('#tabla tbody');
+  tbody.innerHTML = keys.map(k => `
+    <tr>
+      <td><code>${k.key}</code></td>
+      <td>${k.nombre}</td>
+      <td><span class="badge ${k.activo?'badge-on':'badge-off'}">${k.activo?'Activo':'Inactivo'}</span></td>
+      <td>${k.requestsRealizados}</td>
+      <td>${k.limiteRequests}</td>
+      <td>
+        <button class="btn-sm" onclick="toggle('${k.key}')">${k.activo?'Desactivar':'Activar'}</button>
+        <button class="btn-sm" onclick="resetContador('${k.key}')">Reset</button>
+        <button class="btn-sm danger" onclick="eliminar('${k.key}')">Eliminar</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function crearKey(){
+  const nombre = document.getElementById('nombre').value;
+  const limite = parseInt(document.getElementById('limite').value) || 10000;
+  if(!nombre) return alert('Poné un nombre');
+  await fetcher('/api/admin/crear',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre,limiteRequests:limite})});
+  document.getElementById('nombre').value = '';
+  cargarKeys();
+}
+
+async function toggle(key){ await fetcher('/api/admin/toggle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})}); cargarKeys(); }
+async function eliminar(key){ if(confirm('¿Eliminar esta key?')){ await fetcher('/api/admin/eliminar',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})}); cargarKeys(); } }
+async function resetContador(key){ await fetcher('/api/admin/reset-contador',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})}); cargarKeys(); }
+
+cargarKeys();
+</script>
+</body>
+</html>

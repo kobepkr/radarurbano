@@ -1,7 +1,10 @@
 import express from "express";
 import { Reporte } from "../models/reporte";
+import { apiKeyMiddleware } from "../middlewares/apiKey.middleware";
 
 const router = express.Router();
+
+router.use(apiKeyMiddleware);
 
 router.get("/reportes-por-dia", async (req, res) => {
   try {
