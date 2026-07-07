@@ -673,19 +673,14 @@ useEffect(() => {
       
       setReportes(prev => {
         const existe = prev.find(r => r._id === nuevoReporte._id);
-        if (existe) {
-          console.log('⚠️ Reporte ya existe en la lista, ignorando');
-          return prev;
-        }
+        if (existe) return prev;
+
         if (userLocation) {
           const [rLng, rLat] = nuevoReporte.ubicacion.coordinates;
           const dist = calcularDistancia(userLocation.latitude, userLocation.longitude, rLat, rLng);
-          if (dist > 50) {
-            console.log('⚠️ Reporte fuera de rango (50km), ignorando');
-            return prev;
-          }
+          if (dist > 50) return prev;
         }
-        console.log('✅ Agregando nuevo reporte');
+
         return [nuevoReporte, ...prev];
       });
     });
