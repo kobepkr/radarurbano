@@ -465,11 +465,11 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       quality: 0.6,
       base64: true,
     });
-    if (!result.canceled && result.assets[0].base64) {
+    if (!result.canceled && result.assets?.[0]?.base64) {
       setImagenSeleccionada(result.assets[0].base64);
     }
   };
