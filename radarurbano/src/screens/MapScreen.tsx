@@ -9,7 +9,8 @@ import {
   ScrollView, 
   ActivityIndicator,
   Alert,
-  TextInput
+  TextInput,
+  Image
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -1671,6 +1672,9 @@ const centrarMapa = () => {
                     </Text>
                   </View>
                   <Text style={styles.modernCardDesc}>{selectedReporte.descripcion}</Text>
+                  {(selectedReporte as any).imagenUrl ? (
+                    <Image source={{ uri: (selectedReporte as any).imagenUrl }} style={styles.modalImagen} resizeMode="cover" />
+                  ) : null}
                   <View style={styles.modernCardStats}>
                     <View style={styles.statItem}>
                       <Text style={styles.statValue}>{selectedReporte.confirmaciones}</Text>
@@ -2126,7 +2130,13 @@ const styles = StyleSheet.create({
     color: '#8E8E93',
     fontSize: 14,
     lineHeight: 20,
-    marginBottom: 16,
+    marginBottom: 8,
+  },
+  modalImagen: {
+    width: '100%',
+    height: 160,
+    borderRadius: 10,
+    marginBottom: 8,
   },
   modernCardStats: {
     flexDirection: 'row',
