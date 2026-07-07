@@ -1625,6 +1625,7 @@ const centrarMapa = () => {
           }}
           creadoPorNombre={(reporte as any).creadoPorNombre}
           yaConfirmado={reportesConfirmados.has(reporte._id)}
+          imagenUrl={(reporte as any).imagenUrl}
           esPropio={(reporte as any).creadoPor === userIdActual}
           onDelete={() => {
             Alert.alert('Eliminar', '¿Eliminar este reporte?', [

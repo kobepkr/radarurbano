@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Alert, Image } from 'react-native';
 
 interface EventCardProps {
   title: string;
@@ -26,6 +26,7 @@ interface EventCardProps {
   onLocate?: () => void;
   creadoPorNombre?: string;
   yaConfirmado?: boolean;
+  imagenUrl?: string | null;
   esPropio?: boolean;
   onDelete?: () => void;
   onOcultar?: () => void;
@@ -60,6 +61,7 @@ export default function EventCard({
   onLocate,
   creadoPorNombre,
   yaConfirmado,
+  imagenUrl,
   esPropio,
   onDelete,
   onOcultar,
@@ -147,6 +149,10 @@ export default function EventCard({
       {description && description !== `Reporte de ${title.toLowerCase()}` && (
         <Text style={styles.description} numberOfLines={2}>{description}</Text>
       )}
+
+      {imagenUrl ? (
+        <Image source={{ uri: imagenUrl }} style={styles.imagen} resizeMode="cover" />
+      ) : null}
 
       <View style={styles.actionsRow}>
         <TouchableOpacity style={styles.actionButton} onPress={onConfirm}>
@@ -295,6 +301,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     marginBottom: 4,
+  },
+  imagen: {
+    width: '100%',
+    height: 140,
+    borderRadius: 10,
+    marginBottom: 8,
   },
   description: {
     color: '#CCCCCC',
