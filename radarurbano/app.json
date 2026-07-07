@@ -45,6 +45,12 @@
           "icon": "./assets/notification-icon.png",
           "color": "#DC2626"
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Radar Urbano necesita acceso a tus fotos para adjuntar imágenes a las alertas."
+        }
       ]
     ]
   }
