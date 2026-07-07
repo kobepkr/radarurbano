@@ -38,6 +38,7 @@ app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/estadisticas", estadisticasRoutes);
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(express.static("public"));
 
 app.get("/", (req, res) => {
   res.send("API funcionando 🚀");
