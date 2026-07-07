@@ -8,6 +8,8 @@ import { Server } from "socket.io";
 import reporteRoutes from "./routes/reporte.routes";
 import usuarioRoutes from "./routes/usuario.routes";
 import { connectDB } from "./config/db";
+import { swaggerSpec } from "./config/swagger";
+import swaggerUi from "swagger-ui-express";
 
 const app = express();
 const httpServer = createServer(app);
@@ -32,6 +34,8 @@ app.use((req: any, res, next) => {
 
 app.use("/api/reportes", reporteRoutes);
 app.use("/api/usuarios", usuarioRoutes);
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/", (req, res) => {
   res.send("API funcionando 🚀");

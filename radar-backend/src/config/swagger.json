@@ -1,0 +1,280 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Radar Urbano API",
+    "version": "1.5.0",
+    "description": "API para reportes urbanos comunitarios"
+  },
+  "servers": [
+    { "url": "https://radarurbano-1.onrender.com", "description": "Producción" }
+  ],
+  "tags": [
+    { "name": "Usuarios", "description": "Autenticación y gestión de usuarios" },
+    { "name": "Reportes", "description": "Creación y consulta de alertas" }
+  ],
+  "paths": {
+    "/api/usuarios/registro": {
+      "post": {
+        "tags": ["Usuarios"],
+        "summary": "Registrar usuario",
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["nombre", "email", "password", "telefono"],
+                "properties": {
+                  "nombre": { "type": "string", "minLength": 4 },
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string", "minLength": 8 },
+                  "telefono": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Usuario registrado" }, "400": { "description": "Error de validación" } }
+      }
+    },
+    "/api/usuarios/login": {
+      "post": {
+        "tags": ["Usuarios"],
+        "summary": "Iniciar sesión",
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Token JWT + datos de usuario" },
+          "401": { "description": "Credenciales inválidas" },
+          "403": { "description": "Cuenta no verificada" }
+        }
+      }
+    },
+    "/api/usuarios/verificar": {
+      "post": {
+        "tags": ["Usuarios"],
+        "summary": "Verificar código de email",
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["usuarioId", "codigo"],
+                "properties": {
+                  "usuarioId": { "type": "string" },
+                  "codigo": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Cuenta verificada" }, "400": { "description": "Código incorrecto" } }
+      }
+    },
+    "/api/usuarios/perfil": {
+      "get": {
+        "tags": ["Usuarios"],
+        "summary": "Obtener perfil",
+        "responses": { "200": { "description": "Datos del perfil" } }
+      }
+    },
+    "/api/usuarios/recuperar-password": {
+      "post": {
+        "tags": ["Usuarios"],
+        "summary": "Solicitar código de recuperación",
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": { "email": { "type": "string" } }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Código enviado" } }
+      }
+    },
+    "/api/usuarios/confirmar-recuperacion": {
+      "post": {
+        "tags": ["Usuarios"],
+        "summary": "Confirmar recuperación de contraseña",
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["usuarioId", "codigo", "nuevaPassword"],
+                "properties": {
+                  "usuarioId": { "type": "string" },
+                  "codigo": { "type": "string" },
+                  "nuevaPassword": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Contraseña actualizada" } }
+      }
+    },
+    "/api/usuarios/checkout-premium": {
+      "post": {
+        "tags": ["Usuarios"],
+        "summary": "Crear pago Premium (Flow.cl)",
+        "responses": { "200": { "description": "URL de pago Flow" } }
+      }
+    },
+    "/api/usuarios/push-token": {
+      "post": {
+        "tags": ["Usuarios"],
+        "summary": "Guardar token de notificaciones push",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "pushToken": { "type": "string" } }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Token guardado" } }
+      }
+    },
+    "/api/reportes": {
+      "post": {
+        "tags": ["Reportes"],
+        "summary": "Crear alerta",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["tipo", "lat", "lng"],
+                "properties": {
+                  "tipo": { "type": "string" },
+                  "descripcion": { "type": "string" },
+                  "lat": { "type": "number" },
+                  "lng": { "type": "number" },
+                  "imagen": { "type": "string", "description": "Base64 (solo premium)" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Reporte creado" } }
+      }
+    },
+    "/api/reportes/cercanos": {
+      "get": {
+        "tags": ["Reportes"],
+        "summary": "Reportes cercanos",
+        "security": [],
+        "parameters": [
+          { "name": "lat", "in": "query", "schema": { "type": "number" } },
+          { "name": "lng", "in": "query", "schema": { "type": "number" } },
+          { "name": "radio", "in": "query", "schema": { "type": "number", "default": 5 } }
+        ],
+        "responses": { "200": { "description": "Lista de reportes" } }
+      }
+    },
+    "/api/reportes/{id}": {
+      "get": {
+        "tags": ["Reportes"],
+        "summary": "Obtener reporte por ID",
+        "security": [],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Reporte" } }
+      },
+      "put": {
+        "tags": ["Reportes"],
+        "summary": "Editar reporte (solo creador)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Reporte actualizado" } }
+      },
+      "delete": {
+        "tags": ["Reportes"],
+        "summary": "Eliminar reporte (solo creador)",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Reporte eliminado" } }
+      }
+    },
+    "/api/reportes/{id}/confirmar": {
+      "post": {
+        "tags": ["Reportes"],
+        "summary": "Confirmar reporte",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Reporte confirmado" } }
+      }
+    },
+    "/api/reportes/{id}/reportar-falso": {
+      "post": {
+        "tags": ["Reportes"],
+        "summary": "Reportar como falso",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Reporte marcado como falso" } }
+      }
+    },
+    "/api/reportes/{id}/reaccionar": {
+      "post": {
+        "tags": ["Reportes"],
+        "summary": "Reaccionar a reporte",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "tipo": { "type": "string", "enum": ["like", "urgente", "peligro"] } }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Reacción agregada" } }
+      }
+    },
+    "/api/reportes/{id}/comentarios": {
+      "get": {
+        "tags": ["Reportes"],
+        "summary": "Ver comentarios",
+        "security": [],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Lista de comentarios" } }
+      },
+      "post": {
+        "tags": ["Reportes"],
+        "summary": "Agregar comentario",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["texto"],
+                "properties": { "texto": { "type": "string", "maxLength": 300 } }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Comentario agregado" } }
+      }
+    }
+  }
+}
