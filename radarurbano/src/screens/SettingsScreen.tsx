@@ -107,6 +107,7 @@ Por solo $2.990/mes obtenés:
 • Servicios: internet caído, transporte público, postes dañados.
 
 ✨ FUNCIONES AVANZADAS
+• Alertas con fotos 📸
 • Sin límite de vistas de alertas y comentarios.
 • Descripción personalizada en tus alertas.
 • Borde dorado en tus reportes.
