@@ -31,6 +31,7 @@ interface EventCardProps {
   onDelete?: () => void;
   onOcultar?: () => void;
   onEdit?: () => void;
+  vistas?: number;
 }
 
 const categoriaLabels: { [key: string]: string } = {
@@ -65,7 +66,8 @@ export default function EventCard({
   esPropio,
   onDelete,
   onOcultar,
-  onEdit
+  onEdit,
+  vistas
 }: EventCardProps) {
   
   const getEstadoColor = () => {
@@ -96,7 +98,14 @@ export default function EventCard({
     <TouchableOpacity style={[styles.card, esPremium && styles.cardPremium]} onPress={onPress}>
       {/* Tipo + Estado + Locate */}
       <View style={styles.headerRow}>
-        <Text style={styles.title}>{title}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, gap: 6 }}>
+          <Text style={styles.title}>{title}</Text>
+          {vistas !== undefined && vistas > 0 && (
+            <View style={styles.vistasBadge}>
+              <Text style={styles.vistasText}>👁 {vistas}</Text>
+            </View>
+          )}
+        </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           {onLocate && (
             <TouchableOpacity onPress={onLocate} style={styles.locateButton}>
@@ -244,6 +253,18 @@ const styles = StyleSheet.create({
   },
   locateIcon: {
     fontSize: 16,
+  },
+  vistasBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#2C2C2E',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  vistasText: {
+    color: '#8E8E93',
+    fontSize: 11,
   },
   menuButton: {
     padding: 4,
