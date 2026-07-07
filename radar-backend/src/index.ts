@@ -5,6 +5,7 @@ import express from "express";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import rateLimit from "express-rate-limit";
 import reporteRoutes from "./routes/reporte.routes";
 import usuarioRoutes from "./routes/usuario.routes";
 import estadisticasRoutes from "./routes/estadisticas.routes";
@@ -26,6 +27,18 @@ const io = new Server(httpServer, {
 
 app.use(cors({ origin: corsOrigin }));
 app.use(express.json({ limit: '50mb' }));
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { error: "Demasiados intentos. Esperá 15 minutos." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use("/api/usuarios/login", loginLimiter);
+app.use("/api/usuarios/registro", rateLimit({ windowMs: 60 * 60 * 1000, max: 3, message: { error: "Demasiados registros. Esperá 1 hora." } }));
+app.use("/api/usuarios/recuperar-password", rateLimit({ windowMs: 60 * 60 * 1000, max: 3, message: { error: "Demasiados intentos. Esperá 1 hora." } }));
 
 connectDB();
 
