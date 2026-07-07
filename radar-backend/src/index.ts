@@ -7,6 +7,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import reporteRoutes from "./routes/reporte.routes";
 import usuarioRoutes from "./routes/usuario.routes";
+import estadisticasRoutes from "./routes/estadisticas.routes";
 import { connectDB } from "./config/db";
 import { swaggerSpec } from "./config/swagger";
 import swaggerUi from "swagger-ui-express";
@@ -34,6 +35,7 @@ app.use((req: any, res, next) => {
 
 app.use("/api/reportes", reporteRoutes);
 app.use("/api/usuarios", usuarioRoutes);
+app.use("/api/estadisticas", estadisticasRoutes);
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
