@@ -1657,17 +1657,18 @@ const centrarMapa = () => {
             {selectedReporte && (
               <>
                 <View style={styles.modernCard}>
-                  <View style={styles.modernCardHeader}>
-                    <Text style={styles.modernCardTipo}>{selectedReporte.tipo?.toUpperCase() || ''}</Text>
-                    <View style={[styles.estadoPill, { 
-                      backgroundColor: selectedReporte.estado === 'confirmado' ? '#4CAF5020' : selectedReporte.estado === 'falso' ? '#F4433620' : '#FFA50020'
+                  <Text style={styles.modernCardTipo}>{selectedReporte.tipo?.toUpperCase() || ''}</Text>
+                  <View style={[styles.estadoPill, { 
+                    backgroundColor: selectedReporte.estado === 'confirmado' ? '#4CAF5020' : selectedReporte.estado === 'falso' ? '#F4433620' : '#FFA50020',
+                    alignSelf: 'flex-start',
+                    marginTop: 4,
+                    marginBottom: 8,
+                  }]}>
+                    <Text style={[styles.estadoPillText, { 
+                      color: selectedReporte.estado === 'confirmado' ? '#4CAF50' : selectedReporte.estado === 'falso' ? '#F44336' : '#FFA500'
                     }]}>
-                      <Text style={[styles.estadoPillText, { 
-                        color: selectedReporte.estado === 'confirmado' ? '#4CAF50' : selectedReporte.estado === 'falso' ? '#F44336' : '#FFA500'
-                      }]}>
-                        {selectedReporte.estado === 'confirmado' ? '✓ Confirmado' : selectedReporte.estado === 'falso' ? '✗ Falso' : '⋯ Pendiente'}
-                      </Text>
-                    </View>
+                      {selectedReporte.estado === 'confirmado' ? '✓ Confirmado' : selectedReporte.estado === 'falso' ? '✗ Falso' : '⋯ Pendiente'}
+                    </Text>
                   </View>
                   <Text style={styles.modernCardDesc}>{selectedReporte.descripcion}</Text>
                   <View style={styles.modernCardStats}>
