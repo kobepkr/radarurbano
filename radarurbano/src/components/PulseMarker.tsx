@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, Text } from 'react-native';
 import { Marker } from 'react-native-maps';
-import Svg, { Circle, Path, G, Defs, RadialGradient, Stop } from 'react-native-svg';
+import Svg, { Circle, Path, G, Defs, RadialGradient, Stop, Text as SvgText, Rect } from 'react-native-svg';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -32,22 +32,25 @@ const IconoIncendio = ({ size = 32 }) => {
   );
 };
 
-const IconoManifestacion = ({ size = 26 }) => {
-  const scale = useRef(new Animated.Value(1)).current;
-  useEffect(() => {
-    Animated.loop(Animated.sequence([
-      Animated.timing(scale, { toValue: 1.04, duration: 500, useNativeDriver: true }),
-      Animated.timing(scale, { toValue: 1, duration: 500, useNativeDriver: true }),
-    ])).start();
-  }, []);
-  return (
-    <Animated.View style={{ transform: [{ scale }] }}>
-      <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 18 }}>✊</Text>
-      </View>
-    </Animated.View>
-  );
-};
+const IconoManifestacion = ({ size = 32 }) => (
+  <Svg viewBox="0 0 200 200" width={size} height={size}>
+    <Defs>
+      <RadialGradient id="gmf" cx="50%" cy="50%" r="50%">
+        <Stop offset="0%" stopColor="#FF6F00" /><Stop offset="100%" stopColor="#D84315" />
+      </RadialGradient>
+    </Defs>
+    <Circle cx="100" cy="100" r="85" fill="url(#gmf)" stroke="#FFB300" strokeWidth="6" />
+    <G>
+      <SvgText x="35" y="100" textAnchor="middle" fontSize="35" fill="rgba(255,255,255,0.5)" fontWeight="bold">{'✊'}</SvgText>
+    </G>
+    <G>
+      <SvgText x="100" y="95" textAnchor="middle" fontSize="70" fill="white" fontWeight="bold">{'✊'}</SvgText>
+    </G>
+    <G>
+      <SvgText x="165" y="100" textAnchor="middle" fontSize="35" fill="rgba(255,255,255,0.5)" fontWeight="bold">{'✊'}</SvgText>
+    </G>
+  </Svg>
+);
 
 const IconoInundacion = ({ size = 32 }) => {
   const rotate = useRef(new Animated.Value(0)).current;
@@ -88,7 +91,11 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
   }, []);
 
   if (icono.includes('🔥')) return <Marker coordinate={coordinate} onPress={onPress} anchor={{ x: 0.5, y: 0.5 }}><IconoIncendio size={32} /></Marker>;
-  if (icono.includes('✊')) return <Marker coordinate={coordinate} onPress={onPress} anchor={{ x: 0.5, y: 0.5 }}><IconoManifestacion size={36} /></Marker>;
+  if (icono.includes('✊')) return (
+    <Marker coordinate={coordinate} onPress={onPress} anchor={{ x: 0.5, y: 0.5 }}>
+      <IconoManifestacion size={32} />
+    </Marker>
+  );
   if (icono.includes('🌊')) return <Marker coordinate={coordinate} onPress={onPress} anchor={{ x: 0.5, y: 0.5 }}><IconoInundacion size={32} /></Marker>;
 
   return (
