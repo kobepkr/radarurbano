@@ -46,7 +46,7 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
 
   useEffect(() => {
     const a = Animated.loop(Animated.sequence([
-      Animated.timing(pulseAnim, { toValue: 1.5, duration: 1200, useNativeDriver: true }),
+      Animated.timing(pulseAnim, { toValue: 1.15, duration: 1200, useNativeDriver: true }),
       Animated.timing(pulseAnim, { toValue: 1, duration: 1200, useNativeDriver: true }),
     ]));
     a.start();
