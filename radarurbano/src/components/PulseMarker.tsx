@@ -54,9 +54,9 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
   }, []);
 
   const getContent = () => {
-    if (icono.includes('🔥')) return <IconoIncendio size={32} />;
-    if (icono.includes('✊')) return <IconoManifestacion size={32} />;
-    if (icono.includes('🌊')) return <IconoInundacion size={32} />;
+    if (icono.includes('🔥')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoIncendio size={32} /></Animated.View>;
+    if (icono.includes('✊')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoManifestacion size={32} /></Animated.View>;
+    if (icono.includes('🌊')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoInundacion size={32} /></Animated.View>;
     return (
       <View style={styles.container}>
         <Animated.View style={[styles.pulse, { backgroundColor: color, opacity: 0.25, transform: [{ scale: pulseAnim }] }]} />
@@ -69,10 +69,7 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
 
   return (
     <Marker coordinate={coordinate} onPress={onPress} anchor={{ x: 0.5, y: 0.5 }}>
-      <View style={styles.markerWrap}>
-        <Animated.View style={[styles.pulseBig, { backgroundColor: color, opacity: 0.2, transform: [{ scale: pulseAnim }] }]} />
-        {getContent()}
-      </View>
+      {getContent()}
     </Marker>
   );
 }
