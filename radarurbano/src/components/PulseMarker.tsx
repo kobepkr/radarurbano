@@ -49,6 +49,14 @@ const IconoCorteLuz = ({ size = 32 }: { size?: number }) => (
   </Svg>
 );
 
+const IconoCarabineros = ({ size = 32 }: { size?: number }) => (
+  <Svg viewBox="0 0 120 120" width={size} height={size}>
+    <Circle cx="60" cy="60" r="50" fill="#1A237E" stroke="#1976D2" strokeWidth="5" />
+    <Circle cx="48" cy="35" r="4" fill="#FF1744" />
+    <Circle cx="72" cy="35" r="4" fill="#2979FF" />
+  </Svg>
+);
+
 interface PulseMarkerProps {
   coordinate: { latitude: number; longitude: number };
   color: string;
@@ -74,6 +82,7 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
     if (icono.includes('🌊')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoInundacion size={32} /></Animated.View>;
     if (icono.includes('🚑')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoEmergenciaMedica size={32} /></Animated.View>;
     if (icono.includes('⚡')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoCorteLuz size={32} /></Animated.View>;
+    if (icono.includes('👮')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoCarabineros size={32} /></Animated.View>;
     return (
       <View style={styles.container}>
         <Animated.View style={[styles.pulse, { backgroundColor: color, opacity: 0.25, transform: [{ scale: pulseAnim }] }]} />
