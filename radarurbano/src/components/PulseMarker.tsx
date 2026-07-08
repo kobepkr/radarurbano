@@ -32,33 +32,18 @@ const IconoIncendio = ({ size = 32 }) => {
   );
 };
 
-const IconoManifestacion = ({ size = 36 }) => {
+const IconoManifestacion = ({ size = 26 }) => {
   const scale = useRef(new Animated.Value(1)).current;
-  const radio = useRef(new Animated.Value(85)).current;
   useEffect(() => {
     Animated.loop(Animated.sequence([
-      Animated.parallel([
-        Animated.timing(scale, { toValue: 1.03, duration: 500, useNativeDriver: true }),
-        Animated.timing(radio, { toValue: 93, duration: 500, useNativeDriver: false }),
-      ]),
-      Animated.parallel([
-        Animated.timing(scale, { toValue: 1, duration: 500, useNativeDriver: true }),
-        Animated.timing(radio, { toValue: 85, duration: 500, useNativeDriver: false }),
-      ]),
+      Animated.timing(scale, { toValue: 1.04, duration: 500, useNativeDriver: true }),
+      Animated.timing(scale, { toValue: 1, duration: 500, useNativeDriver: true }),
     ])).start();
   }, []);
   return (
-    <Animated.View style={{ backgroundColor: 'transparent', transform: [{ scale }] }}>
+    <Animated.View style={{ transform: [{ scale }] }}>
       <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
-        <Svg width={size} height={size} viewBox="0 0 120 120" style={StyleSheet.absoluteFill}>
-          <Defs>
-            <RadialGradient id="gradM" cx="50%" cy="50%" r="50%">
-              <Stop offset="0%" stopColor="#FF6F00" /><Stop offset="100%" stopColor="#D84315" />
-            </RadialGradient>
-          </Defs>
-          <AnimatedCircle cx="60" cy="60" r={radio} fill="url(#gradM)" stroke="#FFB300" strokeWidth="3" />
-        </Svg>
-        <Text style={{ fontSize: 20 }}>✊</Text>
+        <Text style={{ fontSize: 18 }}>✊</Text>
       </View>
     </Animated.View>
   );
