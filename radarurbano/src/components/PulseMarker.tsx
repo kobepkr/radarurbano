@@ -69,14 +69,19 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
 
   return (
     <Marker coordinate={coordinate} onPress={onPress} anchor={{ x: 0.5, y: 0.5 }}>
-      {getContent()}
+      <View style={styles.markerWrap}>
+        <Animated.View style={[styles.pulseBig, { backgroundColor: color, opacity: 0.2, transform: [{ scale: pulseAnim }] }]} />
+        {getContent()}
+      </View>
     </Marker>
   );
 }
 
 const styles = StyleSheet.create({
+  markerWrap: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
   container: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
   pulse: { position: 'absolute', width: 28, height: 28, borderRadius: 14 },
-  badge: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#1C1C1E', borderWidth: 2, justifyContent: 'center', alignItems: 'center' },
+  pulseBig: { position: 'absolute', width: 34, height: 34, borderRadius: 17 },
+  badge: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#1C1C1E', borderWidth: 2, justifyContent: 'center', alignItems: 'center', zIndex: 1 },
   emoji: { fontSize: 16, textAlign: 'center' },
 });
