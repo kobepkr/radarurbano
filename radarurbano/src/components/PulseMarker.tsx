@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import { View, StyleSheet, Animated, Text } from 'react-native';
 import { Marker } from 'react-native-maps';
 import Svg, { Circle, Path, G, Defs, RadialGradient, Stop, Text as SvgText, Rect } from 'react-native-svg';
 
@@ -82,7 +82,18 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
     if (icono.includes('🌊')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoInundacion size={32} /></Animated.View>;
     if (icono.includes('🚑')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoEmergenciaMedica size={32} /></Animated.View>;
     if (icono.includes('⚡')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoCorteLuz size={32} /></Animated.View>;
-    if (icono.includes('👮')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoCarabineros size={32} /></Animated.View>;
+    if (icono.includes('👮')) return (
+      <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+        <View style={{ width: 32, height: 32, justifyContent: 'center', alignItems: 'center' }}>
+          <Svg viewBox="0 0 120 120" width={32} height={32} style={StyleSheet.absoluteFill}>
+            <Circle cx="60" cy="60" r="50" fill="#1A237E" stroke="#1976D2" strokeWidth="5" />
+            <Circle cx="48" cy="35" r="4" fill="#FF1744" />
+            <Circle cx="72" cy="35" r="4" fill="#2979FF" />
+          </Svg>
+          <Text style={{ fontSize: 18 }}>👮</Text>
+        </View>
+      </Animated.View>
+    );
     return (
       <View style={styles.container}>
         <Animated.View style={[styles.pulse, { backgroundColor: color, opacity: 0.25, transform: [{ scale: pulseAnim }] }]} />
