@@ -64,10 +64,7 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
   if (icono.includes('incendio') || icono.includes('🔥')) {
     return (
       <Marker coordinate={coordinate} onPress={onPress} anchor={{ x: 0.5, y: 0.5 }}>
-        <View style={styles.svgContainer}>
-          <Animated.View style={[styles.pulseCircle, { backgroundColor: color, opacity: 0.3, transform: [{ scale: pulseAnim }] }]} />
-          <IconoIncendio size={40} />
-        </View>
+        <IconoIncendio size={32} />
       </Marker>
     );
   }
