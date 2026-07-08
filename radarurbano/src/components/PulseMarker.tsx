@@ -79,7 +79,17 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
   const getContent = () => {
     if (icono.includes('🔥')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoIncendio size={32} /></Animated.View>;
     if (icono.includes('✊')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoManifestacion size={32} /></Animated.View>;
-    if (icono.includes('🌊')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoInundacion size={32} /></Animated.View>;
+    if (icono.includes('🌊')) return (
+      <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+        <View style={{ width: 32, height: 32, justifyContent: 'center', alignItems: 'center' }}>
+          <Svg viewBox="0 0 120 120" width={32} height={32} style={StyleSheet.absoluteFill}>
+            <Circle cx="60" cy="60" r="50" fill="#0D47A1" stroke="#2196F3" strokeWidth="4" />
+            <Path d="M20 70 Q40 55 60 70 Q80 85 100 70" fill="none" stroke="#64B5F6" strokeWidth="5" />
+          </Svg>
+          <Text style={{ fontSize: 16 }}>🌊</Text>
+        </View>
+      </Animated.View>
+    );
     if (icono.includes('🚑')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoEmergenciaMedica size={32} /></Animated.View>;
     if (icono.includes('⚡')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoCorteLuz size={32} /></Animated.View>;
     if (icono.includes('👮')) return (
