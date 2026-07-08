@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
 import { Marker } from 'react-native-maps';
-import Svg, { Circle, Path, G, Defs, RadialGradient, Stop, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, Path, G, Defs, RadialGradient, Stop, Text as SvgText, Rect } from 'react-native-svg';
 
 const IconoIncendio = ({ size = 32 }: { size?: number }) => (
   <Svg viewBox="0 0 120 120" width={size} height={size}>
@@ -34,6 +34,14 @@ const IconoInundacion = ({ size = 32 }: { size?: number }) => (
   </Svg>
 );
 
+const IconoEmergenciaMedica = ({ size = 32 }: { size?: number }) => (
+  <Svg viewBox="0 0 120 120" width={size} height={size}>
+    <Circle cx="60" cy="60" r="50" fill="#D32F2F" stroke="#FF1744" strokeWidth="4" />
+    <Rect x="50" y="35" width="20" height="50" rx="4" fill="white" />
+    <Rect x="35" y="50" width="50" height="20" rx="4" fill="white" />
+  </Svg>
+);
+
 interface PulseMarkerProps {
   coordinate: { latitude: number; longitude: number };
   color: string;
@@ -57,6 +65,7 @@ export default function PulseMarker({ coordinate, color, icono, onPress }: Pulse
     if (icono.includes('🔥')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoIncendio size={32} /></Animated.View>;
     if (icono.includes('✊')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoManifestacion size={32} /></Animated.View>;
     if (icono.includes('🌊')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoInundacion size={32} /></Animated.View>;
+    if (icono.includes('🚑')) return <Animated.View style={{ transform: [{ scale: pulseAnim }] }}><IconoEmergenciaMedica size={32} /></Animated.View>;
     return (
       <View style={styles.container}>
         <Animated.View style={[styles.pulse, { backgroundColor: color, opacity: 0.25, transform: [{ scale: pulseAnim }] }]} />
