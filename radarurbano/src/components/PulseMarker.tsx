@@ -45,6 +45,7 @@ const IconoEmergenciaMedica = ({ size = 32 }: { size?: number }) => (
 const IconoCorteLuz = ({ size = 32 }: { size?: number }) => (
   <Svg viewBox="0 0 120 120" width={size} height={size}>
     <Circle cx="60" cy="60" r="50" fill="#4E342E" stroke="#FFD600" strokeWidth="4" />
+    <Path d="M70 25 L40 58 L55 58 L47 95 L82 55 L62 55 Z" fill="#FFD600" />
   </Svg>
 );
 
