@@ -236,7 +236,7 @@ const getIconoPorTipo = (tipo: string): string => {
     embotellamiento: '🚗', choque: '💥', semaforoRoto: '🚦',
     calleCortada: '🚧', accidente: '🚘', trafico: '🚙',
     objetoPeligroso: '⚠️', controlCarabineros: '👮',
-    obrasEnVia: '🏗️', calleInundada: '🌊',
+    obrasEnVia: '🏗️', calleInundada: '💧',
     manifestacion: '✊', emergenciaVehicular: '🛟',
     actividadDeportiva: '🏃', bache: '🕳️',
     asalto: '💀', actitudSospechosa: '👁️', balacera: '💥',
