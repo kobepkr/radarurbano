@@ -48,15 +48,18 @@ const IconoManifestacion = ({ size = 36 }) => {
     ])).start();
   }, []);
   return (
-    <Animated.View style={{ transform: [{ scale }] }}>
-      <Svg width={size} height={size} viewBox="0 0 120 120">
-        <Defs>
-          <RadialGradient id="gradM" cx="50%" cy="50%" r="50%">
-            <Stop offset="0%" stopColor="#FF6F00" /><Stop offset="100%" stopColor="#D84315" />
-          </RadialGradient>
-        </Defs>
-        <AnimatedCircle cx="60" cy="60" r={radio} fill="url(#gradM)" stroke="#FFB300" strokeWidth="3" />
-      </Svg>
+    <Animated.View style={{ backgroundColor: 'transparent', transform: [{ scale }] }}>
+      <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
+        <Svg width={size} height={size} viewBox="0 0 120 120" style={StyleSheet.absoluteFill}>
+          <Defs>
+            <RadialGradient id="gradM" cx="50%" cy="50%" r="50%">
+              <Stop offset="0%" stopColor="#FF6F00" /><Stop offset="100%" stopColor="#D84315" />
+            </RadialGradient>
+          </Defs>
+          <AnimatedCircle cx="60" cy="60" r={radio} fill="url(#gradM)" stroke="#FFB300" strokeWidth="3" />
+        </Svg>
+        <Text style={{ fontSize: 20 }}>✊</Text>
+      </View>
     </Animated.View>
   );
 };
