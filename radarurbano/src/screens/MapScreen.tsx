@@ -121,6 +121,9 @@ export default function MapScreen({ mapaOscuro }: { mapaOscuro: boolean }) {
   const [reporteParaComentar, setReporteParaComentar] = useState<Reporte | null>(null);
   const [descripcionCustom, setDescripcionCustom] = useState('');
   const [imagenSeleccionada, setImagenSeleccionada] = useState<string | null>(null);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editReporteId, setEditReporteId] = useState<string | null>(null);
+  const [editDescripcion, setEditDescripcion] = useState('');
   const [userLocation, setUserLocation] = useState<Coordinate | null>(null);
   const [selectedCoordinate, setSelectedCoordinate] = useState<Coordinate | null>(null);
   const [regionSeleccionada, setRegionSeleccionada] = useState(0);
@@ -478,6 +481,20 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
     });
     if (!result.canceled && result.assets?.[0]?.base64) {
       setImagenSeleccionada(result.assets[0].base64);
+    }
+  };
+
+  const editarReporte = async () => {
+    if (!editReporteId || !editDescripcion.trim()) return;
+    try {
+      await axios.put(`${API_URL}/reportes/${editReporteId}`, {
+        descripcion: editDescripcion.trim(),
+      }, { headers: { 'Authorization': `Bearer ${token}` } });
+      setReportes(prev => prev.map(r => r._id === editReporteId ? { ...r, descripcion: editDescripcion.trim() } : r));
+      setEditModalVisible(false);
+      showAlert('✅ Editado', 'Reporte actualizado correctamente', 'success');
+    } catch (error) {
+      showAlert('❌ Error', 'No se pudo editar', 'error');
     }
   };
 
@@ -1637,6 +1654,11 @@ const centrarMapa = () => {
               { text: 'Eliminar', style: 'destructive', onPress: () => eliminarReporte(reporte._id) },
             ]);
           }}
+          onEdit={() => {
+            setEditReporteId(reporte._id);
+            setEditDescripcion(reporte.descripcion || '');
+            setEditModalVisible(true);
+          }}
           onOcultar={() => {
             setReportes(prev => prev.filter(r => r._id !== reporte._id));
           }}
@@ -1731,6 +1753,32 @@ const centrarMapa = () => {
               </>
             )}
             </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal de edición */}
+      <Modal visible={editModalVisible} transparent={true} animationType="slide" onRequestClose={() => setEditModalVisible(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { maxHeight: '80%', padding: 20 }]}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Editar descripción</Text>
+              <TouchableOpacity onPress={() => setEditModalVisible(false)}>
+                <X size={24} color="#8E8E93" />
+              </TouchableOpacity>
+            </View>
+            <TextInput
+              style={styles.descripcionInput}
+              value={editDescripcion}
+              onChangeText={setEditDescripcion}
+              maxLength={200}
+              multiline
+              placeholder="Nueva descripción..."
+              placeholderTextColor="#8E8E93"
+            />
+            <TouchableOpacity style={{ backgroundColor: '#DC2626', padding: 14, borderRadius: 12, alignItems: 'center', marginTop: 12 }} onPress={editarReporte}>
+              <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16, fontWeight: 'bold' }}>Guardar</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>

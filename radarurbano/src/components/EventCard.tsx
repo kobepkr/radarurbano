@@ -121,6 +121,7 @@ export default function EventCard({
           <TouchableOpacity onPress={() => {
             const opciones: { text: string; style?: 'destructive' | 'cancel'; onPress?: () => void }[] = [];
             if (esPropio) {
+              opciones.push({ text: '✏️ Editar', onPress: onEdit });
               opciones.push({ text: '🗑️ Eliminar', style: 'destructive', onPress: onDelete });
             } else {
               opciones.push({ text: '🙈 Ocultar', onPress: onOcultar });
