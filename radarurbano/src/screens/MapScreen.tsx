@@ -485,13 +485,20 @@ const crearReporte = async (tipo: string, coordinate: Coordinate | null) => {
   };
 
   const editarReporte = async () => {
-    if (!editReporteId || !editDescripcion.trim()) return;
+    if (!editReporteId) return;
     try {
-      await axios.put(`${API_URL}/reportes/${editReporteId}`, {
-        descripcion: editDescripcion.trim(),
-      }, { headers: { 'Authorization': `Bearer ${token}` } });
-      setReportes(prev => prev.map(r => r._id === editReporteId ? { ...r, descripcion: editDescripcion.trim() } : r));
+      const body: any = {};
+      if (editDescripcion.trim()) body.descripcion = editDescripcion.trim();
+      if (imagenSeleccionada) body.imagen = imagenSeleccionada;
+      if (Object.keys(body).length === 0) { setEditModalVisible(false); return; }
+      
+      await axios.put(`${API_URL}/reportes/${editReporteId}`, body,
+        { headers: { 'Authorization': `Bearer ${token}` } });
+      setReportes(prev => prev.map(r => r._id === editReporteId 
+        ? { ...r, descripcion: editDescripcion.trim() || r.descripcion } 
+        : r));
       setEditModalVisible(false);
+      setImagenSeleccionada(null);
       showAlert('✅ Editado', 'Reporte actualizado correctamente', 'success');
     } catch (error) {
       showAlert('❌ Error', 'No se pudo editar', 'error');
@@ -1776,6 +1783,11 @@ const centrarMapa = () => {
               placeholder="Nueva descripción..."
               placeholderTextColor="#8E8E93"
             />
+            <TouchableOpacity style={styles.imagenButton} onPress={seleccionarImagen}>
+              <Text style={styles.imagenButtonText}>
+                {imagenSeleccionada ? '📸 Nueva foto seleccionada' : '📷 Cambiar foto'}
+              </Text>
+            </TouchableOpacity>
             <TouchableOpacity style={{ backgroundColor: '#DC2626', padding: 14, borderRadius: 12, alignItems: 'center', marginTop: 12 }} onPress={editarReporte}>
               <Text style={{ color: '#FFF', textAlign: 'center', fontSize: 16, fontWeight: 'bold' }}>Guardar</Text>
             </TouchableOpacity>

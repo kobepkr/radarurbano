@@ -160,8 +160,15 @@ router.put("/:id", authMiddleware, async (req: AuthRequest, res) => {
     const reporte = await Reporte.findById(req.params.id);
     if (!reporte) return res.status(404).json({ error: "Reporte no encontrado" });
     if (reporte.creadoPor.toString() !== req.usuario.id) return res.status(403).json({ error: "Solo el creador puede editar" });
-    const { descripcion } = req.body;
+    const { descripcion, imagen } = req.body;
     if (descripcion) reporte.descripcion = descripcion;
+    if (imagen) {
+      const usuario = await Usuario.findById(req.usuario.id, 'premium');
+      if (usuario?.premium) {
+        const url = await subirImagenCloudinary(imagen);
+        if (url) reporte.imagenUrl = url;
+      }
+    }
     await reporte.save();
     io.emit('reporte-actualizado', reporte);
     res.json(reporte);
