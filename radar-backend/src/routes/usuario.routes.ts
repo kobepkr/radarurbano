@@ -238,6 +238,7 @@ router.get("/perfil", authMiddleware, async (req: AuthRequest, res) => {
         telefono: usuario.telefono,
         rol: usuario.rol,
         premium: usuario.premium || false,
+        premiumHasta: usuario.premiumHasta || null,
         reputacion: usuario.reputacion,
         confirmacionesRealizadas: usuario.confirmacionesRealizadas,
         reportesCreados: usuario.reportesCreados
@@ -322,6 +323,7 @@ router.get("/limite-reportes", authMiddleware, async (req: AuthRequest, res) => 
 
     res.json({
       es_premium: usuario.premium || false,
+      premiumHasta: usuario.premiumHasta || null,
       limite: LIMITE_DIARIO,
       reportes_hoy: reportesHoy,
       restantes: usuario.premium ? -1 : Math.max(0, LIMITE_DIARIO - reportesHoy)

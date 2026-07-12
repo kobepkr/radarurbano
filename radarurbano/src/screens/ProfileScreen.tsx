@@ -29,6 +29,7 @@ export default function ProfileScreen({ navigation }: any) {
   });
   const [racha, setRacha] = useState(0);
   const [confirmacionesDadas, setConfirmacionesDadas] = useState(0);
+  const [premiumHasta, setPremiumHasta] = useState<string | null>(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editReporteId, setEditReporteId] = useState<string | null>(null);
   const [editDescripcion, setEditDescripcion] = useState('');
@@ -92,6 +93,7 @@ const cargarDatosUsuario = async () => {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     setLimite(limiteRes.data);
+    if (limiteRes.data.premiumHasta) setPremiumHasta(limiteRes.data.premiumHasta);
 
   } catch (error) {
     console.error('Error cargando perfil:', error);
@@ -184,7 +186,10 @@ const handleLogout = async () => {
   <View style={styles.premiumCard}>
     <Text style={styles.premiumEmoji}>⭐</Text>
     <Text style={styles.premiumTitle}>Usuario Premium</Text>
-    <Text style={styles.premiumInfo}>Reportes ilimitados · Descripción personalizada</Text>
+    <Text style={styles.premiumInfo}>
+      Reportes ilimitados · Descripción personalizada
+      {premiumHasta ? `\nTe quedan ${Math.max(0, Math.ceil((new Date(premiumHasta).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} días` : ''}
+    </Text>
   </View>
 ) : (
   <TouchableOpacity style={styles.premiumUpgrade} onPress={async () => {
