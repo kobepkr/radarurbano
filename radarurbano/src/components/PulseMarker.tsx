@@ -45,8 +45,7 @@ export default function PulseMarker({ coordinate, color, icono, tipo, onPress }:
 
   return (
     <Marker coordinate={coordinate} onPress={onPress} anchor={{ x: 0.5, y: 0.5 }}>
-      <View style={styles.container}>
-        <Animated.View style={[styles.pulse, { backgroundColor: color, opacity: 0.25, transform: [{ scale: pulseAnim }] }]} />
+      <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
         {imagen ? (
           <Image source={imagen} style={styles.iconImg} resizeMode="contain" />
         ) : (
@@ -54,7 +53,7 @@ export default function PulseMarker({ coordinate, color, icono, tipo, onPress }:
             <Text style={styles.emoji}>{icono}</Text>
           </View>
         )}
-      </View>
+      </Animated.View>
     </Marker>
   );
 }
