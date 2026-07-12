@@ -11,7 +11,6 @@ const iconos: { [key: string]: any } = {
   personaHerida: require('../../assets/markers/emergenciaMedica.png'),
   carabinerosLugar: require('../../assets/markers/carabinerosEnellugar.png'),
   controlCarabineros: require('../../assets/markers/carabinerosEnellugar.png'),
-  patrulla: require('../../assets/markers/carabinerosEnellugar.png'),
   bomberosLugar: require('../../assets/markers/bomberoLugar.png'),
   perroPerdido: require('../../assets/markers/perroPerdido.png'),
   gatoPerdido: require('../../assets/markers/gatoPerdido.png'),
