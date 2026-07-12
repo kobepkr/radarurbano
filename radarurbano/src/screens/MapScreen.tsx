@@ -33,6 +33,7 @@ import {
 } from 'lucide-react-native';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import * as ImagePicker from 'expo-image-picker';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 import { offlineReportService, OfflineReport } from '../services/OfflineReportService';
 import { ConnectionStatus } from '../components/ConnectionStatus';
 import { CommentSection } from '../components/CommentSection';
@@ -1515,6 +1516,16 @@ const centrarMapa = () => {
           </View>
         </Modal>
 
+        {!esPremium && (
+          <View style={styles.adBanner}>
+            <BannerAd
+              unitId={TestIds.BANNER}
+              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+              requestOptions={{ requestNonPersonalizedAdsOnly: true }}
+            />
+          </View>
+        )}
+
         <View style={styles.iconRow}>
           <TouchableOpacity style={[styles.iconButton, filtroCategoria === 'todos' && styles.iconButtonActive]} onPress={() => setFiltroCategoria('todos')}>
             <ScrollText size={20} color={filtroCategoria === 'todos' ? '#FFF' : '#8E8E93'} />
@@ -2002,6 +2013,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginBottom: 16,
+  },
+  adBanner: {
+    marginHorizontal: 0,
+    marginBottom: 8,
+    alignItems: 'center',
   },
   iconRow: {
     flexDirection: 'row',
