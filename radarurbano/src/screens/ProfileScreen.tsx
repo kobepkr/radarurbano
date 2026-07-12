@@ -6,7 +6,9 @@ import {
   TouchableOpacity,
   Alert,
   ScrollView,
-  ActivityIndicator
+  ActivityIndicator,
+  Modal,
+  TextInput
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -27,6 +29,9 @@ export default function ProfileScreen({ navigation }: any) {
   });
   const [racha, setRacha] = useState(0);
   const [confirmacionesDadas, setConfirmacionesDadas] = useState(0);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editReporteId, setEditReporteId] = useState<string | null>(null);
+  const [editDescripcion, setEditDescripcion] = useState('');
 
   useEffect(() => {
     cargarDatosUsuario();
@@ -96,6 +101,24 @@ const cargarDatosUsuario = async () => {
   }
 };
 
+
+const editarReporte = async () => {
+  if (!editReporteId) return;
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const body: any = {};
+    if (editDescripcion.trim()) body.descripcion = editDescripcion.trim();
+    if (Object.keys(body).length === 0) { setEditModalVisible(false); return; }
+    await axios.put(`${API_URL}/reportes/${editReporteId}`, body, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    setMisReportes(prev => prev.map(r => r._id === editReporteId ? { ...r, descripcion: editDescripcion.trim() || r.descripcion } : r));
+    setEditModalVisible(false);
+    Alert.alert('✅ Editado', 'Reporte actualizado');
+  } catch (error) {
+    Alert.alert('❌ Error', 'No se pudo editar');
+  }
+};
 
 // En ProfileScreen.tsx
 const handleLogout = async () => {
@@ -211,8 +234,15 @@ const handleLogout = async () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>📋 Mis últimos reportes</Text>
         {misReportes.slice(0, 5).map((reporte) => (
-          <View key={reporte._id} style={styles.reporteCard}>
-            <Text style={styles.reporteTipo}>{reporte.tipo.toUpperCase()}</Text>
+           <View key={reporte._id} style={styles.reporteCard}>
+             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+               <Text style={styles.reporteTipo}>{reporte.tipo.toUpperCase()}</Text>
+               {(reporte.estado !== 'falso') && (
+                 <TouchableOpacity onPress={() => { setEditReporteId(reporte._id); setEditDescripcion(reporte.descripcion || ''); setEditModalVisible(true); }}>
+                   <Text style={{ fontSize: 18 }}>✏️</Text>
+                 </TouchableOpacity>
+               )}
+             </View>
             <Text style={styles.reporteDesc}>{reporte.descripcion}</Text>
             <View style={styles.reporteFooter}>
               <Text style={styles.reporteEstado}>
@@ -226,6 +256,30 @@ const handleLogout = async () => {
           </View>
         ))}
       </View>
+
+      {/* Modal editar */}
+      <Modal visible={editModalVisible} transparent={true} animationType="slide" onRequestClose={() => setEditModalVisible(false)}>
+        <View style={styles.editOverlay}>
+          <View style={styles.editContent}>
+            <Text style={styles.editTitle}>Editar descripción</Text>
+            <TextInput
+              style={styles.editInput}
+              value={editDescripcion}
+              onChangeText={setEditDescripcion}
+              maxLength={200}
+              multiline
+              placeholder="Nueva descripción..."
+              placeholderTextColor="#8E8E93"
+            />
+            <TouchableOpacity style={styles.editButton} onPress={editarReporte}>
+              <Text style={styles.editButtonText}>Guardar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setEditModalVisible(false)} style={{ marginTop: 10 }}>
+              <Text style={{ color: '#8E8E93', textAlign: 'center' }}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Botón cerrar sesión */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -457,5 +511,44 @@ premiumTitle: {
     borderWidth: 1,
     borderColor: '#FFD70040',
     alignItems: 'center',
+  },
+  editOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  editContent: {
+    backgroundColor: '#1C1C1E',
+    borderRadius: 16,
+    padding: 20,
+    width: '90%',
+  },
+  editTitle: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+  editInput: {
+    backgroundColor: '#2C2C2E',
+    borderRadius: 12,
+    padding: 12,
+    color: '#FFF',
+    fontSize: 14,
+    minHeight: 60,
+    textAlignVertical: 'top',
+    marginBottom: 12,
+  },
+  editButton: {
+    backgroundColor: '#DC2626',
+    padding: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  editButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
