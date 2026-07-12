@@ -33,7 +33,6 @@ import {
 } from 'lucide-react-native';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import * as ImagePicker from 'expo-image-picker';
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 import { offlineReportService, OfflineReport } from '../services/OfflineReportService';
 import { ConnectionStatus } from '../components/ConnectionStatus';
 import { CommentSection } from '../components/CommentSection';
@@ -1517,13 +1516,10 @@ const centrarMapa = () => {
         </Modal>
 
         {!esPremium && (
-          <View style={styles.adBanner}>
-            <BannerAd
-              unitId={TestIds.BANNER}
-              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-              requestOptions={{ requestNonPersonalizedAdsOnly: true }}
-            />
-          </View>
+          <TouchableOpacity style={styles.adBanner} onPress={() => navigation.navigate('Profile')}>
+            <Text style={styles.adText}>📢 ¿Querés eliminar la publicidad?</Text>
+            <Text style={styles.adLink}>Hacerte Premium ⭐</Text>
+          </TouchableOpacity>
         )}
 
         <View style={styles.iconRow}>
@@ -2015,9 +2011,23 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   adBanner: {
-    marginHorizontal: 0,
+    marginHorizontal: 16,
     marginBottom: 8,
+    padding: 10,
+    backgroundColor: '#2C2C2E',
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  adText: {
+    color: '#8E8E93',
+    fontSize: 12,
+  },
+  adLink: {
+    color: '#FFD700',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   iconRow: {
     flexDirection: 'row',
