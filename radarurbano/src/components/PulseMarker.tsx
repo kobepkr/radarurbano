@@ -1,25 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, Image, Text } from 'react-native';
 import { Marker } from 'react-native-maps';
-
-const markerImages: { [key: string]: any } = {
-  incendio: require('../../assets/markers/incendio.png'),
-  manifestacion: require('../../assets/markers/manifestacion.png'),
-  choque: require('../../assets/markers/choque.png'),
-  calleCortada: require('../../assets/markers/calleCortada.png'),
-  obrasEnVia: require('../../assets/markers/obras.png'),
-  corteLuz: require('../../assets/markers/CorteLuz.png'),
-  actitudSospechosa: require('../../assets/markers/actividadSospechosa.png'),
-  accidenteGrave: require('../../assets/markers/emergenciaMedica.png'),
-  ambulanciaLugar: require('../../assets/markers/emergenciaMedica.png'),
-  personaHerida: require('../../assets/markers/emergenciaMedica.png'),
-  carabinerosLugar: require('../../assets/markers/carabinerosEnellugar.png'),
-  controlCarabineros: require('../../assets/markers/carabinerosEnellugar.png'),
-  patrulla: require('../../assets/markers/carabinerosEnellugar.png'),
-  bomberosLugar: require('../../assets/markers/bomberoLugar.png'),
-  perroPerdido: require('../../assets/markers/perroPerdido.png'),
-  gatoPerdido: require('../../assets/markers/gatoPerdido.png'),
-};
+import { getIconoMarker } from '../utils/iconos';
 
 interface PulseMarkerProps {
   coordinate: { latitude: number; longitude: number };
@@ -41,7 +23,7 @@ export default function PulseMarker({ coordinate, color, icono, tipo, onPress }:
     return () => a.stop();
   }, []);
 
-  const imagen = markerImages[tipo];
+  const imagen = getIconoMarker(tipo);
 
   return (
     <Marker coordinate={coordinate} onPress={onPress} anchor={{ x: 0.5, y: 0.5 }}>

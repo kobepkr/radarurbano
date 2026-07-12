@@ -39,6 +39,7 @@ import { CommentSection } from '../components/CommentSection';
 import { Send } from 'lucide-react-native';
 import { regionesChile, RegionChile } from '../utils/regiones';
 import { getAddress } from '../utils/geocoding';
+import { getIconoMarker } from '../utils/iconos';
 
 
 
