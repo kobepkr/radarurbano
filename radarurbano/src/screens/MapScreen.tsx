@@ -918,6 +918,7 @@ const centrarMapa = () => {
                 }}
                 color={color}
                 icono={icono}
+                tipo={reporte.tipo}
                 onPress={() => mostrarOpcionesCard(reporte)}
               />
             );
