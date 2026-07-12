@@ -92,8 +92,10 @@ const cargarDatosUsuario = async () => {
     const limiteRes = await axios.get(`${API_URL}/usuarios/limite-reportes`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    setLimite(limiteRes.data);
-    if (limiteRes.data.premiumHasta) setPremiumHasta(limiteRes.data.premiumHasta);
+      setLimite(limiteRes.data);
+      if (limiteRes.data.premiumHasta) {
+        setPremiumHasta(limiteRes.data.premiumHasta);
+      }
 
   } catch (error) {
     console.error('Error cargando perfil:', error);
@@ -186,10 +188,10 @@ const handleLogout = async () => {
   <View style={styles.premiumCard}>
     <Text style={styles.premiumEmoji}>⭐</Text>
     <Text style={styles.premiumTitle}>Usuario Premium</Text>
-    <Text style={styles.premiumInfo}>
-      Reportes ilimitados · Descripción personalizada
-      {premiumHasta ? `\nTe quedan ${Math.max(0, Math.ceil((new Date(premiumHasta).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} días` : ''}
-    </Text>
+    <Text style={styles.premiumInfo}>Reportes ilimitados · Descripción personalizada</Text>
+    {premiumHasta ? (
+      <Text style={styles.premiumDias}>Te quedan {Math.max(0, Math.ceil((new Date(premiumHasta).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} días</Text>
+    ) : null}
   </View>
 ) : (
   <TouchableOpacity style={styles.premiumUpgrade} onPress={async () => {
@@ -507,6 +509,12 @@ premiumTitle: {
   premiumInfo: {
     color: '#8E8E93',
     fontSize: 12,
+  },
+  premiumDias: {
+    color: '#FFD700',
+    fontSize: 13,
+    fontWeight: '600',
+    marginTop: 4,
   },
   premiumUpgrade: {
     backgroundColor: '#FFD70015',
