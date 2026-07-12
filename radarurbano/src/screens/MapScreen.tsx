@@ -1678,7 +1678,7 @@ const centrarMapa = () => {
       {/* Modal de opciones */}
       <Modal transparent={true} visible={cardModalVisible} animationType="fade" onRequestClose={() => setCardModalVisible(false)}>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { maxHeight: '80%' }]}>
+    <View style={[styles.modalContent, { maxHeight: '90%' }]}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Opciones del reporte</Text>
               <TouchableOpacity onPress={() => setCardModalVisible(false)}>

@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   comentariosList: {
-    maxHeight: 200,
+    maxHeight: 350,
   },
   emptyText: {
     color: '#8E8E93',
