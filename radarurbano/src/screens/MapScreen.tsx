@@ -41,6 +41,11 @@ import { regionesChile, RegionChile } from '../utils/regiones';
 import { getAddress } from '../utils/geocoding';
 import { getIconoMarker } from '../utils/iconos';
 
+const ModalIcon = ({ tipo, emoji }: { tipo: string; emoji: string }) => {
+  const png = getIconoMarker(tipo);
+  return png ? <Image source={png} style={{ width: 32, height: 32 }} resizeMode="contain" /> : <Text style={styles.optionEmoji}>{emoji}</Text>;
+};
+
 
 
 
@@ -1056,7 +1061,7 @@ const centrarMapa = () => {
               <Text style={styles.modernOptionText}>Embotellamiento</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('choque', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>💥</Text>
+              <ModalIcon tipo="choque" emoji="💥" />
               <Text style={styles.modernOptionText}>Choque</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('semaforoRoto', region)} disabled={loadingReporte}>
@@ -1064,7 +1069,7 @@ const centrarMapa = () => {
               <Text style={styles.modernOptionText}>Semáforo roto</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('calleCortada', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>🚧</Text>
+              <ModalIcon tipo="calleCortada" emoji="🚧" />
               <Text style={styles.modernOptionText}>Calle cortada</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('objetoPeligroso', region)} disabled={loadingReporte}>
@@ -1084,7 +1089,7 @@ const centrarMapa = () => {
               <Text style={styles.modernOptionText}>Calle inundada</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('manifestacion', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>✊</Text>
+              <ModalIcon tipo="manifestacion" emoji="✊" />
               <Text style={styles.modernOptionText}>Manifestación</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('emergenciaVehicular', region)} disabled={loadingReporte}>
@@ -1114,7 +1119,7 @@ const centrarMapa = () => {
               <Text style={styles.modernOptionText}>Asalto</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('actitudSospechosa', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>👀</Text>
+              <ModalIcon tipo="actitudSospechosa" emoji="👀" />
               <Text style={styles.modernOptionText}>Actitud sospechosa</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('balacera', region)} disabled={loadingReporte}>
@@ -1122,11 +1127,11 @@ const centrarMapa = () => {
               <Text style={styles.modernOptionText}>Balacera</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('carabinerosLugar', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>👮‍♂️</Text>
+              <ModalIcon tipo="carabinerosLugar" emoji="👮‍♂️" />
               <Text style={styles.modernOptionText}>Carabineros en el lugar</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('patrulla', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>🚔</Text>
+              <ModalIcon tipo="patrulla" emoji="🚔" />
               <Text style={styles.modernOptionText}>Patrulla</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('camaraSeguridad', region)} disabled={loadingReporte}>
@@ -1152,7 +1157,7 @@ const centrarMapa = () => {
           </View>
           <View style={styles.modernOptionsGrid}>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('incendio', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>🔥</Text>
+              <ModalIcon tipo="incendio" emoji="🔥" />
               <Text style={styles.modernOptionText}>Incendio</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('inundacion', region)} disabled={loadingReporte}>
@@ -1160,15 +1165,15 @@ const centrarMapa = () => {
               <Text style={styles.modernOptionText}>Inundación</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('accidenteGrave', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>🚑💥</Text>
+              <ModalIcon tipo="accidenteGrave" emoji="🚑💥" />
               <Text style={styles.modernOptionText}>Accidente grave</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('bomberosLugar', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>🚒</Text>
+              <ModalIcon tipo="bomberosLugar" emoji="🚒" />
               <Text style={styles.modernOptionText}>Bomberos en el lugar</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('personaHerida', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>🤕</Text>
+              <ModalIcon tipo="personaHerida" emoji="🤕" />
               <Text style={styles.modernOptionText}>Persona herida</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('rescate', region)} disabled={loadingReporte}>
@@ -1202,7 +1207,7 @@ const centrarMapa = () => {
           </View>
           <View style={styles.modernOptionsGrid}>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('corteLuz', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>💡❌</Text>
+              <ModalIcon tipo="corteLuz" emoji="💡❌" />
               <Text style={styles.modernOptionText}>Corte de luz</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('corteAgua', region)} disabled={loadingReporte}>
@@ -1218,7 +1223,7 @@ const centrarMapa = () => {
               <Text style={styles.modernOptionText}>Maleza</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('perrosCallejeros', region)} disabled={loadingReporte}>
-              <Text style={styles.optionEmoji}>🐕</Text>
+              <ModalIcon tipo="perroPerdido" emoji="🐕" />
               <Text style={styles.modernOptionText}>Perros callejeros</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('veredaMala', region)} disabled={loadingReporte}>
@@ -1265,7 +1270,7 @@ const centrarMapa = () => {
                   <Text style={styles.modernOptionText}>Perro perdido</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('gatoPerdido', region)} disabled={loadingReporte}>
-                  <Text style={styles.optionEmoji}>🐈</Text>
+                  <ModalIcon tipo="gatoPerdido" emoji="🐈" />
                   <Text style={styles.modernOptionText}>Gato perdido</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.modernOptionCard, loadingReporte && styles.optionButtonDisabled]} onPress={() => crearReporte('animalAgresivo', region)} disabled={loadingReporte}>
