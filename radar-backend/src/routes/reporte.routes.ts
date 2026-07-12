@@ -87,6 +87,22 @@ router.post("/", authMiddleware, async (req: AuthRequest, res) => {
   try {
     const { tipo, descripcion, lat, lng, imagen } = req.body;
     if (!categoriaMap[tipo]) return res.status(400).json({ error: "Tipo de evento no válido" });
+
+    const hace30min = new Date(Date.now() - 30 * 60 * 1000);
+    const duplicado = await Reporte.findOne({
+      creadoPor: req.usuario.id,
+      tipo,
+      createdAt: { $gte: hace30min },
+      ubicacion: {
+        $near: {
+          $geometry: { type: "Point", coordinates: [lng, lat] },
+          $maxDistance: 200,
+        },
+      },
+    });
+    if (duplicado) {
+      return res.status(429).json({ error: "Ya reportaste este mismo tipo de alerta en esta zona hace poco. Esperá 30 min." });
+    }
     const expiraEn = new Date();
     expiraEn.setHours(expiraEn.getHours() + (horasExpiracion[tipo] || 6));
     const creador = await Usuario.findById(req.usuario.id, 'nombre premium');
