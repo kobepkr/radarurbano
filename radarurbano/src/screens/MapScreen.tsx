@@ -33,6 +33,7 @@ import {
 } from 'lucide-react-native';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import * as ImagePicker from 'expo-image-picker';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 import { offlineReportService, OfflineReport } from '../services/OfflineReportService';
 import { ConnectionStatus } from '../components/ConnectionStatus';
 import { CommentSection } from '../components/CommentSection';
@@ -1516,10 +1517,13 @@ const centrarMapa = () => {
         </Modal>
 
         {!esPremium && (
-          <TouchableOpacity style={styles.adBanner} onPress={() => navigation.navigate('Profile')}>
-            <Text style={styles.adText}>📢 ¿Querés eliminar la publicidad?</Text>
-            <Text style={styles.adLink}>Hacerte Premium ⭐</Text>
-          </TouchableOpacity>
+          <View style={{ alignItems: 'center', marginBottom: 8 }}>
+            <BannerAd
+              unitId={TestIds.BANNER}
+              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+              requestOptions={{ requestNonPersonalizedAdsOnly: true }}
+            />
+          </View>
         )}
 
         <View style={styles.iconRow}>
