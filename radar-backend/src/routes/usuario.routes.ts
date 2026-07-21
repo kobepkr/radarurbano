@@ -453,4 +453,57 @@ router.get("/flow-return", (req, res) => {
   res.send("<h1>✅ ¡Gracias por tu compra!</h1><p>Volvé a la app e iniciá sesión de nuevo para ver tus beneficios premium.</p>");
 });
 
+// ============================================
+// GOOGLE LOGIN (POST /api/usuarios/google-login)
+// ============================================
+router.post("/google-login", async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) return res.status(400).json({ error: "Token requerido" });
+
+    const googleRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
+    const googleUser: any = await googleRes.json();
+
+    if (googleUser.error) {
+      return res.status(401).json({ error: "Token de Google inválido" });
+    }
+
+    let usuario = await Usuario.findOne({ email: googleUser.email });
+
+    if (!usuario) {
+      usuario = new Usuario({
+        nombre: googleUser.name || googleUser.email.split('@')[0],
+        email: googleUser.email,
+        password: Math.random().toString(36).slice(-16),
+        telefono: 'google-' + googleUser.sub,
+        verificado: true,
+      });
+      await usuario.save();
+    }
+
+    if (!usuario.verificado) {
+      usuario.verificado = true;
+      await usuario.save();
+    }
+
+    const token = jwt.sign(
+      { id: usuario._id, email: usuario.email, rol: usuario.rol },
+      getJwtSecret(),
+      { expiresIn: "365d" }
+    );
+
+    res.json({
+      message: "Login con Google exitoso",
+      token,
+      usuario: {
+        id: usuario._id, nombre: usuario.nombre, email: usuario.email,
+        telefono: usuario.telefono, rol: usuario.rol, premium: usuario.premium || false,
+      },
+    });
+  } catch (error) {
+    console.error("Error Google login:", error);
+    res.status(500).json({ error: "Error en login con Google" });
+  }
+});
+
 export default router;

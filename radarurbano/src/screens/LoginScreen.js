@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -10,7 +10,11 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import * as Notifications from 'expo-notifications';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
 import styles from './LoginStyles';
+
+WebBrowser.maybeCompleteAuthSession();
 
 const API_URL = 'https://radarurbano-1.onrender.com/api';
 
@@ -29,6 +33,30 @@ export default function LoginScreen() {
   const [nuevaPassword, setNuevaPassword] = useState('');
   const [pasoRecuperar, setPasoRecuperar] = useState(0);
   const [mostrarPassword, setMostrarPassword] = useState(false);
+
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: '212828336741-xxxxxxxxxxxx.apps.googleusercontent.com',
+  });
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+      googleLogin(id_token);
+    }
+  }, [response]);
+
+  const googleLogin = async (idToken) => {
+    setLoading(true);
+    try {
+      const res = await axios.post(`${API_URL}/usuarios/google-login`, { idToken });
+      await AsyncStorage.setItem('token', res.data.token);
+      await AsyncStorage.setItem('usuario', JSON.stringify(res.data.usuario));
+      await savePushToken(res.data.usuario.id, res.data.token);
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo iniciar sesión con Google');
+      setLoading(false);
+    }
+  };
 
   const savePushToken = async (userId, token) => {
     try {
@@ -329,6 +357,16 @@ export default function LoginScreen() {
           <Text style={styles.buttonText}>{isRegistro ? 'Registrarse' : 'Iniciar Sesión'}</Text>
         )}
       </TouchableOpacity>
+
+      {!isRegistro && (
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: '#4285F4', marginTop: 8 }]}
+          onPress={() => promptAsync()}
+          disabled={!request || loading}
+        >
+          <Text style={styles.buttonText}>G  Iniciar sesión con Google</Text>
+        </TouchableOpacity>
+      )}
       
       <TouchableOpacity onPress={() => setIsRegistro(!isRegistro)}>
         <Text style={styles.link}>
