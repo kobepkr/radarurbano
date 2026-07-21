@@ -35,7 +35,7 @@ export default function LoginScreen() {
   const [mostrarPassword, setMostrarPassword] = useState(false);
 
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: '212828336741-xxxxxxxxxxxx.apps.googleusercontent.com',
+    clientId: '212828336741-rnc1udbjjvf38cqnm0mcb4cr5vkrfc8t.apps.googleusercontent.com',
   });
 
   useEffect(() => {
