@@ -51,7 +51,8 @@
         {
           "photosPermission": "Radar Urbano necesita acceso a tus fotos para adjuntar imágenes a las alertas."
         }
-      ]
+      ],
+      "expo-web-browser"
     ]
   }
 }
