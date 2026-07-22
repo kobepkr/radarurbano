@@ -43,13 +43,22 @@ export default function LoginScreen() {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       console.log('Google user:', userInfo.user.email);
+      if (!userInfo.idToken) {
+        Alert.alert('Error', 'No se obtuvo token de Google. Probá de nuevo.');
+        setLoading(false);
+        return;
+      }
       const res = await axios.post(`${API_URL}/usuarios/google-login`, { idToken: userInfo.idToken });
       await AsyncStorage.setItem('token', res.data.token);
       await AsyncStorage.setItem('usuario', JSON.stringify(res.data.usuario));
     } catch (error) {
-      if (error.code !== 'CANCELED') {
-        Alert.alert('Error', 'No se pudo iniciar sesión con Google');
+      console.error('Google login error:', error);
+      if (error.code === 'SIGN_IN_CANCELLED' || error.code === 'CANCELED') {
+        setLoading(false);
+        return;
       }
+      const msg = error.response?.data?.error || error.message || 'No se pudo iniciar sesión con Google';
+      Alert.alert('Error', msg);
     } finally {
       setLoading(false);
     }
