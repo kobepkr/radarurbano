@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   View, 
   Text, 
@@ -10,11 +10,12 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import * as Notifications from 'expo-notifications';
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
 import styles from './LoginStyles';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
-WebBrowser.maybeCompleteAuthSession();
+GoogleSignin.configure({
+  webClientId: '212828336741-idt5het927aec208c313nbakdvcsaahk.apps.googleusercontent.com',
+});
 
 const API_URL = 'https://radarurbano-1.onrender.com/api';
 
@@ -34,24 +35,12 @@ export default function LoginScreen() {
   const [pasoRecuperar, setPasoRecuperar] = useState(0);
   const [mostrarPassword, setMostrarPassword] = useState(false);
 
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    expoClientId: '212828336741-idt5het927aec208c313nbakdvcsaahk.apps.googleusercontent.com',
-    androidClientId: '212828336741-pgvifcmkqtbuocfc6cogamn3kt2j50kt.apps.googleusercontent.com',
-    selectAccount: true,
-    proxy: { useProxy: false },
-  });
-
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const { id_token } = response.params;
-      googleLogin(id_token);
-    }
-  }, [response]);
-
-  const googleLogin = async (idToken) => {
+  const googleLogin = async () => {
     setLoading(true);
     try {
-      const res = await axios.post(`${API_URL}/usuarios/google-login`, { idToken });
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      const res = await axios.post(`${API_URL}/usuarios/google-login`, { idToken: userInfo.data?.idToken });
       await AsyncStorage.setItem('token', res.data.token);
       await AsyncStorage.setItem('usuario', JSON.stringify(res.data.usuario));
       await savePushToken(res.data.usuario.id, res.data.token);
@@ -364,8 +353,8 @@ export default function LoginScreen() {
       {!isRegistro && (
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#4285F4', marginTop: 8 }]}
-          onPress={() => promptAsync()}
-          disabled={!request || loading}
+          onPress={() => googleLogin()}
+          disabled={loading}
         >
           <Text style={styles.buttonText}>G  Iniciar sesión con Google</Text>
         </TouchableOpacity>
