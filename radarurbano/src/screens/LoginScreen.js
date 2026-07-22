@@ -15,6 +15,8 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 GoogleSignin.configure({
   webClientId: '212828336741-idt5het927aec208c313nbakdvcsaahk.apps.googleusercontent.com',
+  offlineAccess: true,
+  scopes: ['profile', 'email'],
 });
 
 const API_URL = 'https://radarurbano-1.onrender.com/api';
@@ -40,7 +42,8 @@ export default function LoginScreen() {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      const res = await axios.post(`${API_URL}/usuarios/google-login`, { idToken: userInfo.data?.idToken });
+      console.log('Google user:', userInfo.user.email);
+      const res = await axios.post(`${API_URL}/usuarios/google-login`, { idToken: userInfo.idToken });
       await AsyncStorage.setItem('token', res.data.token);
       await AsyncStorage.setItem('usuario', JSON.stringify(res.data.usuario));
     } catch (error) {
