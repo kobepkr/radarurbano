@@ -43,9 +43,11 @@ export default function LoginScreen() {
       const res = await axios.post(`${API_URL}/usuarios/google-login`, { idToken: userInfo.data?.idToken });
       await AsyncStorage.setItem('token', res.data.token);
       await AsyncStorage.setItem('usuario', JSON.stringify(res.data.usuario));
-      await savePushToken(res.data.usuario.id, res.data.token);
     } catch (error) {
-      Alert.alert('Error', 'No se pudo iniciar sesión con Google');
+      if (error.code !== 'CANCELED') {
+        Alert.alert('Error', 'No se pudo iniciar sesión con Google');
+      }
+    } finally {
       setLoading(false);
     }
   };
